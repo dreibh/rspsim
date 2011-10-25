@@ -1,0 +1,151 @@
+#!/bin/sh
+# $Id$
+# ###########################################################################
+#             Thomas Dreibholz's R Simulation Scripts Collection
+#                  Copyright (C) 2005-2010 Thomas Dreibholz
+#
+#               Author: Thomas Dreibholz, dreibh@iem.uni-due.de
+# ###########################################################################
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Contact: dreibh@iem.uni-due.de
+
+
+# ====== Check parameters ===================================================
+if [ $# -lt 2 ] ; then
+   echo "Usage: ssrun [Output File Name] [Environment File Name]"
+   exit 2
+fi
+OUTPUT_ARCHIVE="$1"
+ENVIRONMENT_FILE="$2"
+
+
+# ====== Prepare simulation environment =====================================
+echo "+ `date` Unpacking environment ..."
+if [ -e $ENVIRONMENT_FILE ] ; then
+   tar xjf $ENVIRONMENT_FILE || exit 3
+fi
+
+
+# ====== Execute simulation runs ============================================
+RUN_DIRECTORY="."
+SIMULATION_DIRECTORY="`pwd`"   # Must be absolute path!
+RUN_ENVIRONMENT="Environment"
+RESULT=0
+INI_FILES="`ls *.ini`"
+for INI_FILE in $INI_FILES ; do
+   OUTPUT_FILE="`echo $INI_FILE | sed -e "s/-parameters.ini$/-output.txt/g"`"
+   SCALAR_FILE="`echo $INI_FILE | sed -e "s/-parameters.ini$/-scalars.sca/g"`"
+   VECTOR_FILE="`echo $INI_FILE | sed -e "s/-parameters.ini$/-vectors.vec/g"`"
+   STATUS_FILE="`echo $INI_FILE | sed -e "s/-parameters.ini$/-status.txt/g"`"
+
+
+   # %%%%%%%%%%%% Same code in perform-run and ssrun %%%%%%%%%%%%%%%%%%%%%%%%
+   # ====== Get configuration ===============================================
+   echo "+ `date` Loading configuration (in $SIMULATION_DIRECTORY/Environment) ..."
+   CONFIG_STAGES=`ls $SIMULATION_DIRECTORY/Environment/simulation.config-stage?` || exit 4
+   echo "   - Running configuration stages:"
+   for stage in $CONFIG_STAGES ; do
+      echo "      o Using $stage ..."
+      . $stage || exit 5
+   done
+
+   echo "   - Run directory: $RUN_DIRECTORY"
+   echo "   - Environment:   $RUN_DIRECTORY/$RUN_ENVIRONMENT"
+   echo "      o Simulation base directory: $SIMULATION_BASEDIR"
+   echo "      o Simulation libraries:      $SIMULATION_LIBS"
+   echo "      o Simulation NED files:      $SIMULATION_NEDS"
+   echo "      o Simulation program:        $SIMULATION_PROGRAM"
+   echo "      o Simulation system:         $SIMULATION_SYSTEM"
+   echo "      o Simulation machine:        $SIMULATION_MACHINE"
+   nedArgs=""
+   for n in $SIMULATION_NEDS ; do
+      if [ "x$nedArgs" = "x" ] ; then
+         nedArgs="$n"
+      else
+         nedArgs="$nedArgs:$n"
+      fi
+   done
+
+   SIMULATION_ARGS="-u Cmdenv -f $INI_FILE -n $nedArgs"
+   echo "      o Simulation arguments:      $SIMULATION_ARGS"
+
+
+   # ====== Execute binary ==================================================
+   echo "+ `date` Executing simulation run ..."
+   if [ ! -e $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR/$INI_FILE ] ; then
+      ln $RUN_DIRECTORY/$INI_FILE $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR/$INI_FILE || exit 11
+   fi
+   if [ ! -e $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR/$SIMULATION_PROGRAM ] ; then
+      ln $SIMULATION_DIRECTORY/Environment/$SIMULATION_PROGRAM $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR/$SIMULATION_PROGRAM || exit 12
+   fi
+   if [ ! -e $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR/$SIMULATION_LIBS ] ; then
+      ln -s $SIMULATION_DIRECTORY/Environment/$SIMULATION_LIBS $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR/$SIMULATION_LIBS || exit 13
+   fi
+   thisOperatingSystem="`uname -s `"
+   if [ "$thisOperatingSystem" != "$SIMULATION_SYSTEM" ] ; then
+      echo "###### Simulation compiled for different operating system! ######"
+      if [ "$thisOperatingSystem" = "FreeBSD" ] ; then
+         echo "Trying: brandelf -t $SIMULATION_SYSTEM $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_LIBS/ld-loader.so"
+         brandelf -t $SIMULATION_SYSTEM $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_LIBS/ld-loader.so || exit 14
+      fi
+      echo "#################################################################"
+   fi
+
+   (
+      cd $RUN_DIRECTORY/$RUN_ENVIRONMENT/$SIMULATION_BASEDIR && \
+      startTime=`date` && \
+      rm -f $RUN_DIRECTORY/$SCALAR_FILE.bz2 $RUN_DIRECTORY/$VECTOR_FILE.bz2 $RUN_DIRECTORY/$OUTPUT_FILE.bz2 && \
+      echo "   -> env -i $SIMULATION_LIBS/ld-loader.so --library-path $SIMULATION_LIBS ./$SIMULATION_PROGRAM $SIMULATION_ARGS" && \
+      chmod 700 ./$SIMULATION_PROGRAM && \
+      env -i $SIMULATION_LIBS/ld-loader.so --library-path $SIMULATION_LIBS ./$SIMULATION_PROGRAM $SIMULATION_ARGS >$OUTPUT_FILE 2>&1 && \
+      find . -name $OUTPUT_FILE -or -name $VECTOR_FILE -or -name $SCALAR_FILE | xargs -r bzip2 -f && \
+      endTime=`date` && \
+      ( echo "Start: $startTime" && echo "End:   $endTime" ) >$STATUS_FILE
+   ) || RESULT=15
+   # %%%%%%%%%%%% Same code in perform-run and ssrun %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+   # ====== If run has failed: print output for debugging ===================
+   if [ $RESULT -ne 0 ] ; then
+      echo ""
+      echo "----- SIMULATION RUN FAILED -----"
+      echo ""
+      echo "Contents of directory $RUN_DIRECTORY :"
+      ls -l $RUN_DIRECTORY
+      echo "-----"
+      if [ -e $RUN_DIRECTORY/$OUTPUT_FILE.bz2 ] ; then
+         echo "#########################################################"
+         bzcat $RUN_DIRECTORY/$OUTPUT_FILE.bz2
+         echo "#########################################################"
+         echo "Output file: $RUN_DIRECTORY/$OUTPUT_FILE.bz2"
+         echo "INI file:    $RUN_DIRECTORY/$INI_FILE"
+         echo "----- SIMULATION RUN FAILED -----"
+      fi
+   fi
+done
+
+
+# ====== Archive results to output file =====================================
+echo "+ `date` Archiving results ..."
+(
+   cd $RUN_DIRECTORY/Environment/$SIMULATION_BASEDIR && \
+   find . -name "*-output.txt" -or -name "*.sca" -or -name "*.vec" | xargs -r bzip2 -f && \
+   find . -name "*-status.txt" -or -name "*.txt.bz2" -or -name "*-scalars.sca.bz2" -or -name "*-vectors.vec.bz2" -or -name "core*" | xargs -r tar czf output.tar.gz
+) || exit 20
+mv $RUN_DIRECTORY/Environment/$SIMULATION_BASEDIR/output.tar.gz $OUTPUT_ARCHIVE || exit 25
+
+
+exit $RESULT

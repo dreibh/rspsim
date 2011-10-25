@@ -1,0 +1,58 @@
+#!/bin/sh
+# $Id$
+# ###########################################################################
+#             Thomas Dreibholz's R Simulation Scripts Collection
+#                  Copyright (C) 2005-2008 Thomas Dreibholz
+#
+#               Author: Thomas Dreibholz, dreibh@iem.uni-due.de
+# ###########################################################################
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Contact: dreibh@iem.uni-due.de
+
+if [ $# -lt 1 ] ; then
+   echo >&2 "Usage: get-neds [NED Directory] {NED file or directory} ..."
+   exit 1
+fi
+
+NEDDIR=$1
+shift
+
+
+# ====== Prepare NED directory ==============================================
+if [ -e $NEDDIR ] ; then
+   rm -rf $NEDDIR
+fi
+mkdir $NEDDIR || exit 1
+
+
+# ====== Copy NED files =====================================================
+# Create list of NEDs first; otherwise, "find" would also find newly copied
+# files in the output directory!
+while [ $# -gt 0 ] ; do
+   NED=$1
+   shift
+
+   if [ -d $NED ] ; then
+      rm -f $NEDDIR/out.tar
+      find $NED -name "*.ned" -printf "%P\n" | grep --invert-match "tdtoolchain/" | tar cf $NEDDIR/out.tar -C $NED -T -
+      if [ -e $NEDDIR/out.tar ] ; then
+         ( cd $NEDDIR && tar xf out.tar )
+      fi
+      rm -f $NEDDIR/out.tar
+   else
+      cp $NED $NEDDIR
+   fi
+done

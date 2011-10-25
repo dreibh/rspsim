@@ -1,0 +1,15 @@
+#!/bin/sh
+
+PROGRAM_NAME=rspsim5
+PROGRAM_DIRS="/backup/Dreibholz/$PROGRAM_NAME $HOME/$PROGRAM_NAME $HOME/src/$PROGRAM_NAME"
+
+SIMULATION_PROGRAM=""
+for PROGRAM_DIR in $PROGRAM_DIRS ; do
+   if [ -e "$PROGRAM_DIR/$PROGRAM_NAME" ] ; then
+      SIMULATION_PROGRAM="$PROGRAM_DIR/$PROGRAM_NAME"
+   fi
+done
+if [ "SIMULATION_PROGRAM" = "" ] ; then
+   echo "ERROR: $SIMULATION_PROGRAM binary not found!"
+   exit 1
+fi

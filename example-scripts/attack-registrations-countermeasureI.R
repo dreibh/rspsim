@@ -1,0 +1,59 @@
+# ###########################################################################
+# Name:        attack-registrations-countermeasureI
+# Description: Countermeasure for registration attacks:
+#              only a single PE per user (by fixed user-specific PE ID)
+# Revision:    $Id$
+# ###########################################################################
+
+source("simulate-version14.R")
+
+# ====== Simulation Settings ================================================
+simulationDirectory <- "attack-registrations-countermeasureI"
+simulationRuns <- 24
+simulationDuration <- 120
+simulationStoreVectors <- FALSE
+simulationExecuteMake <- TRUE
+simulationScriptOutputVerbosity <- 3
+simulationSummaryCompressionLevel <- 9
+simulationSummarySkipList <- c("lan.calcApp", "lan,registrar", "lan.switch")
+# -------------------------------------
+source("computation-pool.R")
+# -------------------------------------
+
+# ###########################################################################
+
+simulationConfigurations <- list(
+   list("puToPERatio", 10),
+
+   list("scenarioNumberOfAttackersVariable", 1),
+
+   list("calcAppProtocolServiceJobKeepAliveInterval", 10),
+   list("calcAppProtocolServiceJobKeepAliveTimeout", 10),
+   list("calcAppProtocolServiceJobRequestTimeout", 10),
+
+   list("registrarMaxBadPEReports", 3),   # !!!
+   list("registrarMaxEndpointUnreachableRate", -1),   # !!! Alte Werte: 1, 100 !!!
+   list("registrarEndpointUnreachableRateBuckets", 64),
+   list("registrarEndpointUnreachableRateMaxEntries", 16),
+   list("registrarMaxHandleResolutionRate", -1),
+   list("registrarHandleResolutionRateBuckets", 64),
+   list("registrarHandleResolutionRateMaxEntries", 16),
+
+   list("calcAppPoolElementServiceMinCapacityPerJob", 250000),   # !!! Für LoadDeg wichtig!
+   list("calcAppPoolElementSelectionPolicy", "LeastUsed", "LeastUsedDegradation", "Random", "RoundRobin"),
+   list("calcAppPoolElementServerRegistrationLife", 30),
+
+   list("calcAppPoolUserServiceJobSizeVariable", 1e7),
+
+   list("attackerAttackType", "Registration"),
+   list("attackerAttackInterval", 0.001, 0.01, 1, 1.75, 2.5, 3.75, 5, 7.5, 10, 12.5, 15),
+   list("attackTargetPolicyLoadDegradation", 0.25),
+   list("attackTargetPolicyWeight", 4294967295),
+   list("attackRandomizeIdentifier", "false"),   # !!!
+   list("attackAnswerKeepAlive", "true"),
+   list("attackReportUnreachableProbability", 0.0)
+)
+
+# ###########################################################################
+
+createSimulation(simulationDirectory, simulationConfigurations, rspsim5DefaultConfiguration)

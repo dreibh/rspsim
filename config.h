@@ -1,0 +1,13 @@
+#ifndef HAVE_TEST
+#define HAVE_TEST
+#endif
+#ifndef FAKE_ADDRESSCMP
+#define FAKE_ADDRESSCMP
+#endif
+#ifndef INCLUDE_SIMPLEREDBLACKTREE
+#define INCLUDE_SIMPLEREDBLACKTREE
+#endif
+#ifndef USE_SIMPLEREDBLACKTREE
+#define USE_SIMPLEREDBLACKTREE
+#endif
+#include <stdint.h>
