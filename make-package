@@ -1,0 +1,32 @@
+#!/bin/sh
+# $Id$
+# ###########################################################################
+#             Thomas Dreibholz's R Simulation Scripts Collection
+#                  Copyright (C) 2005-2010 Thomas Dreibholz
+#
+#               Author: Thomas Dreibholz, dreibh@iem.uni-due.de
+# ###########################################################################
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Contact: dreibh@iem.uni-due.de
+
+PACKAGE="rspsim5-`date -u +%Y%m%d-%H%M%S`"
+
+cd /tmp && \
+rm -rf rspsim5 && \
+svn co https://svn1.tdr.iem.uni-due.de/svn/omnetpp/trunk/rspsim5 && \
+rm rspsim5/make-package && \
+tar czvf $PACKAGE.tar.gz rspsim5 && \
+echo "DONE. Package is /tmp/$PACKAGE.tar.gz"
