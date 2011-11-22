@@ -43,7 +43,9 @@ example1.pdf
 
 Need more examples? Have a look into the directory example-scripts/.
 Each <simulation>.R file is accompanied by the corresponding
-plot-<simulation>.R to create the PDF output.
+plot-<simulation>.R to create the PDF output. To use one of these
+scripts, copy it to the toolchain/ directory itself. They will
+*not* work in the example-scripts/ subdirectory!
 
 
 To distribute simulation runs in a compute pool, and for more details
