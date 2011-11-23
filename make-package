@@ -2,7 +2,7 @@
 # $Id$
 # ###########################################################################
 #             Thomas Dreibholz's R Simulation Scripts Collection
-#                  Copyright (C) 2005-2010 Thomas Dreibholz
+#                  Copyright (C) 2005-2012 Thomas Dreibholz
 #
 #               Author: Thomas Dreibholz, dreibh@iem.uni-due.de
 # ###########################################################################
@@ -22,11 +22,12 @@
 #
 # Contact: dreibh@iem.uni-due.de
 
-PACKAGE="rspsim5-`date -u +%Y%m%d-%H%M%S`"
+#PACKAGE="rspsim-`date -u +%Y%m%d-%H%M%S`"
+PACKAGE="rspsim-svn`svnversion`"
 
 cd /tmp && \
 rm -rf rspsim5 && \
-svn co https://svn1.tdr.iem.uni-due.de/svn/omnetpp/trunk/rspsim5 && \
+svn co https://svn1.tdr.iem.uni-due.de/svn/omnetpp/trunk/rspsim5 rspsim && \
 rm rspsim5/make-package && \
-tar czvf $PACKAGE.tar.gz rspsim5 && \
+tar czvf $PACKAGE.tar.gz rspsim && \
 echo "DONE. Package is /tmp/$PACKAGE.tar.gz"
