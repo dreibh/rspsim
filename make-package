@@ -26,8 +26,8 @@
 PACKAGE="rspsim-svn`svnversion`"
 
 cd /tmp && \
-rm -rf rspsim5 && \
+rm -rf rspsim && \
 svn co https://svn1.tdr.iem.uni-due.de/svn/omnetpp/trunk/rspsim5 rspsim && \
-rm rspsim5/make-package && \
+rm rspsim/make-package && \
 tar czvf $PACKAGE.tar.gz rspsim && \
 echo "DONE. Package is /tmp/$PACKAGE.tar.gz"
