@@ -23,12 +23,13 @@
 # Contact: dreibh@iem.uni-due.de
 
 #PACKAGE="rspsim-`date -u +%Y%m%d-%H%M%S`"
-PACKAGE="rspsim-svn`svnversion`"
+#PACKAGE="rspsim-svn`svnversion`"
+PACKAGE="rspsim"
 
 cd /tmp && \
 rm -rf rspsim && \
 svn co https://svn1.tdr.iem.uni-due.de/svn/omnetpp/trunk/rspsim5 rspsim && \
 rm rspsim/make-package && \
-find rspsim -name .svn | xargs rm -rf &&
-tar czvf $PACKAGE.tar.gz rspsim && \
+( find rspsim -name .svn | xargs rm -rf ) && \
+tar czvf $PACKAGE.tar.gz rspsim/ && \
 echo "DONE. Package is /tmp/$PACKAGE.tar.gz"
