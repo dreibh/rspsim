@@ -1,7 +1,6 @@
-// $Id$
 // ###########################################################################
 //             Thomas Dreibholz's R Simulation Scripts Collection
-//                  Copyright (C) 2004-2012 Thomas Dreibholz
+//                  Copyright (C) 2004-2019 Thomas Dreibholz
 //
 //           Author: Thomas Dreibholz, dreibh@iem.uni-due.de
 // ###########################################################################
@@ -26,6 +25,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unistd.h>
 
 #include "simpleredblacktree.h"
 #include "inputfile.h"
@@ -107,8 +107,8 @@ ScalarNode::~ScalarNode()
 // ###### Get ScalarNode object from storage node ###########################
 static inline ScalarNode* getScalarNodeFromStorageNode(struct SimpleRedBlackTreeNode* node)
 {
-   const long offset = (long)(&((struct ScalarNode*)node)->Node) - (long)node;
-   return( (struct ScalarNode*)( (long)node - offset ));
+   const long offset = (long)(&((class ScalarNode*)node)->Node) - (long)node;
+   return( (class ScalarNode*)( (long)node - offset ));
 }
 
 
@@ -378,7 +378,7 @@ static char* getWord(char* str, char* word)
    size_t i = 0;
    while( ((quoted) && (str[n] != '\"')) ||
           ((!quoted) && (str[n] != ' ') && (str[n] != '\t')) ) {
-      if(str[n] == 0x00) {
+      if( (quoted == true) && (str[n] == 0x00) ) {
          return(NULL);
       }
       word[i++] = str[n++];
@@ -558,9 +558,9 @@ static bool handleScalarFile(const std::string& varNames,
           (!(strncmp(buffer, "scalar\t", 7))) ) {
          // ====== Parse scalar line ========================================
          char* s = getWord((char*)&buffer[7], (char*)&objectName);
-         if(s) {
+         if(s != NULL) {
             s = getWord(s, (char*)&statName);
-            if(s) {
+            if(s != NULL) {
                if(sscanf(s, "%lf", &value) != 1) {
                   cerr << "ERROR: File \"" << fileName << "\", line " << inputFile.getLine()
                        << " - Value expected!" << endl;
@@ -570,14 +570,14 @@ static bool handleScalarFile(const std::string& varNames,
             }
             else {
                cerr << "ERROR: File \"" << fileName << "\", line " << inputFile.getLine()
-                    << " - Statistics name expected!" << endl;
+                    << " - Statistics name expected for \"scalar\"!" << endl;
                success = false;
                break;
             }
          }
          else {
             cerr << "ERROR: File \"" << fileName << "\", line " << inputFile.getLine()
-                 << " - Object name expected!" << endl;
+                 << " - Object name expected for \"scalar\"!" << endl;
             success = false;
             break;
          }
@@ -636,14 +636,14 @@ static bool handleScalarFile(const std::string& varNames,
             s = getWord(s, (char*)&statisticBlockName);
             if(s == NULL) {
                cerr << "ERROR: File \"" << fileName << "\", line " << inputFile.getLine()
-                    << " - Statistics name expected!" << endl;
+                    << " - Statistics name expected for \"statistic\"!" << endl;
                success = false;
                break;
             }
          }
          else {
             cerr << "ERROR: File \"" << fileName << "\", line " << inputFile.getLine()
-                 << " - Object name expected!" << endl;
+                 << " - Object name expected for \"statistic\"!" << endl;
             success = false;
             break;
          }
@@ -813,16 +813,17 @@ static void usage(const char* name)
 // ###### Main program ######################################################
 int main(int argc, char** argv)
 {
-   unsigned int compressionLevel     = 9;
-   bool         interactiveMode      = true;
-   bool         splitAll             = false;
-   bool         quietMode            = false;
-   std::string  varNames             = "_NoVarNamesGiven_";
-   std::string  varValues            = "";
-   std::string  simulationsDirectory = ".";
-   std::string  resultsDirectory     = ".";
-   std::string  logFileName          = "";
-   std::string  statusFileName       = "";
+   unsigned int compressionLevel       = 9;
+   bool         interactiveMode        = true;
+   bool         splitAll               = false;
+   bool         quietMode              = false;
+   bool         ignoreScalarFileErrors = false;
+   std::string  varNames               = "_NoVarNamesGiven_";
+   std::string  varValues              = "";
+   std::string  simulationsDirectory   = ".";
+   std::string  resultsDirectory       = ".";
+   std::string  logFileName            = "";
+   std::string  statusFileName         = "";
    char         buffer[4096];
    char*        command;
 
@@ -853,6 +854,9 @@ int main(int argc, char** argv)
          else if(!(strcmp(argv[i], "-quiet"))) {
             quietMode = true;
          }
+         else if(!(strcmp(argv[i], "-ignore-scalar-file-errors"))) {
+            ignoreScalarFileErrors = true;
+         }
          else {
             usage(argv[0]);
          }
@@ -864,7 +868,7 @@ int main(int argc, char** argv)
 
 
    if(!quietMode) {
-      cout << "CreateSummary - Version 4.3.1" << endl
+      cout << "CreateSummary - Version 4.4.0" << endl
            << "=============================" << endl << endl
            << "Compression Level: " << compressionLevel << endl
            << "Interactive Mode:  " << (interactiveMode ? "on" : "off") << endl
@@ -949,6 +953,9 @@ int main(int argc, char** argv)
       else if(!(strcmp(command, "--splitall"))) {
          splitAll = true;
       }
+      else if(!(strcmp(command, "--ignore-scalar-file-errors"))) {
+         ignoreScalarFileErrors = true;
+      }
       else if(!(strncmp(command, "--level=", 8))) {
          // Deprecated, ignore ...
       }
@@ -979,15 +986,18 @@ int main(int argc, char** argv)
    if(interactiveMode) {
       cout << endl << endl;
    }
-   if(!scalarFileError) {
-      cout << "Writing scalar files..." << endl;
-      dumpScalars(simulationsDirectory, resultsDirectory, varNames,
-                  compressionLevel, interactiveMode);
-   }
-   else {
-      cerr << "Not all scalar files have been read -> aborting!" << endl;
-      exit(1);
-   }
+   if(scalarFileError) {
+      if(ignoreScalarFileErrors == false) {
+         cerr << "ERROR: Not all scalar files have been read -> aborting!" << endl;
+         exit(1);
+      }
+      else {
+         cerr << "WARNING: Not all scalar files have been read -> continuing!" << endl;
+      }
+   }      
+   cout << "Writing scalar files..." << endl;
+   dumpScalars(simulationsDirectory, resultsDirectory, varNames,
+               compressionLevel, interactiveMode);
 
 
    // ====== Clean up =======================================================
