@@ -28,6 +28,7 @@
  */
 
 #include <omnetpp.h>
+#include <algorithm>
 #include "messages_m.h"
 
 #include "statisticswriterinterface.h"
@@ -892,8 +893,8 @@ void RegistrarProcess::handleASAPDeregistration(ASAPDeregistration* msg)
 unsigned int RegistrarProcess::randomizeMaxHandleResolutionItems(const unsigned int maxHandleResolutionItems,
                                                                  const char*        poolHandle)
 {
-   unsigned int maxItems = min(Handlespace->getPoolElementsOfPool(poolHandle),
-                               maxHandleResolutionItems + 1);
+   unsigned int maxItems = std::min((unsigned int)Handlespace->getPoolElementsOfPool(poolHandle),
+                                    maxHandleResolutionItems + 1);
    if(maxItems > 1) {
       maxItems--;
    }

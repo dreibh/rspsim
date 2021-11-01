@@ -30,6 +30,7 @@
 #include <omnetpp.h>
 
 #include "statuschangelist.h"
+#include "utilities.h"
 
 
 // ###### Constructor #######################################################
@@ -74,7 +75,7 @@ void StatusChangeList::print()
    StatusChange* statusChange = FirstStatusChange;
    EV << "StatusChangeList:" << endl;
    while(statusChange != NULL) {
-      ev.printf(" - %6.6f %s\n", statusChange->Time.dbl(), statusChange->Command);
+      EV << format(" - %6.6f %s\n", statusChange->Time.dbl(), statusChange->Command);
       statusChange = statusChange->Next;
    }
 }
