@@ -29,7 +29,7 @@ rspsim5WriteHeader <- function(iniFile, simulationRun, scalarName, vectorName, d
    cat(sep="", "# output-vector-file = ", "run", simulationRun, "-vectors.vec\n", file=iniFile)
    cat(sep="", "# --- Note: Set sim-time-limit larger than Controller::statisticsWriteTimeStamp! ---\n", file=iniFile)
    cat(sep="", "sim-time-limit = ", simCreatorSimulationStartup, " ", duration, "s 1ms\n", file=iniFile)
-   cat(sep="", "simtime-scale = -8   # 10ns time scale\n", file=iniFile)
+   cat(sep="", "simtime-resolution = 10ns   # 10ns time scale\n", file=iniFile)
    cat(sep="", "\n\n", file=iniFile)
 
    cat(sep="", "cmdenv-express-mode = yes\n", file=iniFile)
