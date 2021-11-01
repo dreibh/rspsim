@@ -1,5 +1,4 @@
-/* $Id$
- * --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
  *
  *              //===//   //=====   //===//   //=====  //   //      //
  *             //    //  //        //    //  //       //   //=/  /=//
@@ -9,7 +8,7 @@
  *
  * ------------- An Open Source RSerPool Simulation for OMNeT++ -------------
  *
- * Copyright (C) 2003-2012 by Thomas Dreibholz
+ * Copyright (C) 2003-2021 by Thomas Dreibholz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +33,7 @@
 #include <sys/socket.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include "ext_socket.h"
+#include <ext_socket.h>
 
 #include "tdtypes.h"
 #include "sockaddrunion.h"

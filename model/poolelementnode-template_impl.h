@@ -1,5 +1,4 @@
-/* $Id$
- * --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
  *
  *              //===//   //=====   //===//   //=====  //   //      //
  *             //    //  //        //    //  //       //   //=/  /=//
@@ -9,7 +8,7 @@
  *
  * ------------- An Open Source RSerPool Simulation for OMNeT++ -------------
  *
- * Copyright (C) 2003-2012 by Thomas Dreibholz
+ * Copyright (C) 2003-2021 by Thomas Dreibholz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,7 +118,7 @@ void ST_CLASS(poolElementNodeGetDescription)(
         const size_t                            bufferSize,
         const unsigned int                      fields)
 {
-   char tmp[512];
+   char tmp[536];
    char poolPolicySettingsDescription[512];
    char transportAddressDescription[1024];
 

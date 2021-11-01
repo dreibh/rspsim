@@ -1,5 +1,4 @@
-/* $Id$
- * --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
  *
  *              //===//   //=====   //===//   //=====  //   //      //
  *             //    //  //        //    //  //       //   //=/  /=//
@@ -9,7 +8,7 @@
  *
  * ------------- An Open Source RSerPool Simulation for OMNeT++ -------------
  *
- * Copyright (C) 2003-2012 by Thomas Dreibholz
+ * Copyright (C) 2003-2021 by Thomas Dreibholz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,30 +29,19 @@
 #ifndef TDTYPES_H
 #define TDTYPES_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#ifdef NDEBUG
-#include "config.h"
-#endif
-#ifdef WITH_NETBUILDER
-#include "config.h"
-#endif
-
-#include <sys/types.h>
-
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#ifdef HAVE_SYS_INTTYPES_H
-#include <sys/inttypes.h>
-#endif
-#ifdef FreeBSD
+#include <sys/types.h>
+#if defined(__FreeBSD__)
 #include <machine/endian.h>
 #endif
-#ifdef DARWIN
+#if defined(__APPLE__)
 #include <machine/endian.h>
 #endif
+
+#ifndef __cplusplus
+typedef unsigned char bool;
+#define true 1
+#define false 0
 
 #ifndef max
 #define max(a, b) ((a) < (b) ? (b) : (a))
@@ -62,10 +50,6 @@
 #define min(a, b) ((a) > (b) ? (b) : (a))
 #endif
 
-#ifndef __cplusplus
-typedef unsigned char bool;
-#define true 1
-#define false 0
 #endif
 
 #endif

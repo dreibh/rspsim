@@ -1,5 +1,4 @@
-/* $Id$
- * --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
  *
  *              //===//   //=====   //===//   //=====  //   //      //
  *             //    //  //        //    //  //       //   //=/  /=//
@@ -9,7 +8,7 @@
  *
  * ------------- An Open Source RSerPool Simulation for OMNeT++ -------------
  *
- * Copyright (C) 2003-2012 by Thomas Dreibholz
+ * Copyright (C) 2003-2021 by Thomas Dreibholz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,9 +97,10 @@ uint32_t random32()
             return(number);
          }
          RandomSource = RS_CLIB;
+
       case RS_CLIB:
          return(random());
-       break;
+
       case RS_TRY_DEVICE:
          RandomDevice = fopen("/dev/urandom", "r");
          if(RandomDevice != NULL) {

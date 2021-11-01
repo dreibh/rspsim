@@ -1,5 +1,4 @@
-/* $Id$
- * --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
  *
  *              //===//   //=====   //===//   //=====  //   //      //
  *             //    //  //        //    //  //       //   //=/  /=//
@@ -9,7 +8,7 @@
  *
  * ------------- An Open Source RSerPool Simulation for OMNeT++ -------------
  *
- * Copyright (C) 2003-2012 by Thomas Dreibholz
+ * Copyright (C) 2003-2021 by Thomas Dreibholz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -488,9 +487,9 @@ size_t RB_FUNCTION(RedBlackTreeGetElements)(
 
 
 /* ###### Get prev node by walking through the tree (does *not* use list!) */
-struct RB_DEFINITION(RedBlackTreeNode)* RB_FUNCTION(RedBlackTreeInternalFindPrev)(
-                                           const struct RB_DEFINITION(RedBlackTree)*     rbt,
-                                           const struct RB_DEFINITION(RedBlackTreeNode)* cmpNode)
+static struct RB_DEFINITION(RedBlackTreeNode)* RB_FUNCTION(RedBlackTreeInternalFindPrev)(
+                                                  const struct RB_DEFINITION(RedBlackTree)*     rbt,
+                                                  const struct RB_DEFINITION(RedBlackTreeNode)* cmpNode)
 {
    const struct RB_DEFINITION(RedBlackTreeNode)* node = cmpNode->LeftSubtree;
    const struct RB_DEFINITION(RedBlackTreeNode)* parent;
@@ -514,9 +513,9 @@ struct RB_DEFINITION(RedBlackTreeNode)* RB_FUNCTION(RedBlackTreeInternalFindPrev
 
 
 /* ###### Get next node by walking through the tree (does *not* use list!) */
-struct RB_DEFINITION(RedBlackTreeNode)* RB_FUNCTION(RedBlackTreeInternalFindNext)(
-                                           const struct RB_DEFINITION(RedBlackTree)*     rbt,
-                                           const struct RB_DEFINITION(RedBlackTreeNode)* cmpNode)
+static struct RB_DEFINITION(RedBlackTreeNode)* RB_FUNCTION(RedBlackTreeInternalFindNext)(
+                                                  const struct RB_DEFINITION(RedBlackTree)*     rbt,
+                                                  const struct RB_DEFINITION(RedBlackTreeNode)* cmpNode)
 {
    const struct RB_DEFINITION(RedBlackTreeNode)* node = cmpNode->RightSubtree;
    const struct RB_DEFINITION(RedBlackTreeNode)* parent;
