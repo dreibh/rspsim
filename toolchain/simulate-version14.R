@@ -342,7 +342,7 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
 #          prID <- prID + 1
 #       }
 #    }
-   cat(sep="", "gammaScenario.lan[*].registrarArray[*].registrarProcess.registrarIdentifier = uniform(1.0,4294967295.0)\n", file=iniFile)
+   cat(sep="", "gammaScenario.lan[*].registrarArray[*].registrarProcess.registrarIdentifier = intuniform(0x00000001,0x7FFFFFFF)\n", file=iniFile)
 
 
    cat(sep="", "gammaScenario.lan[*].registrarArray[*].registrarProcess.registrarMentorDiscoveryTimeout = ", registrarMentorDiscoveryTimeout, "s\n", file=iniFile)
@@ -414,7 +414,7 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.selectionReregisterImmediatelyOnUpdate = ", calcAppPoolElementReregisterImmediatelyOnUpdate, "\n", file=iniFile)
    cat(sep="", "\n", file=iniFile)
 
-   cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.servicePoolElementIdentifier = uniform(1.0,4294967295.0)\n", file=iniFile)
+   cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.servicePoolElementIdentifier = intuniform(0x00000001,0x7FFFFFFF)\n", file=iniFile)
    cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.servicePoolHandle = \"CalcAppPool\"\n", file=iniFile)
    cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.serviceRegistrationLife = ", calcAppPoolElementServerRegistrationLife, "s\n", file=iniFile)
    cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.serviceJobKeepAliveInterval = ", calcAppProtocolServiceJobKeepAliveInterval, "s\n", file=iniFile)
@@ -446,7 +446,7 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobKeepAliveInterval = ", calcAppProtocolServiceJobKeepAliveInterval, "s\n", file=iniFile)
    cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobKeepAliveTimeout = ", calcAppProtocolServiceJobKeepAliveTimeout, "s\n", file=iniFile)
    cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobRequestTimeout = ", calcAppProtocolServiceJobRequestTimeout, "s\n", file=iniFile)
-   cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobCount = 1e9\n", file=iniFile)
+   cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobCount = 1000000000\n", file=iniFile)
    for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
       for(j in seq(1, as.numeric(CalcAppPUs[i]))) {
          result <- eval(call(calcAppPoolUserServiceJobSizeDistribution, i, as.numeric(scenarioNumberOfLANs), j, as.numeric(CalcAppPUs[i]), as.numeric(calcAppPoolUserServiceJobSizeVariable), calcAppPoolUserServiceJobSizeGamma, calcAppPoolUserServiceJobSizeLambda))
@@ -997,7 +997,7 @@ rspsim5DefaultConfiguration <- list(
    list("registrarMaxHandleResolutionItems", 1),
    list("registrarRandomizeMaxHandleResolutionItems", "false"),
    list("registrarMaxIncrement", 0),
-   list("registrarMaxBadPEReports", 1e9),
+   list("registrarMaxBadPEReports", 1000000000),
    list("registrarUpdateLossProbability", 0.0),
    list("registrarMaxEndpointUnreachableRate", -1.0),
    list("registrarEndpointUnreachableRateBuckets", 64),

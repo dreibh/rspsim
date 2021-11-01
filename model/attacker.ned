@@ -34,23 +34,23 @@ simple AttackerProcess
 {
     parameters:
         // ------ Component Parameters --------------------------------------
-        double componentStartupDelay @unit(s);
-        double componentRuns;
+        double          componentStartupDelay @unit(s);
+        int             componentRuns;
         volatile double componentUptime @unit(s);
         volatile double componentDowntime @unit(s);
-        string componentStatusChanges;
+        string          componentStatusChanges;
 
         // ------ Attacker Parameters ---------------------------------------
-        string attackType;
+        string          attackType;
         volatile double attackInterval @unit(s);
-        string attackTargetRegistrarsList;
+        string          attackTargetRegistrarsList;
         volatile double attackReportUnreachableProbability;
-        string attackTargetPoolHandle;
-        string attackTargetPolicy;
-        double attackTargetPolicyLoadDegradation;
-        double attackTargetPolicyWeight;
-        bool attackRandomizeIdentifier;
-        bool attackAnswerKeepAlive;
+        string          attackTargetPoolHandle;
+        string          attackTargetPolicy;
+        double          attackTargetPolicyLoadDegradation;
+        double          attackTargetPolicyWeight;
+        bool          attackRandomizeIdentifier;
+        bool          attackAnswerKeepAlive;
     gates:
         output toTransport;
         input fromTransport;

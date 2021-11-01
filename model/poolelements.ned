@@ -36,34 +36,34 @@ simple CalcAppServerProcess
 {
     parameters:
         // ------ Component Parameters --------------------------------------
-        double componentStartupDelay @unit(s);
-        double componentRuns;
+        double          componentStartupDelay @unit(s);
+        int             componentRuns;
         volatile double componentUptime @unit(s);
         volatile double componentDowntime @unit(s);
-        string componentStatusChanges;
+        string          componentStatusChanges;
         volatile double componentCleanShutdownProbability;
 
         // ------ Service Parameters ----------------------------------------
-        double serviceCapacity;
-        double serviceMaxJobs;
-        double serviceMinCapacityPerJob;
-        double serviceRejectProbability;
+        double          serviceCapacity;
+        double          serviceMaxJobs;
+        double          serviceMinCapacityPerJob;
+        double          serviceRejectProbability;
 
         // ------ Selection Parameters --------------------------------------
-        string selectionPolicy;
-        double selectionPolicyWeight;
-        double selectionPolicyLoadDegradation;
-        double selectionPolicyLoadDPF;
-        double selectionPolicyWeightDPF;
-        double selectionPolicyUpdateThreshold;
-        bool selectionReregisterImmediatelyOnUpdate;
+        string          selectionPolicy;
+        double          selectionPolicyWeight;
+        double          selectionPolicyLoadDegradation;
+        double          selectionPolicyLoadDPF;
+        double          selectionPolicyWeightDPF;
+        double          selectionPolicyUpdateThreshold;
+        bool            selectionReregisterImmediatelyOnUpdate;
 
         // ------ Service Parameters ----------------------------------------
-        volatile double servicePoolElementIdentifier;
-        string servicePoolHandle;
-        double serviceRegistrationLife @unit(s);
+        volatile int    servicePoolElementIdentifier;
+        string          servicePoolHandle;
+        double          serviceRegistrationLife @unit(s);
         volatile double serviceJobKeepAliveInterval @unit(s);
-        double serviceJobKeepAliveTimeout @unit(s);
+        double          serviceJobKeepAliveTimeout @unit(s);
         volatile double serviceCookieMaxTime @unit(s);
         volatile double serviceCookieMaxCalculations;
 

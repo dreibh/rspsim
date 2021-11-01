@@ -40,11 +40,11 @@ import attacker.ned;
 module GammaSwitch
 {
     parameters:
-        double numberOfBlocks;
-        double numberOfRegistrars;
-        double numberOfCalcAppPoolUsers;
-        double numberOfCalcAppPoolElements;
-        double numberOfAttackers;
+        int    numberOfBlocks;
+        int    numberOfRegistrars;
+        int    numberOfCalcAppPoolUsers;
+        int    numberOfCalcAppPoolElements;
+        int    numberOfAttackers;
         double interfaceUptime @unit(s);
         double interfaceDowntime @unit(s);
     gates:
@@ -103,24 +103,24 @@ module GammaSwitch
 module GammaScenarioNetwork
 {
     parameters:
-        double numberOfRegistrars;
-        double numberOfCalcAppPoolUsers;
-        double numberOfCalcAppPoolElements;
-        double numberOfAttackers;
+        int             numberOfRegistrars;
+        int             numberOfCalcAppPoolUsers;
+        int             numberOfCalcAppPoolElements;
+        int             numberOfAttackers;
 
-        double networkLocalAddressBase;
+        double          networkLocalAddressBase;
         volatile double networkRegistrarStartTimeBase @unit(s);
-        double networkRegistrarStartTimeIncrement0 @unit(s);
-        double networkRegistrarStartTimeIncrement1 @unit(s);
+        double          networkRegistrarStartTimeIncrement0 @unit(s);
+        double          networkRegistrarStartTimeIncrement1 @unit(s);
         volatile double networkCalcAppPoolElementStartTimeBase @unit(s);
-        double networkCalcAppPoolElementStartTimeIncrement0 @unit(s);
-        double networkCalcAppPoolElementStartTimeIncrement1 @unit(s);
+        double          networkCalcAppPoolElementStartTimeIncrement0 @unit(s);
+        double          networkCalcAppPoolElementStartTimeIncrement1 @unit(s);
         volatile double networkCalcAppPoolUserStartTimeBase @unit(s);
-        double networkCalcAppPoolUserStartTimeIncrement0 @unit(s);
-        double networkCalcAppPoolUserStartTimeIncrement1 @unit(s);
+        double          networkCalcAppPoolUserStartTimeIncrement0 @unit(s);
+        double          networkCalcAppPoolUserStartTimeIncrement1 @unit(s);
         volatile double networkAttackerStartTimeBase @unit(s);
-        double networkAttackerStartTimeIncrement0 @unit(s);
-        double networkAttackerStartTimeIncrement1 @unit(s);
+        double          networkAttackerStartTimeIncrement0 @unit(s);
+        double          networkAttackerStartTimeIncrement1 @unit(s);
 
         @display("bgb=899,322;bgp=10,10");
     gates:
@@ -200,7 +200,7 @@ module GammaScenarioNetwork
 module GammaScenario
 {
     parameters:
-        double numberOfLANs;
+        int    numberOfLANs;
         @display("bgb=300,174");
     submodules:
         controller: Controller {

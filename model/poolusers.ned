@@ -34,16 +34,16 @@ simple CalcAppQueuingClientProcess
 {
     parameters:
         // ------ Component Parameters --------------------------------------
-        double componentStartupDelay @unit(s);
+        double          componentStartupDelay @unit(s);
 
         // ------ Service Parameters ----------------------------------------
-        string servicePoolHandle;
-        double serviceJobCount;
+        string          servicePoolHandle;
+        int             serviceJobCount;
         volatile double serviceJobSize;
         volatile double serviceJobInterval;
-        double serviceJobRequestTimeout @unit(s);
+        double          serviceJobRequestTimeout @unit(s);
         volatile double serviceJobKeepAliveInterval @unit(s);
-        double serviceJobKeepAliveTimeout @unit(s);
+        double          serviceJobKeepAliveTimeout @unit(s);
         volatile double serviceHandleResolutionRetryDelay @unit(s);
         volatile double serviceJobRetryDelay @unit(s);
 
@@ -94,7 +94,7 @@ module CalcAppPoolUser
             parameters:
                 componentStartupDelay = componentStartupDelay;
 
-                serviceJobCount = default(1e9);
+                serviceJobCount = default(1000000000);
                 serviceJobSize = default(10000000);
                 serviceJobInterval = default(60.0);
 

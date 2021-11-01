@@ -35,7 +35,7 @@ simple PoolElementASAPProcess
     parameters:
         double asapRegistrationTimeout @unit(s);
         double asapDeregistrationTimeout @unit(s);
-        double asapMaxRegistrationAttempts;
+        int    asapMaxRegistrationAttempts;
         double asapServerHuntRetryDelay @unit(s);
     gates:
         output toApplication;

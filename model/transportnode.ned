@@ -30,7 +30,7 @@
 simple TransportNode
 {
     parameters:
-        double interfaceAddress;
+        int interfaceAddress;
         volatile double interfaceUptime @unit(s);
         volatile double interfaceDowntime @unit(s);
         string interfaceStatusChanges;

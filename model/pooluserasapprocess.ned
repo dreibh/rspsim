@@ -35,7 +35,7 @@ simple PoolUserASAPProcess
 {
     parameters:
         double asapRequestTimeout @unit(s);
-        double asapMaxRequestRetransmit;
+        int    asapMaxRequestRetransmit;
         double asapStaleCacheValue @unit(s);
         double asapServerHuntRetryDelay @unit(s);
     gates:

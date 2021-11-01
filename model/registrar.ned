@@ -34,36 +34,36 @@ simple RegistrarProcess
 {
     parameters:
         // ------ Component Parameters --------------------------------------
-        double componentStartupDelay @unit(s);
-        double componentRuns;
-        string componentStatusChanges;
+        double          componentStartupDelay @unit(s);
+        int             componentRuns;
+        string          componentStatusChanges;
         volatile double componentUptime @unit(s);
         volatile double componentDowntime @unit(s);
         // ------ Registrar Parameters --------------------------------------
-        double registrarIdentifier;
-        double registrarMentorDiscoveryTimeout @unit(s);
-        double registrarMaxBadPEReports;
-        volatile double registrarMaxHandleResolutionItems;
-        bool registrarRandomizeMaxHandleResolutionItems;
-        volatile double registrarMaxIncrement;
+        int             registrarIdentifier;
+        double          registrarMentorDiscoveryTimeout @unit(s);
+        int             registrarMaxBadPEReports;
+        volatile int    registrarMaxHandleResolutionItems;
+        bool            registrarRandomizeMaxHandleResolutionItems;
+        volatile int    registrarMaxIncrement;
         volatile double registrarUpdateLossProbability;
-        double registrarMaxEndpointUnreachableRate;
-        double registrarEndpointUnreachableRateBuckets;
-        double registrarEndpointUnreachableRateMaxEntries;
-        double registrarMaxHandleResolutionRate;
-        double registrarHandleResolutionRateBuckets;
-        double registrarHandleResolutionRateMaxEntries;
+        double          registrarMaxEndpointUnreachableRate;
+        double          registrarEndpointUnreachableRateBuckets;
+        double          registrarEndpointUnreachableRateMaxEntries;
+        double          registrarMaxHandleResolutionRate;
+        double          registrarHandleResolutionRateBuckets;
+        double          registrarHandleResolutionRateMaxEntries;
         // ------ ENRP Parameters -------------------------------------------
         volatile double enrpPeerHeartbeatCycle @unit(s);
-        double enrpMaxTimeLastHeared @unit(s);
-        double enrpMaxTimeNoResponse @unit(s);
-        double enrpTakeoverExpiry @unit(s);
-        string enrpStaticPeersList;
+        double          enrpMaxTimeLastHeared @unit(s);
+        double          enrpMaxTimeNoResponse @unit(s);
+        double          enrpTakeoverExpiry @unit(s);
+        string          enrpStaticPeersList;
         // ------ ASAP Parameters -------------------------------------------
         volatile double asapEndpointKeepAliveInterval @unit(s);
         volatile double asapEndpointKeepAliveTimeout @unit(s);
-        bool asapNoServiceDuringStartup;
-        bool asapUseTakeoverSuggestion;
+        bool            asapNoServiceDuringStartup;
+        bool            asapUseTakeoverSuggestion;
     gates:
         output toTransport;
         input fromTransport;

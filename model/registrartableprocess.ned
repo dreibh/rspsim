@@ -35,7 +35,7 @@ simple RegistrarTableProcess
 {
     parameters:
         string staticRegistrarsList; // A string with a list of addresses
-                                      //    (separated by comma or space)
+                                     // (separated by comma or space)
     gates:
         output toUser;
         output toTransport;
