@@ -260,7 +260,7 @@ void RegistrarProcess::initialize()
       }
    }
 
-   ev << Description;
+   EV << Description;
    PeerList->print();
 
    // ------ Bind to port ---------------------------------------------------
@@ -320,10 +320,10 @@ void RegistrarProcess::resetStatistics()
    TotalTakeoversByConsent            = 0;
    TotalTakeoversByTimeout            = 0;
 
-   NumberOfPoolsStat.clearResult();
-   NumberOfPEsStat.clearResult();
-   NumberOfOwnedPEsStat.clearResult();
-   NumberOfPeersStat.clearResult();
+   NumberOfPoolsStat.clear();
+   NumberOfPEsStat.clear();
+   NumberOfOwnedPEsStat.clear();
+   NumberOfPeersStat.clear();
    LastNumberUpdate = simTime();
    NumberOfPools    = Handlespace->getPools();
    NumberOfPEs      = Handlespace->getPoolElements();
@@ -391,10 +391,10 @@ void RegistrarProcess::updateNumberStatistics()
    const simtime_t elapsedTime = simTime() - LastNumberUpdate;
    const double    elapsed     = elapsedTime.dbl();
    if(elapsed > 0) {
-      NumberOfPoolsStat.collect2(NumberOfPools, elapsed);
-      NumberOfPEsStat.collect2(NumberOfPEs, elapsed);
-      NumberOfOwnedPEsStat.collect2(NumberOfOwnedPEs, elapsed);
-      NumberOfPeersStat.collect2(NumberOfPeers, elapsed);
+      NumberOfPoolsStat.collectWeighted(NumberOfPools, elapsed);
+      NumberOfPEsStat.collectWeighted(NumberOfPEs, elapsed);
+      NumberOfOwnedPEsStat.collectWeighted(NumberOfOwnedPEs, elapsed);
+      NumberOfPeersStat.collectWeighted(NumberOfPeers, elapsed);
 
       NumberOfPools    = Handlespace->getPools();
       NumberOfPEs      = Handlespace->getPoolElements();
@@ -416,7 +416,7 @@ void RegistrarProcess::startStartupTimer()
       delay = (simtime_t)par("componentStartupDelay");
    }
    scheduleAt(simTime() + delay, StartupTimer);
-   ev << Description << "Scheduled startup in " << delay << "s" << endl;
+   EV << Description << "Scheduled startup in " << delay << "s" << endl;
 }
 
 
@@ -566,7 +566,7 @@ void RegistrarProcess::handleEndpointKeepAliveTimeoutTimer(cPoolElement* poolEle
    poolElement->EndpointKeepAliveTimeoutTimer = NULL;
    TotalEndpointKeepAliveTimeouts++;
 
-   ev << Description << "Pool element " << getPoolElementDescription(*poolElement)
+   EV << Description << "Pool element " << getPoolElementDescription(*poolElement)
       << " has not answered, removing it" << endl;
    sendENRPHandleUpdates(poolElement, DEL_PE);
    if(poolElement->EndpointKeepAliveTransmissionTimer) {
@@ -579,7 +579,7 @@ void RegistrarProcess::handleEndpointKeepAliveTimeoutTimer(cPoolElement* poolEle
       stopLifetimeExpiryTimer(poolElement);
    }
    if(Handlespace->deregisterPoolElement(poolElement) != 0) {
-      ev << Description << "Failed to remove pool element "
+      EV << Description << "Failed to remove pool element "
          << getPoolElementDescription(*poolElement)
          << " from handlespace!" << endl;
    }
@@ -594,10 +594,10 @@ void RegistrarProcess::handleLifetimeExpiryTimer(cPoolElement* poolElement)
    poolElement->LifetimeExpiryTimer = NULL;
    TotalLifetimeExpiries++;
 
-   ev << Description << "Pool element " << getPoolElementDescription(*poolElement)
+   EV << Description << "Pool element " << getPoolElementDescription(*poolElement)
       << "'s  lifetime has expired, removing it" << endl;
    if(Handlespace->deregisterPoolElement(poolElement) != 0) {
-      ev << Description << "Failed to remove pool element "
+      EV << Description << "Failed to remove pool element "
          << getPoolElementDescription(*poolElement)
          << " from handlespace!" << endl;
    }
@@ -679,7 +679,7 @@ void RegistrarProcess::stopTakeoverExpiryTimer(cPeerListNode* node)
 // ###### Handle Peer Heartbeat Cycle timer #################################
 void RegistrarProcess::handlePeerHeartbeatCycleTimer()
 {
-   ev << Description << "Sending Peer Heartbeats ..." << endl;
+   EV << Description << "Sending Peer Heartbeats ..." << endl;
    PeerList->print();
 
    cPeerListNode* node = PeerList->getFirstPeerListNode();
@@ -696,10 +696,10 @@ void RegistrarProcess::handlePeerHeartbeatCycleTimer()
 void RegistrarProcess::handleLastHeardTimeoutTimer(cPeerListNode* node)
 {
    node->LastHeardTimeoutTimer = NULL;
-   ev << Description << "LastHeard timeout for peer " << node->getIdentifier()
+   EV << Description << "LastHeard timeout for peer " << node->getIdentifier()
       << " -> requesting Presence" << endl;
 
-   if(ev.isGUI()) {
+   if(EV.isGUI()) {
       char str[256];
       snprintf((char*)&str, sizeof(str), "Peer %u (%u:%u) seems to be dead. Requesting ENRP Presence.",
                node->getIdentifier(), node->getAddress(), node->getPort());
@@ -715,11 +715,11 @@ void RegistrarProcess::handleLastHeardTimeoutTimer(cPeerListNode* node)
 void RegistrarProcess::handleResponseTimeoutTimer(cPeerListNode* node)
 {
    node->ResponseTimeoutTimer = NULL;
-   ev << Description << "Response timeout for peer " << node->getIdentifier()
+   EV << Description << "Response timeout for peer " << node->getIdentifier()
       << " -> starting takeover" << endl;
    TotalTakeoversStarted++;
 
-   if(ev.isGUI()) {
+   if(EV.isGUI()) {
       char str[256];
       snprintf((char*)&str, sizeof(str), "Starting takeover of %u (%u:%u)",
                node->getIdentifier(), node->getAddress(), node->getPort());
@@ -736,7 +736,7 @@ void RegistrarProcess::handleResponseTimeoutTimer(cPeerListNode* node)
 void RegistrarProcess::handleTakeoverExpiryTimer(cPeerListNode* node)
 {
    node->TakeoverExpiryTimer = NULL;
-   ev << Description << "Takeover expiry for peer " << node->getIdentifier()
+   EV << Description << "Takeover expiry for peer " << node->getIdentifier()
       << ". -> assuming consent for takeover." << endl;
    TotalTakeoversByTimeout++;
    finishTakeover(node);
@@ -761,10 +761,10 @@ void RegistrarProcess::addStaticPeer(const unsigned int peerAddress)
 // ###### Dump handlespace ##################################################
 void RegistrarProcess::printHandlespace()
 {
-   ev << Description << endl
+   EV << Description << endl
       << "===== Handlespace Dump ======" << endl;
    Handlespace->print();
-   ev << "===========================" << endl;
+   EV << "===========================" << endl;
 }
 
 
@@ -802,7 +802,7 @@ void RegistrarProcess::handleASAPRegistration(ASAPRegistration* msg)
                                                           msg->getSrcPort(),
                                                           poolElement, updated));
       if(response->getError() == 0) {
-         ev << Description << "Added or updated pool element "
+         EV << Description << "Added or updated pool element "
             << getPoolElementDescription(*poolElement) << endl;
          sendENRPHandleUpdates(poolElement, ADD_PE);
          if(poolElement->LifetimeExpiryTimer) {
@@ -810,13 +810,13 @@ void RegistrarProcess::handleASAPRegistration(ASAPRegistration* msg)
          }
          if((poolElement->EndpointKeepAliveTransmissionTimer == NULL) &&
             (poolElement->EndpointKeepAliveTimeoutTimer == NULL)) {
-            ev << Description << "Pool element is new -> "
+            EV << Description << "Pool element is new -> "
                << "starting endpoint keep alive transmission timer ..." << endl;
             startEndpointKeepAliveTransmissionTimer(poolElement);
          }
       }
       else {
-         ev << Description << "Cannot add new pool element" << endl;
+         EV << Description << "Cannot add new pool element" << endl;
       }
 
       PoolElementCountVector->record(Handlespace->getPoolElements());
@@ -824,7 +824,7 @@ void RegistrarProcess::handleASAPRegistration(ASAPRegistration* msg)
       printHandlespace();
    }
    else {
-      ev << Description << "Rejecting registration request in startup phase" << endl;
+      EV << Description << "Rejecting registration request in startup phase" << endl;
       response->setRejectFlag(true);
    }
 
@@ -849,7 +849,7 @@ void RegistrarProcess::handleASAPDeregistration(ASAPDeregistration* msg)
    cPoolElement* poolElement = Handlespace->findPoolElement(msg->getPoolHandle(),
                                                             msg->getIdentifier());
    if(poolElement) {
-      ev << Description << "Removing pool element "
+      EV << Description << "Removing pool element "
          << getPoolElementDescription(*poolElement) << " ..." << endl;
       // ====== Take ownership, if necessary ================================
       if(poolElement->getHomeRegistrarIdentifier() != MyIdentifier) {
@@ -873,7 +873,7 @@ void RegistrarProcess::handleASAPDeregistration(ASAPDeregistration* msg)
       response->setError(RSPERR_OKAY);
    }
    else {
-      ev << Description << "Pool element "
+      EV << Description << "Pool element "
          << msg->getIdentifier() << " of pool " << msg->getPoolHandle()
          << " is found, it seems to be already removed" << endl;
       response->setError(RSPERR_OKAY);
@@ -919,7 +919,7 @@ void RegistrarProcess::handleASAPHandleResolution(ASAPHandleResolution* msg)
                                                  par("registrarHandleResolutionRateMaxEntries"));
       if(handleResolutionRate > (double)par("registrarMaxHandleResolutionRate")) {
          TotalRefusedHandleResolutions++;
-         ev << Description << "Refusing handle resolution for pool user at "
+         EV << Description << "Refusing handle resolution for pool user at "
                            << msg->getSrcAddress() << ":" << msg->getSrcPort() << endl;
          return;
       }
@@ -943,7 +943,7 @@ void RegistrarProcess::handleASAPHandleResolution(ASAPHandleResolution* msg)
          items = (unsigned int)par("registrarMaxHandleResolutionItems");
       }
 
-      ev << Description << "Selecting up to " << items << " of pool "
+      EV << Description << "Selecting up to " << items << " of pool "
          << msg->getPoolHandle() << " ..." << endl;
 
       cPoolElement* selectionArray[items];
@@ -953,11 +953,11 @@ void RegistrarProcess::handleASAPHandleResolution(ASAPHandleResolution* msg)
                                  items,
                                  (unsigned int)par("registrarMaxIncrement"));
 
-      ev << Description << "Selected pool elements:" << endl;
+      EV << Description << "Selected pool elements:" << endl;
       for(unsigned int i = 0;i < items;i++) {
-         ev << "   ";
+         EV << "   ";
          selectionArray[i]->print(true);
-         ev << endl;
+         EV << endl;
       }
 
       response->setPoolHandle(msg->getPoolHandle());
@@ -970,7 +970,7 @@ void RegistrarProcess::handleASAPHandleResolution(ASAPHandleResolution* msg)
       }
    }
    else {
-      ev << Description << "Rejecting handle resolution request in startup phase" << endl;
+      EV << Description << "Rejecting handle resolution request in startup phase" << endl;
       response->setRejectFlag(true);
    }
 
@@ -995,7 +995,7 @@ void RegistrarProcess::handleASAPEndpointUnreachable(ASAPEndpointUnreachable* ms
 
       if(endpointUnreachableRate > (double)par("registrarMaxEndpointUnreachableRate")) {
          TotalRefusedEndpointUnreachables++;
-         ev << Description << "Refusing handle resolution for pool user at "
+         EV << Description << "Refusing handle resolution for pool user at "
                            << msg->getSrcAddress() << ":" << msg->getSrcPort() << endl;
          return;
       }
@@ -1005,12 +1005,12 @@ void RegistrarProcess::handleASAPEndpointUnreachable(ASAPEndpointUnreachable* ms
                                                             msg->getIdentifier());
    if(poolElement) {
       poolElement->setUnreachabilityReports(poolElement->getUnreachabilityReports() + 1);
-      ev << Description << "Failure reported for pool element ";
+      EV << Description << "Failure reported for pool element ";
       poolElement->print(true);
-      ev << endl;
+      EV << endl;
 
       if(poolElement->getUnreachabilityReports() >= (unsigned int)par("registrarMaxBadPEReports")) {
-         ev << Description << "Too many unreachability reports -> removing it ..." << endl;
+         EV << Description << "Too many unreachability reports -> removing it ..." << endl;
          if(poolElement->EndpointKeepAliveTransmissionTimer) {
             stopEndpointKeepAliveTransmissionTimer(poolElement);
          }
@@ -1059,11 +1059,11 @@ void RegistrarProcess::handleASAPEndpointKeepAliveAck(ASAPEndpointKeepAliveAck* 
    if((poolElement) && (poolElement->EndpointKeepAliveTimeoutTimer)) {
       stopEndpointKeepAliveTimeoutTimer(poolElement);
       startEndpointKeepAliveTransmissionTimer(poolElement);
-      ev << Description << "Endpoint is alive" << endl;
+      EV << Description << "Endpoint is alive" << endl;
       TotalEndpointKeepAliveAcksReceived++;
    }
    else {
-      ev << Description << "Unexpected ASAP_ENDPOINT_KEEP_ALIVE_ACK!" << endl;
+      EV << Description << "Unexpected ASAP_ENDPOINT_KEEP_ALIVE_ACK!" << endl;
    }
 }
 
@@ -1129,13 +1129,13 @@ bool RegistrarProcess::handleENRPListResponse(ENRPListResponse* msg)
 
    cPeerListNode* node = PeerList->findPeerListNode(msg->getSenderServerID());
    if(msg->getRejectFlag() == 0) {
-      ev << Description << "Adding peers to Peer List ..." << endl;
+      EV << Description << "Adding peers to Peer List ..." << endl;
       for(unsigned int i = 0;i < msg->getServerInformationArraySize();i++) {
          ServerInformationParameter serverInfo = msg->getServerInformation(i);
          if(serverInfo.getServerID() != MyIdentifier) {
             OPP_CHECK(PeerList->registerPeerListNode(serverInfo, node) == RSPERR_OKAY);
             if(node->getNewFlag())  {
-               ev << Description << "Sending Presence to new peer "
+               EV << Description << "Sending Presence to new peer "
                   << node->getIdentifier() << endl;
                sendENRPPresence(node, true);
             }
@@ -1145,7 +1145,7 @@ bool RegistrarProcess::handleENRPListResponse(ENRPListResponse* msg)
       return(true);
    }
    else {
-      ev << Description << "Peer rejected peer list request!" << endl;
+      EV << Description << "Peer rejected peer list request!" << endl;
       return(false);
    }
 }
@@ -1215,9 +1215,9 @@ bool RegistrarProcess::handleENRPHandleTableResponse(ENRPHandleTableResponse* ms
 
    if(msg->getRejectFlag() == 0) {
       // ====== Update handlespace ==========================================
-      ev << Description << "Adding handle table content to handlespace ..." << endl;
+      EV << Description << "Adding handle table content to handlespace ..." << endl;
       for(unsigned int i = 0;i < msg->getPoolEntryArraySize();i++) {
-         ev << "Adding pool element "
+         EV << "Adding pool element "
             << msg->getPoolEntry(i).getPoolElementParameter().getIdentifier()
             << " of pool " << msg->getPoolEntry(i).getPoolHandle() << " ..." << endl;
 
@@ -1238,7 +1238,7 @@ bool RegistrarProcess::handleENRPHandleTableResponse(ENRPHandleTableResponse* ms
                stopLifetimeExpiryTimer(poolElement);
             }
             if(poolElement->getHomeRegistrarIdentifier() == MyIdentifier) {
-               ev << Description << "Handle Table from " << msg->getSenderServerID()
+               EV << Description << "Handle Table from " << msg->getSenderServerID()
                   << " made me home registrar of pool element " << poolElement->getIdentifier() << endl;
                startEndpointKeepAliveTransmissionTimer(poolElement);
             }
@@ -1259,7 +1259,7 @@ bool RegistrarProcess::handleENRPHandleTableResponse(ENRPHandleTableResponse* ms
       return(true);
    }
    else {
-      ev << Description << "Peer rejected peer list request!" << endl;
+      EV << Description << "Peer rejected peer list request!" << endl;
       if( (inStartupPhase()) && (node->getStatus() & PLNS_MENTOR) ) {
          node->setStatus(node->getStatus() & ~PLNS_MENTOR);
          beginNormalOperation(false);
@@ -1296,7 +1296,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
    // ====== Add/update peer node ===========================================
    cPeerListNode* node;
    OPP_CHECK(PeerList->registerPeerListNode(msg->getServerInformation(), node) == RSPERR_OKAY);
-   ev << Description << "New peer list is: " << endl;
+   EV << Description << "New peer list is: " << endl;
    PeerList->print();
 
    // ====== Timer handling =================================================
@@ -1307,7 +1307,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
       stopResponseTimeoutTimer(node);
    }
    if(node->TakeoverExpiryTimer) {
-      ev << "Peer " << node->getIdentifier()
+      EV << "Peer " << node->getIdentifier()
          << " is still alive -> stopping takeover" << endl;
       stopTakeoverExpiryTimer(node);
       delete node->Takeover;
@@ -1323,7 +1323,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
    // ====== Presence to new peer ===========================================
    else {
       if(node->getNewFlag())  {
-         ev << Description << "Sending Presence to new peer "
+         EV << Description << "Sending Presence to new peer "
             << node->getIdentifier() << endl;
          sendENRPPresence(node, false);
       }
@@ -1334,12 +1334,12 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
        (MentorServerID == UNDEFINED_REGISTRAR_IDENTIFIER) &&
        (!(node->getStatus() & PLNS_HTSYNC)) ) {
 
-      ev << Description << "Using peer " << node->getIdentifier()
+      EV << Description << "Using peer " << node->getIdentifier()
          << " as mentor" << endl;
       node->setStatus(node->getStatus() | PLNS_MENTOR);
       MentorServerID = node->getIdentifier();
 
-      if(ev.isGUI()) {
+      if(EV.isGUI()) {
          char str[256];
          snprintf((char*)&str, sizeof(str), "Using peer at %u (%u:%u) as mentor",
                   node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1355,7 +1355,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
    // ====== Resolve handlespace inconsistencies ============================
    if(!(node->getStatus() & PLNS_HTSYNC)) {
       if(node->getOwnershipChecksum() != msg->getChecksum()) {
-         if(ev.isGUI()) {
+         if(EV.isGUI()) {
             char str[256];
             snprintf((char*)&str, sizeof(str), "Synchronizing with %u (%u:%u)",
                      node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1368,7 +1368,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
 
    // ====== Get peer's server list =========================================
    if(!(node->getStatus() & PLNS_LISTSYNC)) {
-      if(ev.isGUI()) {
+      if(EV.isGUI()) {
          char str[256];
          snprintf((char*)&str, sizeof(str), "Requesting list from %u (%u:%u)",
                   node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1384,7 +1384,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
 void RegistrarProcess::sendENRPHandleUpdates(const cPoolElement* poolElement,
                                              const unsigned int  updateAction)
 {
-   ev << Description << "Sending Handle Update: "
+   EV << Description << "Sending Handle Update: "
       << ((updateAction == ADD_PE) ? "ADD_PE" : "DEL_PE")
       << " for pool element " << poolElement->getIdentifier()
       << " of pool " << poolElement->getOwnerPoolHandle() << endl;
@@ -1434,13 +1434,13 @@ void RegistrarProcess::handleENRPHandleUpdate(ENRPHandleUpdate* msg)
    OPP_CHECK(msg->getReceiverServerID() == MyIdentifier);
 
    if(uniform(0.0, 1.0) <= (double)par("registrarUpdateLossProbability")) {
-      ev << "Dropping incoming ENRP handle update due to registrarUpdateLoss setting" << endl;
+      EV << "Dropping incoming ENRP handle update due to registrarUpdateLoss setting" << endl;
       return;
    }
 
    TotalHandleUpdates++;
 
-   ev << Description << "Received Handle Update: "
+   EV << Description << "Received Handle Update: "
       << ((msg->getUpdateAction() == ADD_PE) ? "ADD_PE" : "DEL_PE")
       << " for pool element " << msg->getPoolElementParameter().getIdentifier()
       << " of pool " << msg->getPoolHandle() << endl;
@@ -1502,7 +1502,7 @@ void RegistrarProcess::handleENRPHandleUpdate(ENRPHandleUpdate* msg)
 // ###### Send ENRP_INIT_TAKEOVER messages ##################################
 void RegistrarProcess::sendENRPInitTakeovers(const unsigned int targetServerID)
 {
-   ev << Description << "Sending Init Takeover for peer "
+   EV << Description << "Sending Init Takeover for peer "
       << targetServerID << endl;
 
    cPeerListNode* node = PeerList->getFirstPeerListNode();
@@ -1532,7 +1532,7 @@ void RegistrarProcess::sendENRPInitTakeoverAck(const unsigned int targetServerID
                                                const unsigned int receiverServerAddress,
                                                const unsigned int receiverServerPort)
 {
-   ev << Description << "Sending Init Takeover Ack for peer "
+   EV << Description << "Sending Init Takeover Ack for peer "
       << targetServerID << " to peer " << receiverServerID << endl;
 
    ENRPInitTakeoverAck* initTakeoverAck = new ENRPInitTakeoverAck("ENRP_INIT_TAKEOVER_ACK", ENRP);
@@ -1553,7 +1553,7 @@ void RegistrarProcess::sendENRPInitTakeoverAck(const unsigned int targetServerID
 // ###### Send ENRP_TAKEOVER_SERVER messages ################################
 void RegistrarProcess::sendENRPTakeoverServers(const unsigned int targetServerID)
 {
-   ev << Description << "Sending Takeover Server for peer "
+   EV << Description << "Sending Takeover Server for peer "
       << targetServerID << endl;
 
    cPeerListNode* node = PeerList->getFirstPeerListNode();
@@ -1582,13 +1582,13 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
 {
    OPP_CHECK(msg->getSenderServerID() != MyIdentifier);
 
-   ev << Description << "Init Takeover for registrar " << msg->getTargetServerID()
+   EV << Description << "Init Takeover for registrar " << msg->getTargetServerID()
       << " from registrar " << msg->getSenderServerID() << endl;
 
    // ====== We are the takeover target -> try to stop it by Presence =======
    if(msg->getTargetServerID() == MyIdentifier) {
-      ev << Description << "We are takeover target -> trying to stop this" << endl;
-      if(ev.isGUI()) {
+      EV << Description << "We are takeover target -> trying to stop this" << endl;
+      if(EV.isGUI()) {
          char str[256];
          snprintf((char*)&str, sizeof(str), "%u (%u:%u) is trying to take me over!!!",
                   msg->getSenderServerID(), msg->getSrcAddress(), msg->getSrcPort());
@@ -1609,10 +1609,10 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
          // ====== We have also started a takeover -> negotiation required ==
          if(node->Takeover != NULL) {
             if(msg->getSenderServerID() < MyIdentifier) {
-               ev << Description << "Peer " << msg->getSenderServerID()
+               EV << Description << "Peer " << msg->getSenderServerID()
                   << ", also trying takeover of " << msg->getTargetServerID()
                   << ", has lower ID -> we (" << MyIdentifier << ") abort our takeover" << endl;
-               if(ev.isGUI()) {
+               if(EV.isGUI()) {
                   char str[256];
                   snprintf((char*)&str, sizeof(str), "%u has higher ID than me (%u) -> aborting takeover of %u (%u:%u)",
                            msg->getSenderServerID(), MyIdentifier,
@@ -1636,7 +1636,7 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
                // peer comes up again, its ENRP Presence will do!
             }
             else {
-               ev << Description << "Peer " << msg->getSenderServerID()
+               EV << Description << "Peer " << msg->getSenderServerID()
                   << ", also trying takeover of " << msg->getTargetServerID()
                   << ", has higher ID -> we (" << MyIdentifier << ") continue our takeover" << endl;
             }
@@ -1644,7 +1644,7 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
 
          // ====== Acknowledge takeover =====================================
          else {
-            ev << Description << "Acknowledging peer " << msg->getSenderServerID()
+            EV << Description << "Acknowledging peer " << msg->getSenderServerID()
                << "'s takeover of peer " << msg->getTargetServerID() << endl;
             node->setTakeoverRegistrarID(msg->getSenderServerID());
             sendENRPInitTakeoverAck(msg->getTargetServerID(),
@@ -1662,7 +1662,7 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
 
       // ====== The target is unknown. Agree to takeover. ===================
       else {
-         ev << Description << "Acknowledging peer " << msg->getSenderServerID()
+         EV << Description << "Acknowledging peer " << msg->getSenderServerID()
             << "'s takeover of peer " << msg->getTargetServerID()
             << " (which is unknown for us!)" << endl;
          sendENRPInitTakeoverAck(msg->getTargetServerID(),
@@ -1680,16 +1680,16 @@ void RegistrarProcess::handleENRPInitTakeoverAck(ENRPInitTakeoverAck* msg)
 
    cPeerListNode* node = PeerList->findPeerListNode(msg->getTargetServerID());
    if((node) && (node->Takeover)) {
-      ev << "Got InitTakeoverAck from peer " << msg->getSenderServerID()
+      EV << "Got InitTakeoverAck from peer " << msg->getSenderServerID()
          << " for target " << msg->getTargetServerID() << endl;
 
       if(node->Takeover->acknowledge(msg->getTargetServerID(),
                                      msg->getSenderServerID())) {
-         ev << "Peer " << msg->getSenderServerID()
+         EV << "Peer " << msg->getSenderServerID()
             << " acknowledges takeover of target "
             << msg->getTargetServerID() << ". "
             << node->Takeover->getOutstandingAcks() << " to go." << endl;
-         if(ev.isGUI()) {
+         if(EV.isGUI()) {
             char str[256];
             snprintf((char*)&str, sizeof(str), "Still waiting for %u acknowledgements for takeover of %u (%u:%u)",
                      (unsigned int)node->Takeover->getOutstandingAcks(),
@@ -1698,8 +1698,8 @@ void RegistrarProcess::handleENRPInitTakeoverAck(ENRPInitTakeoverAck* msg)
          }
       }
       else {
-         ev << Description << "Ready for takeover of target " << msg->getTargetServerID() << endl;
-         if(ev.isGUI()) {
+         EV << Description << "Ready for takeover of target " << msg->getTargetServerID() << endl;
+         if(EV.isGUI()) {
             char str[256];
             snprintf((char*)&str, sizeof(str), "Taking over %u (%u:%u)",
                      node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1710,7 +1710,7 @@ void RegistrarProcess::handleENRPInitTakeoverAck(ENRPInitTakeoverAck* msg)
       }
    }
    else {
-      ev << "Ignoring InitTakeoverAck from peer " << msg->getSenderServerID()
+      EV << "Ignoring InitTakeoverAck from peer " << msg->getSenderServerID()
          << " for target " << msg->getTargetServerID() << endl;
    }
 }
@@ -1721,7 +1721,7 @@ void RegistrarProcess::handleENRPTakeoverServer(ENRPTakeoverServer* msg)
 {
    OPP_CHECK(msg->getSenderServerID() != MyIdentifier);
 
-   ev << Description << "Got TakeoverServer from peer "
+   EV << Description << "Got TakeoverServer from peer "
       << msg->getSenderServerID() << " for target "
       << msg->getTargetServerID() << endl;
 
@@ -1748,7 +1748,7 @@ void RegistrarProcess::handleENRPTakeoverServer(ENRPTakeoverServer* msg)
    while(poolElement) {
       cPoolElement* nextPoolElement = Handlespace->getNextPoolElementOfSameOwner(poolElement);
 
-      ev << Description << "Changing ownership of pool element "
+      EV << Description << "Changing ownership of pool element "
          << poolElement->getIdentifier() << " in pool "
          << poolElement->getOwnerPoolHandle() << endl;
 
@@ -1780,7 +1780,7 @@ void RegistrarProcess::handleENRPTakeoverServer(ENRPTakeoverServer* msg)
 // ###### Finish a takeover by actually taking the PEs' ownership ###########
 void RegistrarProcess::finishTakeover(cPeerListNode* node)
 {
-   ev << "Takeover of target " << node->getIdentifier()
+   EV << "Takeover of target " << node->getIdentifier()
       << " confirmed. Taking it over now." << endl;
 
    // ====== Take over PEs ==================================================
@@ -1788,7 +1788,7 @@ void RegistrarProcess::finishTakeover(cPeerListNode* node)
    while(poolElement) {
       cPoolElement* nextPoolElement = Handlespace->getNextPoolElementOfSameOwner(poolElement);
 
-      ev << Description << "Taking ownership of pool element "
+      EV << Description << "Taking ownership of pool element "
          << poolElement->getIdentifier() << " in pool "
          << poolElement->getOwnerPoolHandle() << endl;
 
@@ -1823,7 +1823,7 @@ void RegistrarProcess::finishTakeover(cPeerListNode* node)
 // ###### Begin normal operation mode #######################################
 void RegistrarProcess::beginNormalOperation(const bool initializedFromMentor)
 {
-   ev << Description << "Going from initialization phase to normal operation, after "
+   EV << Description << "Going from initialization phase to normal operation, after "
       << (initializedFromMentor ? "initialization from mentor" : "mentor discovery timeout") << endl;
    colorizeModule(getParentModule(), "#00ff00");
 
@@ -1845,7 +1845,7 @@ void RegistrarProcess::beginNormalOperation(const bool initializedFromMentor)
 // ###### Registrar service startup #########################################
 void RegistrarProcess::startupService()
 {
-   ev << Description << "Starting ENRP service ..." << endl;
+   EV << Description << "Starting ENRP service ..." << endl;
    colorizeModule(getParentModule(), "#ffff55");
    MentorServerID = UNDEFINED_REGISTRAR_IDENTIFIER;
    PoolElementCountVector->record(0);
@@ -1870,7 +1870,7 @@ void RegistrarProcess::startupService()
 // ###### Registrar service startup #########################################
 void RegistrarProcess::shutdownService()
 {
-   ev << Description << "Service shutdown ..." << endl;
+   EV << Description << "Service shutdown ..." << endl;
 
    // ------ Clear handlespace ----------------------------------------------
    PoolElementCountVector->record(Handlespace->getPoolElements());
@@ -1925,7 +1925,7 @@ void RegistrarProcess::shutdownService()
 // ###### Handle message ####################################################
 void RegistrarProcess::handleMessage(cMessage* msg)
 {
-   ev << Description << "Received message \"" << msg->getName()
+   EV << Description << "Received message \"" << msg->getName()
       << "\" in state " << State.getStateName() << endl;
 
    FSM_Switch(State) {
@@ -1989,7 +1989,7 @@ void RegistrarProcess::handleMessage(cMessage* msg)
          }
          else if(msg == MentorDiscoveryTimeoutTimer) {
             MentorDiscoveryTimeoutTimer = NULL;
-            ev << Description << "Mentor discovery phase is over, no mentor found" << endl;
+            EV << Description << "Mentor discovery phase is over, no mentor found" << endl;
             beginNormalOperation(false);
          }
 
@@ -2070,7 +2070,7 @@ void RegistrarProcess::handleMessage(cMessage* msg)
          }
          else {
             colorizeModule(getParentModule(), "");
-            ev << Description << "--- FINISHED ---" << endl;
+            EV << Description << "--- FINISHED ---" << endl;
             colorizeModule(getParentModule());
             FSM_Goto(State, FINISHED);
          }
@@ -2079,7 +2079,7 @@ void RegistrarProcess::handleMessage(cMessage* msg)
       case FSM_Exit(WAIT_FOR_RESTART):
          if(msg == RestartDelayTimer) {
             RestartDelayTimer = NULL;
-            ev << Description << "Restarting service ..." << endl;
+            EV << Description << "Restarting service ..." << endl;
             FSM_Goto(State, STARTUP_SERVICE);
          }
          else if((dynamic_cast<ASAPPacket*>(msg)) ||

@@ -187,7 +187,7 @@ bool PoolUserASAPProcess::handleASAPHandleResolutionResponse(ASAPHandleResolutio
          selectPoolElements() call. */
       size_t purged = Cache.purgeExpiredPoolElements();
       if(purged > 0) {
-         ev << Description << "Purged " << purged << " entries in cache" << endl;
+         EV << Description << "Purged " << purged << " entries in cache" << endl;
       }
       const size_t oldElementCount = Cache.getPoolElementsOfPool(msg->getPoolHandle());
 
@@ -218,13 +218,13 @@ bool PoolUserASAPProcess::selectPoolElementFromCache()
    size_t        items  = 1;
    const size_t  purged = Cache.purgeExpiredPoolElements();
    if(purged > 0) {
-      ev << Description << "Purged " << purged << " entries in cache" << endl;
+      EV << Description << "Purged " << purged << " entries in cache" << endl;
    }
    Cache.selectPoolElementsByPolicy(PoolHandle.c_str(), (cPoolElement**)&selectionArray, items, 1, 1000000000);
    if(items > 0) {
-      ev << Description << "Successfully selected pool element from cache: " << endl;
+      EV << Description << "Successfully selected pool element from cache: " << endl;
       selectionArray[0]->print(true);
-      ev << "Cache content:" << endl;
+      EV << "Cache content:" << endl;
       Cache.print();
 
       ServerSelectionSuccess* response = new ServerSelectionSuccess("ServerSelectionSuccess");
@@ -234,7 +234,7 @@ bool PoolUserASAPProcess::selectPoolElementFromCache()
       return(true);
    }
    else {
-      ev << Description << "No pool element available from cache" << endl;
+      EV << Description << "No pool element available from cache" << endl;
    }
    return(false);
 }
@@ -251,9 +251,9 @@ void PoolUserASAPProcess::selectPoolElement()
       This ensures, that all cached elements are gone. */
    Cache.selectPoolElementsByPolicy(PoolHandle.c_str(), (cPoolElement**)&selectionArray, items, 1, 1000000000);
    if(items > 0) {
-      ev << Description << "Successfully selected pool element after nameserver query: " << endl;
+      EV << Description << "Successfully selected pool element after nameserver query: " << endl;
       selectionArray[0]->print(true);
-      ev << "Cache contents:" << endl;
+      EV << "Cache contents:" << endl;
       Cache.print();
 
 /*
@@ -268,7 +268,7 @@ void PoolUserASAPProcess::selectPoolElement()
       send(response, "toApplication");
    }
    else {
-      ev << Description << "No pool element available" << endl;
+      EV << Description << "No pool element available" << endl;
       ServerSelectionFailure* response = new ServerSelectionFailure("ServerSelectionFailure");
       send(response, "toApplication");
    }
@@ -278,7 +278,7 @@ void PoolUserASAPProcess::selectPoolElement()
 // ###### Handle EndpointUnreachable from application #######################
 void PoolUserASAPProcess::handleEndpointUnreachable(EndpointUnreachable* msg)
 {
-   ev << Description << "Endpoint unreachable for " << msg->getIdentifier()
+   EV << Description << "Endpoint unreachable for " << msg->getIdentifier()
       << " in pool " << msg->getPoolHandle() << endl;
    Cache.deregisterPoolElement(msg->getPoolHandle(), msg->getIdentifier());
 
@@ -298,7 +298,7 @@ void PoolUserASAPProcess::handleEndpointUnreachable(EndpointUnreachable* msg)
 // ###### Handle CachePurge from application ################################
 void PoolUserASAPProcess::handleCachePurge(CachePurge* msg)
 {
-   ev << Description << "Cache purge for " << msg->getIdentifier()
+   EV << Description << "Cache purge for " << msg->getIdentifier()
       << " in pool " << msg->getPoolHandle() << endl;
    Cache.deregisterPoolElement(msg->getPoolHandle(), msg->getIdentifier());
 }
@@ -308,7 +308,7 @@ void PoolUserASAPProcess::handleCachePurge(CachePurge* msg)
 void PoolUserASAPProcess::startRegistrarHunt()
 {
    RegistrarHuntRequest* request = new RegistrarHuntRequest("RegistrarHuntRequest");
-   ev << Description << "Starting registrar hunt" << endl;
+   EV << Description << "Starting registrar hunt" << endl;
    send(request, "toRegistrarTable");
 }
 
@@ -317,14 +317,14 @@ void PoolUserASAPProcess::startRegistrarHunt()
 void PoolUserASAPProcess::handleRegistrarHuntResponse(RegistrarHuntResponse* msg)
 {
    RegistrarAddress = msg->getRegistrarAddress();
-   ev << Description << "Selected name server at " << RegistrarAddress << endl;
+   EV << Description << "Selected name server at " << RegistrarAddress << endl;
 }
 
 
 // ###### Handle message from transport layer ###############################
 void PoolUserASAPProcess::handleMessage(cMessage* msg)
 {
-   ev << Description << "Received message \"" << msg->getName()
+   EV << Description << "Received message \"" << msg->getName()
       << "\" in state " << State.getStateName() << endl;
 
    FSM_Switch(State) {
@@ -335,16 +335,16 @@ void PoolUserASAPProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(WAIT_FOR_APPLICATION):
          if(dynamic_cast<ServerSelectionRequest*>(msg)) {
-            ev << Description << "Got ServerSelectionRequest ..." << endl;
+            EV << Description << "Got ServerSelectionRequest ..." << endl;
             handleServerSelectionRequest((ServerSelectionRequest*)msg);
             FSM_Goto(State, SELECT_POOL_ELEMENT_FROM_CACHE);
          }
          else if(dynamic_cast<EndpointUnreachable*>(msg)) {
-            ev << Description << "Got EndpointUnreachable ..." << endl;
+            EV << Description << "Got EndpointUnreachable ..." << endl;
             handleEndpointUnreachable((EndpointUnreachable*)msg);
          }
          else if(dynamic_cast<CachePurge*>(msg)) {
-            ev << Description << "Got CachePurge ..." << endl;
+            EV << Description << "Got CachePurge ..." << endl;
             handleCachePurge((CachePurge*)msg);
          }
          else {
@@ -353,7 +353,7 @@ void PoolUserASAPProcess::handleMessage(cMessage* msg)
        break;
 
       case FSM_Exit(SELECT_POOL_ELEMENT_FROM_CACHE):
-         ev << Description << "Select pool element from cache ..." << endl;
+         EV << Description << "Select pool element from cache ..." << endl;
          if(selectPoolElementFromCache()) {
             FSM_Goto(State, WAIT_FOR_APPLICATION);
          }
@@ -367,7 +367,7 @@ void PoolUserASAPProcess::handleMessage(cMessage* msg)
          if( (RegistrarAddress != UNDEFINED_REGISTRAR_IDENTIFIER) &&
              (HandleResolutionRequestsSent <= (unsigned int)par("asapMaxRequestRetransmit")) ) {
             HandleResolutionRequestsSent++;
-            ev << Description << "Sending ASAP_HANDLE_RESOLUTION ... (attempt "
+            EV << Description << "Sending ASAP_HANDLE_RESOLUTION ... (attempt "
                << HandleResolutionRequestsSent << " of " << (unsigned int)par("asapMaxRequestRetransmit") << ")" << endl;
             sendASAPHandleResolution();
             startT1HandleResolutionRequestTimer();
@@ -380,19 +380,19 @@ void PoolUserASAPProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(WAIT_FOR_HANDLE_RESOLUTION_RESPONSE):
          if(dynamic_cast<ASAPHandleResolutionResponse*>(msg)) {
-            ev << Description << "Got handle resolution response" << endl;
+            EV << Description << "Got handle resolution response" << endl;
             stopT1HandleResolutionRequestTimer();
             if(handleASAPHandleResolutionResponse((ASAPHandleResolutionResponse*)msg)) {
                FSM_Goto(State, SELECT_POOL_ELEMENT);
             }
             else {
-               ev << Description << "Handle resolution has been rejected! Trying to find other registrar!" << endl;
+               EV << Description << "Handle resolution has been rejected! Trying to find other registrar!" << endl;
                startServerHuntRetryTimer();
                FSM_Goto(State, SERVER_HUNT_RETRY_DELAY);
             }
          }
          else if(msg == T1HandleResolutionRequestTimer) {
-            ev << Description << "Handle resolution timed out" << endl;
+            EV << Description << "Handle resolution timed out" << endl;
             T1HandleResolutionRequestTimer = NULL;
             FSM_Goto(State, SEND_HANDLE_RESOLUTION_REQUEST);
          }
@@ -428,7 +428,7 @@ void PoolUserASAPProcess::handleMessage(cMessage* msg)
        break;
 
       case FSM_Exit(SELECT_POOL_ELEMENT):
-         ev << Description << "Select pool element ..." << endl;
+         EV << Description << "Select pool element ..." << endl;
          selectPoolElement();
          FSM_Goto(State, WAIT_FOR_APPLICATION);
        break;

@@ -121,7 +121,7 @@ void cPoolElement::print(const bool full)
       Node,
       (char*)&poolElementNodeDescription, sizeof(poolElementNodeDescription),
       ((full == true) ? PENPO_FULL : PENPO_ONLY_ID));
-   ev << poolElementNodeDescription;
+   EV << poolElementNodeDescription;
 }
 
 
@@ -189,28 +189,28 @@ void cPoolHandlespace::print(const unsigned int homeRegistrarIdentifier)
    TMPL_CLASS(poolHandlespaceManagementGetDescription, SimpleRedBlackTree)(
       &Handlespace, (char*)&description, sizeof(description));
 
-   ev << description << endl;
+   EV << description << endl;
 
    poolNode = TMPL_CLASS(poolHandlespaceManagementGetFirstPoolNode, SimpleRedBlackTree)(&Handlespace);
    while(poolNode != NULL) {
-      ev << "+--- ";
+      EV << "+--- ";
       TMPL_CLASS(poolNodeGetDescription, SimpleRedBlackTree)(
          poolNode,
          (char*)&description, sizeof(description));
-      ev << description << endl;
+      EV << description << endl;
 
       poolElementNodeS = TMPL_CLASS(poolNodeGetFirstPoolElementNodeFromSelection, SimpleRedBlackTree)(poolNode);
       poolElementNodeI = TMPL_CLASS(poolNodeGetFirstPoolElementNodeFromIndex, SimpleRedBlackTree)(poolNode);
       while(poolElementNodeS != NULL) {
          poolElementS = (cPoolElement*)poolElementNodeS->UserData;
          poolElementI = (cPoolElement*)poolElementNodeI->UserData;
-         ev << "   - ";
+         EV << "   - ";
          poolElementI->print(false);
-         ev << "   ";
+         EV << "   ";
          poolElementS->print(true);
          poolElementNodeS = TMPL_CLASS(poolNodeGetNextPoolElementNodeFromSelection, SimpleRedBlackTree)(poolNode, poolElementNodeS);
          poolElementNodeI = TMPL_CLASS(poolNodeGetNextPoolElementNodeFromIndex, SimpleRedBlackTree)(poolNode, poolElementNodeI);
-         ev << endl;
+         EV << endl;
       }
 
       poolNode = TMPL_CLASS(poolHandlespaceManagementGetNextPoolNode, SimpleRedBlackTree)(&Handlespace, poolNode);
@@ -564,15 +564,15 @@ void cPoolUserList::print()
 
    TMPL_CLASS(poolUserListGetDescription, SimpleRedBlackTree)(
       &List, (char*)&description, sizeof(description));
-   ev << description << endl;
+   EV << description << endl;
 
    poolUserNode = TMPL_CLASS(poolUserListGetFirstPoolUserNode, SimpleRedBlackTree)(&List);
    while(poolUserNode != NULL) {
-      ev << "+--- ";
+      EV << "+--- ";
       TMPL_CLASS(poolUserNodeGetDescription, SimpleRedBlackTree)(
          poolUserNode,
          (char*)&description, sizeof(description), ~0);
-      ev << description << endl;
+      EV << description << endl;
       poolUserNode = TMPL_CLASS(poolUserListGetNextPoolUserNode, SimpleRedBlackTree)(&List, poolUserNode);
    }
 }
@@ -614,7 +614,7 @@ void cPoolUserList::purge(const simtime_t minTime)
          TMPL_CLASS(poolUserNodeGetDescription, SimpleRedBlackTree)(
             poolUserNode,
             (char*)&description, sizeof(description), ~0);
-            ev << "Purging " << description << endl;
+            EV << "Purging " << description << endl;
 
          TMPL_CLASS(poolUserListRemovePoolUserNode, SimpleRedBlackTree)(
             &List, poolUserNode);
@@ -685,7 +685,7 @@ void cPeerListNode::print(const bool full)
       Node,
       (char*)&peerListNodeDescription, sizeof(peerListNodeDescription),
       ((full == true) ? PLPO_FULL : PLPO_ONLY_INDEX));
-   ev << peerListNodeDescription;
+   EV << peerListNodeDescription;
 }
 
 
@@ -751,16 +751,16 @@ void cPeerList::print()
 
    TMPL_CLASS(peerListManagementGetDescription, SimpleRedBlackTree)(
       &List, (char*)&description, sizeof(description));
-   ev << description << endl;
+   EV << description << endl;
 
    peerListNode = TMPL_CLASS(peerListManagementGetFirstPeerListNodeFromIndexStorage, SimpleRedBlackTree)(&List);
    while(peerListNode != NULL) {
-      ev << "+--- ";
+      EV << "+--- ";
       TMPL_CLASS(peerListNodeGetDescription, SimpleRedBlackTree)(
          peerListNode,
          (char*)&description, sizeof(description),
          PLPO_FULL);
-      ev << description << endl;
+      EV << description << endl;
       peerListNode = TMPL_CLASS(peerListManagementGetNextPeerListNodeFromIndexStorage, SimpleRedBlackTree)(&List, peerListNode);
    }
 }

@@ -371,7 +371,7 @@ void CalcAppServerProcess::startStartupTimer()
       delay = (simtime_t)par("componentStartupDelay");
    }
    scheduleAt(simTime() + delay, StartupTimer);
-   ev << Description << "Scheduled startup in " << delay << "s" << endl;
+   EV << Description << "Scheduled startup in " << delay << "s" << endl;
 }
 
 
@@ -556,7 +556,7 @@ void CalcAppServerProcess::sendAbort(CalcAppServerJob* job)
    jobAbort->setDstPort(job->getClientPort());
    jobAbort->setSrcPort(LocalPort);
    jobAbort->setJobID(job->getJobID());
-   ev << Description << "Sending CALCAPP_ABORT for job "
+   EV << Description << "Sending CALCAPP_ABORT for job "
       << getJobDescription(job) << " ..." << endl;
    send(jobAbort, "toTransport");
 }
@@ -576,7 +576,7 @@ void CalcAppServerProcess::handleCalcAppRequest(CalcAppRequest* msg)
       success->setDstPort(msg->getSrcPort());
       success->setSrcPort(LocalPort);
       success->setJobID(msg->getJobID());
-      ev << Description << "Sending CALCAPP_ACCEPT for job "
+      EV << Description << "Sending CALCAPP_ACCEPT for job "
          << getJobDescription(job) << " ..." << endl;
       send(success, "toTransport");
    }
@@ -588,7 +588,7 @@ void CalcAppServerProcess::handleCalcAppRequest(CalcAppRequest* msg)
       reject->setDstPort(msg->getSrcPort());
       reject->setSrcPort(LocalPort);
       reject->setJobID(msg->getJobID());
-      ev << Description << "Sending CALCAPP_REJECT for request "
+      EV << Description << "Sending CALCAPP_REJECT for request "
          << msg->getSrcAddress() << ":" << msg->getSrcPort() << " ..." << endl;
       send(reject, "toTransport");
    }
@@ -610,7 +610,7 @@ void CalcAppServerProcess::handleCalcAppCookieEcho(CalcAppCookieEcho* msg)
       success->setDstPort(msg->getSrcPort());
       success->setSrcPort(LocalPort);
       success->setJobID(msg->getCookie().getJobID());
-      ev << Description << "Sending CALCAPP_ACCEPT for job "
+      EV << Description << "Sending CALCAPP_ACCEPT for job "
          << getJobDescription(job) << " ..." << endl;
       send(success, "toTransport");
    }
@@ -622,7 +622,7 @@ void CalcAppServerProcess::handleCalcAppCookieEcho(CalcAppCookieEcho* msg)
       reject->setDstPort(msg->getSrcPort());
       reject->setSrcPort(LocalPort);
       reject->setJobID(msg->getCookie().getJobID());
-      ev << Description << "Sending CALCAPP_REJECT for request from "
+      EV << Description << "Sending CALCAPP_REJECT for request from "
          << msg->getSrcAddress() << ":" << msg->getSrcPort() << " ..." << endl;
       send(reject, "toTransport");
    }
@@ -674,7 +674,7 @@ void CalcAppServerProcess::handleJobCompleteTimer(cMessage* msg)
    completed->setDstPort(job->getClientPort());
    completed->setSrcPort(LocalPort);
    completed->setJobID(job->getJobID());
-   ev << Description << "Sending CALCAPP_COMPLETE for job "
+   EV << Description << "Sending CALCAPP_COMPLETE for job "
       << getJobDescription(job) << " ..." << endl;
    send(completed, "toTransport");
 
@@ -740,7 +740,7 @@ void CalcAppServerProcess::sendCookie(CalcAppServerJob* job)
    cookie->setDstPort(job->getClientPort());
    cookie->setSrcPort(LocalPort);
    cookie->setCookie(cookieParameter);
-   ev << Description << "Sending ASAP_COOKIE for job "
+   EV << Description << "Sending ASAP_COOKIE for job "
       << getJobDescription(job) << " ..." << endl;
    send(cookie, "toTransport");
 }
@@ -753,15 +753,15 @@ CalcAppServerJob* CalcAppServerProcess::addJob(const unsigned int address,
                                                const double       calculations,
                                                const double       completed)
 {
-   if((unsigned int)JobQueue.length() >= ServiceMaxJobs) {
-      ev << Description << "Server is full: rejected job " << jobID << " from "
+   if((unsigned int)JobQueue.getLength() >= ServiceMaxJobs) {
+      EV << Description << "Server is full: rejected job " << jobID << " from "
          << address << ":" << port << endl;
       return(NULL);
    }
    const double serviceRejectProbability = (double)par("serviceRejectProbability");
    if((serviceRejectProbability > 0.0) &&
       (uniform(0.0, 1.0) < serviceRejectProbability)) {
-      ev << Description << "Random reject: rejected job " << jobID << " from "
+      EV << Description << "Random reject: rejected job " << jobID << " from "
          << address << ":" << port << endl;
       return(NULL);
    }
@@ -790,7 +790,7 @@ CalcAppServerJob* CalcAppServerProcess::addJob(const unsigned int address,
    JobQueue.insert(job);
    scheduleJobs();
 
-   ev << Description << "Added job " << jobID << " from "
+   EV << Description << "Added job " << jobID << " from "
       << address << ":" << port << " - "
       << job->getJobCompletedCalculations() << " of " << job->getJobCalculations()
       << " calculations are already completed" << endl;
@@ -802,7 +802,7 @@ CalcAppServerJob* CalcAppServerProcess::addJob(const unsigned int address,
 void CalcAppServerProcess::removeJob(CalcAppServerJob* job)
 {
    updateAccounting();
-   ev << Description << "Removing job " << job->getJobID()
+   EV << Description << "Removing job " << job->getJobID()
       << " from " << job->getClientAddress() << ":" << job->getClientPort() << endl;
    if(job->CookieTransmissionTimer) {
       stopCookieTransmissionTimer(job);
@@ -866,9 +866,9 @@ void CalcAppServerProcess::updateAccounting()
       ServiceUptime += timeSinceLastAccounting;
    }
 
-   if(JobQueue.length() > 0) {
-      const double powerPerJob = ServiceCapacity / JobQueue.length();
-      ev << Description << "Update:" << endl;
+   if(JobQueue.getLength() > 0) {
+      const double powerPerJob = ServiceCapacity / JobQueue.getLength();
+      EV << Description << "Update:" << endl;
       for(cQueue::Iterator iterator(JobQueue);!iterator.end();iterator++) {
          CalcAppServerJob* job = (CalcAppServerJob*)iterator();
          if(job->JobCompleteTimer) {
@@ -887,7 +887,7 @@ void CalcAppServerProcess::updateAccounting()
             error("Negative value of operations to go for job %u\n", job->getJobID());
          }
 
-         ev << "   " << getJobDescription(job)
+         EV << "   " << getJobDescription(job)
             << format(" - update=%1.0f in %fs, toGo=%1.0f",
                       completed, duration.dbl(),
                       job->getJobCalculations() - job->getJobCompletedCalculations()) << endl;
@@ -903,10 +903,10 @@ void CalcAppServerProcess::updateAccounting()
 // ###### Calculate job schedule ############################################
 void CalcAppServerProcess::scheduleJobs()
 {
-   if(JobQueue.length() > 0) {
-      const double powerPerJob = ServiceCapacity / JobQueue.length();
+   if(JobQueue.getLength() > 0) {
+      const double powerPerJob = ServiceCapacity / JobQueue.getLength();
 
-      ev << Description << "Schedule:" << endl;
+      EV << Description << "Schedule:" << endl;
       for(cQueue::Iterator iterator(JobQueue);!iterator.end();iterator++) {
          CalcAppServerJob* job = (CalcAppServerJob*)iterator();
          simtime_t duration = (job->getJobCalculations() - job->getJobCompletedCalculations()) / powerPerJob;
@@ -923,23 +923,23 @@ void CalcAppServerProcess::scheduleJobs()
          const simtime_t nextCookie = min(nextByCalculations, nextByTime);
          startCookieTransmissionTimer(job, nextCookie);
 
-         ev << "   " << getJobDescription(job)
+         EV << "   " << getJobDescription(job)
             << format(" - toGo=%1.0f, finish in %fs",
                       job->getJobCalculations() - job->getJobCompletedCalculations(), duration.dbl()) << endl;
       }
    }
 
-   const double load = (double)JobQueue.length() / ServiceMaxJobs;
+   const double load = (double)JobQueue.getLength() / ServiceMaxJobs;
    LoadVector->record(load);
    if(fabs(CurrentLoad - load) > 0.000001) {
       CurrentLoad = load;
       if(ShuttingDown) {
-         ev << Description << "Skipping PolicyUpdate since PE is shutting down" << endl;
+         EV << Description << "Skipping PolicyUpdate since PE is shutting down" << endl;
       }
       else {
          if(PPT_IS_ADAPTIVE(SelectionPolicyType)) {
             const double selectionPolicyUpdateThreshold = par("selectionPolicyUpdateThreshold");
-            ev << Description << "Load changed -> policy update: CurrentLoad="
+            EV << Description << "Load changed -> policy update: CurrentLoad="
                << CurrentLoad << ", LastPolicyInfoUpdate=" << LastPolicyInfoUpdate
                << " (PolicyUpdateThreshold " << selectionPolicyUpdateThreshold << ")"
                << endl;
@@ -973,7 +973,7 @@ void CalcAppServerProcess::scheduleJobs()
                send(policyUpdate, "toASAP");
             }
             else {
-               ev << "Skipping update, difference="
+               EV << "Skipping update, difference="
                   << fabs(CurrentLoad - LastPolicyInfoUpdate)
                   << " below threshold " << selectionPolicyUpdateThreshold << endl;
             }
@@ -986,7 +986,7 @@ void CalcAppServerProcess::scheduleJobs()
 // ###### Startup ###########################################################
 void CalcAppServerProcess::startupService()
 {
-   ev << Description << "Registering and starting service ..." << endl;
+   EV << Description << "Registering and starting service ..." << endl;
 
    // ------ Bind to port ---------------------------------------------------
    LocalPort++;
@@ -1008,7 +1008,7 @@ void CalcAppServerProcess::shutdownService()
    const bool cleanShutdown = (uniform(0.0, 1.0) <= (double)par("componentCleanShutdownProbability"));
 
    ShutdownTimer = NULL;
-   ev << Description << (cleanShutdown ? "clean" : "unclean") << " service shutdown ..." << endl;
+   EV << Description << (cleanShutdown ? "clean" : "unclean") << " service shutdown ..." << endl;
    performPoolElementDeregistration(cleanShutdown);
    killAllJobs(cleanShutdown);
    LastAccounting = 0.0;
@@ -1023,7 +1023,7 @@ void CalcAppServerProcess::shutdownService()
 // ###### Handle message #####################################################
 void CalcAppServerProcess::handleMessage(cMessage* msg)
 {
-   ev << Description << "Received message \"" << msg->getName()
+   EV << Description << "Received message \"" << msg->getName()
       << "\" in state " << State.getStateName() << endl;
 
    FSM_Switch(State) {
@@ -1070,7 +1070,7 @@ void CalcAppServerProcess::handleMessage(cMessage* msg)
             handleCookieTransmissionTimer(msg);
          }
          else if(dynamic_cast<RegisterPoolElementAck*>(msg) != NULL)  {
-            ev << Description << "Successfully registered as pool element" << endl;
+            EV << Description << "Successfully registered as pool element" << endl;
             startShutdownTimer();
          }
          else if(msg == ShutdownTimer) {
@@ -1092,7 +1092,7 @@ void CalcAppServerProcess::handleMessage(cMessage* msg)
                FSM_Goto(State, WAIT_FOR_RESTART);
             }
             else {
-               ev << Description << "--- FINISHED ---" << endl;
+               EV << Description << "--- FINISHED ---" << endl;
                colorizeModule(getParentModule(), "");
                FSM_Goto(State, FINISHED);
             }
@@ -1111,7 +1111,7 @@ void CalcAppServerProcess::handleMessage(cMessage* msg)
       case FSM_Exit(WAIT_FOR_RESTART):
          if(msg == RestartDelayTimer) {
             RestartDelayTimer = NULL;
-            ev << Description << "Restarting service ..." << endl;
+            EV << Description << "Restarting service ..." << endl;
             FSM_Goto(State, STARTUP_SERVICE);
          }
          else if((dynamic_cast<CalcAppRequest*>(msg) != NULL)   ||

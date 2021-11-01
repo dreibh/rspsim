@@ -162,7 +162,7 @@ void AttackerProcess::initialize()
          break;
       }
    }
-   ev << Description;
+   EV << Description;
    TargetRegistrarTable->print();
 
    // ------ Prepare startup ------------------------------------------------
@@ -241,7 +241,7 @@ void AttackerProcess::startStartupTimer()
       delay = (simtime_t)par("componentStartupDelay");
    }
    scheduleAt(simTime() + delay, StartupTimer);
-   ev << Description << "Scheduled startup in " << delay << "s" << endl;
+   EV << Description << "Scheduled startup in " << delay << "s" << endl;
 }
 
 
@@ -303,7 +303,7 @@ unsigned int AttackerProcess::selectTargetRegistrar()
 // ###### Handle NextAttack timer ###########################################
 void AttackerProcess::handleNextAttackTimer()
 {
-   ev << Description << "Attack!" << endl;
+   EV << Description << "Attack!" << endl;
 
    const char*        attackType             = par("attackType");
    const unsigned int targetRegistrarAddress = selectTargetRegistrar();
@@ -318,7 +318,7 @@ void AttackerProcess::handleNextAttackTimer()
           (uniform(0.0, 1.0) <= (double)par("attackReportUnreachableProbability")) &&
           (VictimPoolElements > 0) ) {
          for(unsigned int i = 0;i < VictimPoolElements;i++) {
-            ev << "Sending endpoint unreachable for PE #"
+            EV << "Sending endpoint unreachable for PE #"
                << VictimPoolElementList[i] << "..." << endl;
             sendASAPEndpointUnreachable(targetRegistrarAddress, RegistrarPort,
                                         VictimPoolHandle.c_str(), VictimPoolElementList[i]);
@@ -332,7 +332,7 @@ void AttackerProcess::handleNextAttackTimer()
       handleResolution->setDstPort(RegistrarPort);
       handleResolution->setPoolHandle(par("attackTargetPoolHandle"));
 
-      ev << Description << "Sending ASAP Handle Resolution..." << endl;
+      EV << Description << "Sending ASAP Handle Resolution..." << endl;
       handleResolution->setTimestamp(simTime());
       send(handleResolution, "toTransport");
       GotHandleResolutionResponse = false;
@@ -432,12 +432,12 @@ void AttackerProcess::handleASAPHandleResolutionResponse(ASAPHandleResolutionRes
         VictimPoolElementList[i] = msg->getPoolElementParameter(i).getIdentifier();
      }
 
-     ev << Description << "Got handle resolution response" << endl;
+     EV << Description << "Got handle resolution response" << endl;
      GotHandleResolutionResponse = true;
      TotalHandleResolutions++;
       if(uniform(0.0, 1.0) <= (double)par("attackReportUnreachableProbability")) {
          for(unsigned int i = 0;i < VictimPoolElements;i++) {
-            ev << "Sending endpoint unreachable for PE #"
+            EV << "Sending endpoint unreachable for PE #"
                << msg->getPoolElementParameter(i).getIdentifier() << "..." << endl;
             sendASAPEndpointUnreachable(msg->getSrcAddress(), AttackerPort,
                                         msg->getPoolHandle(),
@@ -465,7 +465,7 @@ void AttackerProcess::handleASAPHandleResolutionResponse(ASAPHandleResolutionRes
 void AttackerProcess::handleASAPRegistrationResponse(ASAPRegistrationResponse* msg)
 {
    if(!msg->getRejectFlag()) {
-     ev << Description << "Got registration response" << endl;
+     EV << Description << "Got registration response" << endl;
      TotalRegistrations++;
    }
 }
@@ -475,7 +475,7 @@ void AttackerProcess::handleASAPRegistrationResponse(ASAPRegistrationResponse* m
 void AttackerProcess::handleASAPEndpointKeepAlive(ASAPEndpointKeepAlive* msg)
 {
    if((bool)par("attackAnswerKeepAlive")) {
-      ev << Description << "Replying endpoint keep-alive" << endl;
+      EV << Description << "Replying endpoint keep-alive" << endl;
       ASAPEndpointKeepAliveAck* endpointKeepAliveAck = new ASAPEndpointKeepAliveAck("ASAP_ENDPOINT_KEEP_ALIVE_ACK");
       endpointKeepAliveAck->setProtocol(ASAP);
       endpointKeepAliveAck->setDstAddress(msg->getSrcAddress());
@@ -490,7 +490,7 @@ void AttackerProcess::handleASAPEndpointKeepAlive(ASAPEndpointKeepAlive* msg)
       TotalEndpointKeepAliveAcks++;
    }
    else {
-      ev << Description << "Ignoring endpoint keep-alive" << endl;
+      EV << Description << "Ignoring endpoint keep-alive" << endl;
    }
 }
 
@@ -505,7 +505,7 @@ void AttackerProcess::handleApplicationMessage(CalcAppMessage* msg)
 // ###### Handle message ####################################################
 void AttackerProcess::handleMessage(cMessage* msg)
 {
-   ev << Description << "Received message \""   << msg->getName()
+   EV << Description << "Received message \""   << msg->getName()
       << "\" in state " << State.getStateName() << endl;
 
    FSM_Switch(State) {
@@ -562,7 +562,7 @@ void AttackerProcess::handleMessage(cMessage* msg)
             FSM_Goto(State, WAIT_FOR_RESTART);
          }
          else {
-            ev << Description << "--- FINISHED ---" << endl;
+            EV << Description << "--- FINISHED ---" << endl;
             colorizeModule(getParentModule(), "");
             FSM_Goto(State, FINISHED);
          }
@@ -571,7 +571,7 @@ void AttackerProcess::handleMessage(cMessage* msg)
       case FSM_Exit(WAIT_FOR_RESTART):
          if(msg == RestartDelayTimer) {
             RestartDelayTimer = NULL;
-            ev << Description << "Restarting service ..." << endl;
+            EV << Description << "Restarting service ..." << endl;
             FSM_Goto(State, STARTUP_SERVICE);
          }
          else {

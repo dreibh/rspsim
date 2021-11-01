@@ -41,7 +41,7 @@
 #define handleUnexpectedMsgState(msg, fsm) error("Received unexpected message %s in state %s", msg->getName(), (fsm).getStateName())
 
 #define handleIgnore(description, msg, state) \
-   ev << (description) << "Ignoring " << (msg)->getName() << " from " \
+   EV << (description) << "Ignoring " << (msg)->getName() << " from " \
       << ((SimplePacket*)(msg))->getSrcAddress() << ":" \
       << ((SimplePacket*)(msg))->getSrcPort() << " in state " \
       << (state).getStateName() << endl;

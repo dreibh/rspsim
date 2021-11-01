@@ -124,11 +124,11 @@ void AbstractController::resetStatistics()
    GlobalJobGoodputTime                = 0.0;
    GlobalJobFailoverTime               = 0.0;
 
-   GlobalUtilizationStat->clearResult();
-   GlobalJobQueuingDelayStat->clearResult();
-   GlobalJobStartupDelayStat->clearResult();
-   GlobalJobProcessingTimeStat->clearResult();
-   GlobalJobHandlingTimeStat->clearResult();
+   GlobalUtilizationStat->clear();
+   GlobalJobQueuingDelayStat->clear();
+   GlobalJobStartupDelayStat->clear();
+   GlobalJobProcessingTimeStat->clear();
+   GlobalJobHandlingTimeStat->clear();
 
    GlobalServerSelections              = 0;
    GlobalUnreachables                  = 0;

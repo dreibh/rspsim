@@ -181,7 +181,7 @@ void TransportNode::initialize()
    const simtime_t interfaceUptime = getUpDownTime(true);
    InterfaceUpDownTimer = new cMessage("InterfaceDownTimer");
    scheduleAt(simTime() + interfaceUptime, InterfaceUpDownTimer);
-   ev << Description << "Interface is up for " << interfaceUptime << "s" << endl;
+   EV << Description << "Interface is up for " << interfaceUptime << "s" << endl;
 
    // ------ Reset statistics -----------------------------------------------
    resetStatistics();
@@ -360,7 +360,7 @@ void TransportNode::handleMessage(cMessage* msg)
                   }
                }
                if(i == PortMappingArray.size()) {
-                  ev.printf("Node %u: Unknown destination port %u!", LocalAddress, simplePacket->getDstPort());
+                  EV << "Unknown destination port " << simplePacket->getDstPort();
                }
             }
 
@@ -406,14 +406,14 @@ void TransportNode::handleMessage(cMessage* msg)
          const simtime_t interfaceDowntime = getUpDownTime(false);
          InterfaceUpDownTimer = new cMessage("InterfaceUpTimer");
          scheduleAt(simTime() + interfaceDowntime, InterfaceUpDownTimer);
-         ev << Description << "Interface is down for " << interfaceDowntime << "s" << endl;
+         EV << Description << "Interface is down for " << interfaceDowntime << "s" << endl;
       }
       else {
          HasInterfaceUp = true;
          const simtime_t interfaceUptime = getUpDownTime(true);
          InterfaceUpDownTimer = new cMessage("InterfaceDownTimer");
          scheduleAt(simTime() + interfaceUptime, InterfaceUpDownTimer);
-         ev << Description << "Interface is up for " << interfaceUptime << "s" << endl;
+         EV << Description << "Interface is up for " << interfaceUptime << "s" << endl;
       }
    }
 
@@ -431,7 +431,7 @@ void TransportNode::handleMessage(cMessage* msg)
       portMapping->setPort(bindMessage->getPort());
       portMapping->setGate(returnGateID(bindMessage->getArrivalGateId()));
       PortMappingArray.add(portMapping);
-      ev << Description
+      EV << Description
          << "Node " << LocalAddress << " - Port " << portMapping->getPort()
          << " bound to gate " << portMapping->getGate() << endl;
    }
@@ -440,7 +440,7 @@ void TransportNode::handleMessage(cMessage* msg)
       for(int i = 0;i < PortMappingArray.size();i++) {
          if((PortMappingArray[i]) &&
             ((cPortMapping*)PortMappingArray[i])->getPort() == unbindMessage->getPort()) {
-            ev << Description
+            EV << Description
                << "Node " << LocalAddress << " - Unbinding port " << unbindMessage->getPort()
                << " from gate " << ((cPortMapping*)PortMappingArray[i])->getGate() << endl;
             delete PortMappingArray.remove(i);
@@ -451,7 +451,7 @@ void TransportNode::handleMessage(cMessage* msg)
 
    // ====== Something went wrong ... =======================================
    else {
-      error("Node %u: Unknown message \"%s\" received!", msg->getName());
+      error("Node %u: Unknown message \"%s\" received!", LocalAddress, msg->getName());
    }
 
    delete msg;

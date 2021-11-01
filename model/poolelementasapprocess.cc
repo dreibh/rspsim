@@ -209,7 +209,7 @@ void PoolElementASAPProcess::handleASAPEndpointKeepAlive(ASAPEndpointKeepAlive* 
    }
 
    if(msg->getHomeFlag()) {
-      ev << Description << "Changing home registrar: "
+      EV << Description << "Changing home registrar: "
          <<  HomeRegistrarAddress << " -> " << msg->getSrcAddress() << endl;
       HomeRegistrarAddress = msg->getSrcAddress();
    }
@@ -281,7 +281,7 @@ void PoolElementASAPProcess::startT4ReregistrationTimer(double nextReregistratio
       }
    }
 
-   ev << Description << "Next reregistration in " << nextReregistration << "s" << endl;
+   EV << Description << "Next reregistration in " << nextReregistration << "s" << endl;
    scheduleAt(simTime() + nextReregistration, T4ReregistrationTimer);
 }
 
@@ -314,7 +314,7 @@ void PoolElementASAPProcess::updatePoolElementParameter(RegisterPoolElement* msg
 void PoolElementASAPProcess::startRegistrarHunt()
 {
    RegistrarHuntRequest* request = new RegistrarHuntRequest("RegistrarHuntRequest");
-   ev << Description << "Starting registrar hunt" << endl;
+   EV << Description << "Starting registrar hunt" << endl;
    send(request, "toRegistrarTable");
 }
 
@@ -323,7 +323,7 @@ void PoolElementASAPProcess::startRegistrarHunt()
 void PoolElementASAPProcess::handleRegistrarHuntResponse(RegistrarHuntResponse* msg)
 {
    HomeRegistrarAddress = msg->getRegistrarAddress();
-   ev << Description << "Selected name server at " << HomeRegistrarAddress << endl;
+   EV << Description << "Selected name server at " << HomeRegistrarAddress << endl;
 }
 
 
@@ -337,7 +337,7 @@ void PoolElementASAPProcess::bindService()
    }
    Description = format("PoolElementASAPProcess at %u:%u> ",
                         getLocalAddress(this), LocalPort);
-   ev << Description << "Binding port ..." << endl;
+   EV << Description << "Binding port ..." << endl;
 
    BindMessage* msg = new BindMessage("Bind");
    msg->setPort(LocalPort);
@@ -355,7 +355,7 @@ void PoolElementASAPProcess::bindService()
 // ###### Unbind ASAP service ###############################################
 void PoolElementASAPProcess::unbindService()
 {
-   ev << Description << "Unbinding port" << endl;
+   EV << Description << "Unbinding port" << endl;
 
    // ------ Unbind port ----------------------------------------------------
    UnbindMessage* msg = new UnbindMessage("Bind");
@@ -367,7 +367,7 @@ void PoolElementASAPProcess::unbindService()
 // ###### Handle message ####################################################
 void PoolElementASAPProcess::handleMessage(cMessage* msg)
 {
-   ev << Description << "Received message \"" << msg->getName()
+   EV << Description << "Received message \"" << msg->getName()
       << "\" in state " << State.getStateName() << endl;
 
    FSM_Switch(State) {
@@ -378,7 +378,7 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(WAIT_FOR_APPLICATION):
          if(dynamic_cast<RegisterPoolElement*>(msg)) {
-            ev << Description << "Got RegisterPoolElement -> Starting registration" << endl;
+            EV << Description << "Got RegisterPoolElement -> Starting registration" << endl;
             RegistrationAttempts                = 0;
             DeregAttempts                       = 0;
             HasSentRegisterPoolElementAck       = false;
@@ -400,13 +400,13 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
       case FSM_Exit(SEND_REGISTRATION):
          if( (HomeRegistrarAddress == 0) ||
              (RegistrationAttempts >= (unsigned int)par("asapMaxRegistrationAttempts")) ) {
-            ev << Description << "Registration requires registrar hunt" << endl;
+            EV << Description << "Registration requires registrar hunt" << endl;
             RegistrationAttempts = 0;
             FSM_Goto(State, REGISTRATION_SEND_SERVER_HUNT_REQUEST);
          }
          else {
             RegistrationAttempts++;
-            ev << Description << "Sending ASAP_REGISTRATION ... (attempt "
+            EV << Description << "Sending ASAP_REGISTRATION ... (attempt "
                << RegistrationAttempts << " of " << (unsigned int)par("asapMaxRegistrationAttempts") << ")" << endl;
             HasReceivedPolicyUpdate = false;
             sendASAPRegistration();
@@ -417,24 +417,24 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(WAIT_FOR_REGISTRATION_RESPONSE):
          if(dynamic_cast<ASAPRegistrationResponse*>(msg)) {
-            ev << Description << "Got ASAP_REGISTRATION_RESPONSE" << endl;
+            EV << Description << "Got ASAP_REGISTRATION_RESPONSE" << endl;
             stopT2RegistrationTimer();
             RegistrationAttempts = 0;
             if(!(((ASAPRegistrationResponse*)msg)->getRejectFlag())) {
                if(handleASAPRegistrationResponse((ASAPRegistrationResponse*)msg)) {
-                  ev << Description << "Registration successful" << endl;
+                  EV << Description << "Registration successful" << endl;
                   startT4ReregistrationTimer();
                   if(!HasSentRegisterPoolElementAck) {
                      HasSentRegisterPoolElementAck = true;
                      send(new RegisterPoolElementAck("RegisterPoolElementAck"), "toApplication");
                   }
                   if(HasReceivedPolicyUpdate) {
-                     ev << Description << "Delayed PolicyUpdate -> reregistering ..." << endl;
+                     EV << Description << "Delayed PolicyUpdate -> reregistering ..." << endl;
                      stopT4ReregistrationTimer();
                      FSM_Goto(State, SEND_REGISTRATION);
                   }
                   else if(HasReceivedDeregistration) {
-                     ev << Description << "Delayed DeregisterPoolElement -> deregistering ..." << endl;
+                     EV << Description << "Delayed DeregisterPoolElement -> deregistering ..." << endl;
                      stopT4ReregistrationTimer();
                      DeregAttempts = 0;
                      FSM_Goto(State, SEND_DEREGISTRATION);
@@ -451,7 +451,7 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
                /* In order to avoid adding another state, we simply use the
                   T4ReregistrationTimer to wait the asapServerHuntRetryDelay.
                   After that, a new registrar will be chosen. */
-               ev << Description << "Registration has been rejected! Trying to find other registrar!" << endl;
+               EV << Description << "Registration has been rejected! Trying to find other registrar!" << endl;
                HomeRegistrarAddress = 0;
                startT4ReregistrationTimer(par("asapServerHuntRetryDelay"));
                FSM_Goto(State, REGISTERED);
@@ -459,32 +459,32 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
          }
          else if(msg == T2RegistrationTimer) {
             T2RegistrationTimer = NULL;
-            ev << Description << "Registration timed out" << endl;
+            EV << Description << "Registration timed out" << endl;
             FSM_Goto(State, SEND_REGISTRATION);
          }
          else if(dynamic_cast<ASAPEndpointKeepAlive*>(msg)) {
-            ev << Description << "Got ASAP_ENDPOINT_KEEP_ALIVE -> sending reply ..." << endl;
+            EV << Description << "Got ASAP_ENDPOINT_KEEP_ALIVE -> sending reply ..." << endl;
             handleASAPEndpointKeepAlive((ASAPEndpointKeepAlive*)msg);
          }
          else if(dynamic_cast<PolicyUpdate*>(msg)) {
-            ev << Description << "Got PolicyUpdate in state " << State.getName()
+            EV << Description << "Got PolicyUpdate in state " << State.getName()
                << " - will be processed later" << endl;
             HasReceivedPolicyUpdate = ((PolicyUpdate*)msg)->getReregisterImmediately();
             if(HasReceivedPolicyUpdate) {
-               ev << "Immediately re-registering ..." << endl;
+               EV << "Immediately re-registering ..." << endl;
             }
             else {
-               ev << "No immediate reregistration will be made" << endl;
+               EV << "No immediate reregistration will be made" << endl;
             }
             updatePoolPolicy((PolicyUpdate*)msg);
          }
          else if(dynamic_cast<DeregisterPoolElement*>(msg)) {
-            ev << Description << "Got DeregisterPoolElement in state " << State.getName()
+            EV << Description << "Got DeregisterPoolElement in state " << State.getName()
                << " - will be processed later" << endl;
             HasReceivedDeregistration = true;
          }
          else if(dynamic_cast<ResetPoolElement*>(msg)) {
-            ev << Description << "Received Reset - unclean shutdown ..." << endl;
+            EV << Description << "Received Reset - unclean shutdown ..." << endl;
             stopT2RegistrationTimer();
             send(new ResetPoolElementAck("ResetPoolElementAck"), "toApplication");
             FSM_Goto(State, UNBIND);
@@ -505,19 +505,19 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
             FSM_Goto(State, SEND_REGISTRATION);
          }
          else if(dynamic_cast<PolicyUpdate*>(msg)) {
-            ev << Description << "Got PolicyUpdate in state " << State.getName()
+            EV << Description << "Got PolicyUpdate in state " << State.getName()
                << " - will be processed later" << endl;
             HasReceivedPolicyUpdate = ((PolicyUpdate*)msg)->getReregisterImmediately();
             if(HasReceivedPolicyUpdate) {
-               ev << "Immediately re-registering ..." << endl;
+               EV << "Immediately re-registering ..." << endl;
             }
             else {
-               ev << "No immediate reregistration will be made" << endl;
+               EV << "No immediate reregistration will be made" << endl;
             }
             updatePoolPolicy((PolicyUpdate*)msg);
          }
          else if(dynamic_cast<DeregisterPoolElement*>(msg)) {
-            ev << Description << "Got DeregisterPoolElement in state " << State.getName()
+            EV << Description << "Got DeregisterPoolElement in state " << State.getName()
                << " - will be processed later" << endl;
             HasReceivedDeregistration = true;
          }
@@ -525,7 +525,7 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
             handleIgnore(Description, msg, State);
          }
          else if(dynamic_cast<ResetPoolElement*>(msg)) {
-            ev << Description << "Received Reset - unclean shutdown ..." << endl;
+            EV << Description << "Received Reset - unclean shutdown ..." << endl;
             send(new ResetPoolElementAck("ResetPoolElementAck"), "toApplication");
             FSM_Goto(State, UNBIND);
          }
@@ -537,34 +537,34 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
       case FSM_Exit(REGISTERED):
          if(msg == T4ReregistrationTimer) {
             T4ReregistrationTimer = NULL;
-            ev << Description << "Reregistration timer -> reregistering" << endl;
+            EV << Description << "Reregistration timer -> reregistering" << endl;
             RegistrationAttempts = 0;
             FSM_Goto(State, SEND_REGISTRATION);
          }
          else if(dynamic_cast<ASAPEndpointKeepAlive*>(msg)) {
-            ev << Description << "Got ASAP_ENDPOINT_KEEP_ALIVE -> sending reply ..." << endl;
+            EV << Description << "Got ASAP_ENDPOINT_KEEP_ALIVE -> sending reply ..." << endl;
             handleASAPEndpointKeepAlive((ASAPEndpointKeepAlive*)msg);
          }
          else if(dynamic_cast<PolicyUpdate*>(msg)) {
-            ev << Description << "Got PolicyUpdate in state " << State.getName() << endl;
+            EV << Description << "Got PolicyUpdate in state " << State.getName() << endl;
             updatePoolPolicy((PolicyUpdate*)msg);  // Always update information
             if(((PolicyUpdate*)msg)->getReregisterImmediately()) {
-               ev << "Reregistering immediately ..." << endl;
+               EV << "Reregistering immediately ..." << endl;
                stopT4ReregistrationTimer();
                FSM_Goto(State, SEND_REGISTRATION);
             }
             else {
-               ev << "Delaying reregistration until next interval" << endl;
+               EV << "Delaying reregistration until next interval" << endl;
             }
          }
          else if(dynamic_cast<DeregisterPoolElement*>(msg)) {
-            ev << Description << "Got DeregisterPoolElement from application. Deregistering ..." << endl;
+            EV << Description << "Got DeregisterPoolElement from application. Deregistering ..." << endl;
             stopT4ReregistrationTimer();
             DeregAttempts = 0;
             FSM_Goto(State, SEND_DEREGISTRATION);
          }
          else if(dynamic_cast<ResetPoolElement*>(msg)) {
-            ev << Description << "Received Reset - unclean shutdown ..." << endl;
+            EV << Description << "Received Reset - unclean shutdown ..." << endl;
             stopT4ReregistrationTimer();
             send(new ResetPoolElementAck("ResetPoolElementAck"), "toApplication");
             FSM_Goto(State, UNBIND);
@@ -577,13 +577,13 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
       case FSM_Exit(SEND_DEREGISTRATION):
          if( (HomeRegistrarAddress == 0) ||
              (DeregAttempts >= (unsigned int)par("asapMaxRegistrationAttempts")) ) {
-            ev << Description << "Deregistration requires registrar hunt" << endl;
+            EV << Description << "Deregistration requires registrar hunt" << endl;
             DeregAttempts = 0;
             FSM_Goto(State, DEREGISTRATION_SEND_SERVER_HUNT_REQUEST);
          }
          else {
             DeregAttempts++;
-            ev << Description << "Sending ASAP_DEREGISTRATION ... (attempt "
+            EV << Description << "Sending ASAP_DEREGISTRATION ... (attempt "
                << DeregAttempts << " of " << (unsigned int)par("asapMaxRegistrationAttempts") << ")" << endl;
             sendASAPDeregistration();
             startT3DeregistrationTimer();
@@ -593,29 +593,29 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(WAIT_FOR_DEREGISTRATION_RESPONSE):
          if(dynamic_cast<ASAPDeregistrationResponse*>(msg)) {
-            ev << Description << "Got ASAP_DEREGISTRATION_RESPONSE" << endl;
+            EV << Description << "Got ASAP_DEREGISTRATION_RESPONSE" << endl;
             stopT3DeregistrationTimer();
             DeregAttempts = 0;
             if(handleASAPDeregistrationResponse((ASAPDeregistrationResponse*)msg)) {
-               ev << Description << "Deregistration successful" << endl;
+               EV << Description << "Deregistration successful" << endl;
                send(new DeregisterPoolElementAck("DeregisterPoolElementAck"), "toApplication");
                FSM_Goto(State, UNBIND);
             }
             else {
-               ev << Description << "Deregistration failed -> retry" << endl;
+               EV << Description << "Deregistration failed -> retry" << endl;
                FSM_Goto(State, SEND_DEREGISTRATION);
             }
          }
          else if(msg == T3DeregistrationTimer) {
             T3DeregistrationTimer = NULL;
-            ev << Description << "Deregistration timed out" << endl;
+            EV << Description << "Deregistration timed out" << endl;
             FSM_Goto(State, SEND_DEREGISTRATION);
          }
          else if(dynamic_cast<ASAPEndpointKeepAlive*>(msg)) {
             handleIgnore(Description, msg, State);
          }
          else if(dynamic_cast<ResetPoolElement*>(msg)) {
-            ev << Description << "Received Reset - unclean shutdown ..." << endl;
+            EV << Description << "Received Reset - unclean shutdown ..." << endl;
             stopT3DeregistrationTimer();
             send(new ResetPoolElementAck("ResetPoolElementAck"), "toApplication");
             FSM_Goto(State, UNBIND);
@@ -639,7 +639,7 @@ void PoolElementASAPProcess::handleMessage(cMessage* msg)
             handleIgnore(Description, msg, State);
          }
          else if(dynamic_cast<ResetPoolElement*>(msg)) {
-            ev << Description << "Received Reset - unclean shutdown ..." << endl;
+            EV << Description << "Received Reset - unclean shutdown ..." << endl;
             send(new ResetPoolElementAck("ResetPoolElementAck"), "toApplication");
             FSM_Goto(State, UNBIND);
          }

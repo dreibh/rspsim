@@ -256,7 +256,7 @@ void CalcAppQueuingClientProcess::initialize()
       StartupTimer = new cMessage("StartupTimer");
       const simtime_t startupDelay = (simtime_t)par("componentStartupDelay");
       scheduleAt(simTime() + startupDelay, StartupTimer);
-      ev << Description << "Scheduled startup in " << startupDelay << "s" << endl;
+      EV << Description << "Scheduled startup in " << startupDelay << "s" << endl;
    }
    else {
       FSM_Goto(State, FINISHED);
@@ -300,10 +300,10 @@ void CalcAppQueuingClientProcess::finish()
 // ###### Reset statistics ##################################################
 void CalcAppQueuingClientProcess::resetStatistics()
 {
-   QueuingDelayStat->clearResult();
-   StartupDelayStat->clearResult();
-   ProcessingTimeStat->clearResult();
-   HandlingTimeStat->clearResult();
+   QueuingDelayStat->clear();
+   StartupDelayStat->clear();
+   ProcessingTimeStat->clear();
+   HandlingTimeStat->clear();
 
    TotalJobsStarted         = 0;
    TotalJobsQueued          = 0;
@@ -518,7 +518,7 @@ void CalcAppQueuingClientProcess::startJobGeneratorTimer()
    JobGeneratorTimer = new cMessage("JobGeneratorTimer");
    const simtime_t jobInterval = par("serviceJobInterval");
    scheduleAt(simTime() + jobInterval, JobGeneratorTimer);
-   ev << Description << "Waiting " << jobInterval << "s before starting next job ..." << endl;
+   EV << Description << "Waiting " << jobInterval << "s before starting next job ..." << endl;
 }
 
 
@@ -560,7 +560,7 @@ void CalcAppQueuingClientProcess::handleJobGeneratorTimer()
    TotalJobsQueued++;
    TotalJobSizeQueued += job->getJobCalculations();
 
-   ev << Description << "Queued job #" << job->getJobID() << " with "
+   EV << Description << "Queued job #" << job->getJobID() << " with "
       << job->getJobCalculations() << " calculations" << endl;
 
    startJobGeneratorTimer();
@@ -654,7 +654,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppAccept(CalcAppAccept* msg)
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "Job #" << CurrentJob->getJobID()
+      EV << Description << "Job #" << CurrentJob->getJobID()
          << " accepted from pool element " << CurrentPoolElementDescription << endl;
       stopJobRequestTimeoutTimer();
       startJobKeepAliveTransmissionTimer();
@@ -682,7 +682,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppAccept(CalcAppAccept* msg)
       return(true);
    }
    else {
-      ev << Description << "Ignoring CALCAPP_ACCEPT with invalid source or JobID" << endl;
+      EV << Description << "Ignoring CALCAPP_ACCEPT with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -694,13 +694,13 @@ bool CalcAppQueuingClientProcess::handleCalcAppReject(CalcAppReject* msg)
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "Job #" << CurrentJob->getJobID()
+      EV << Description << "Job #" << CurrentJob->getJobID()
          << " rejected from pool element " << CurrentPoolElementDescription << endl;
       stopJobRequestTimeoutTimer();
       return(true);
    }
    else {
-      ev << Description << "Ignoring CALCAPP_REJECT with invalid source or JobID" << endl;
+      EV << Description << "Ignoring CALCAPP_REJECT with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -712,7 +712,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppAbort(CalcAppAbort* msg)
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "Job #" << CurrentJob->getJobID()
+      EV << Description << "Job #" << CurrentJob->getJobID()
          << " aborted from pool element " << CurrentPoolElementDescription << endl;
       if(JobRequestTimeoutTimer) {
          stopJobRequestTimeoutTimer();
@@ -726,7 +726,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppAbort(CalcAppAbort* msg)
       return(true);
    }
    else {
-      ev << Description << "Ignoring CALCAPP_ABORT with invalid source or JobID" << endl;
+      EV << Description << "Ignoring CALCAPP_ABORT with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -738,7 +738,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppKeepAliveAck(CalcAppKeepAliveAck*
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "JobKeepAliveAck for job #"
+      EV << Description << "JobKeepAliveAck for job #"
          << CurrentJob->getJobID() << " received -> pool element "
          << CurrentPoolElementDescription << " is still alive" << endl;
       stopJobKeepAliveTimeoutTimer();
@@ -746,7 +746,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppKeepAliveAck(CalcAppKeepAliveAck*
       return(true);
    }
    else {
-      ev << Description << "Ignoring CALCAPP_KEEP_ALIVE_ACK with invalid source or JobID" << endl;
+      EV << Description << "Ignoring CALCAPP_KEEP_ALIVE_ACK with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -758,7 +758,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppKeepAlive(CalcAppKeepAlive* msg)
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "JobKeepAlive for job #"
+      EV << Description << "JobKeepAlive for job #"
          << CurrentJob->getJobID() << " received from pool element "
          << CurrentPoolElementDescription << " -> sending CALCAPP_KEEP_ALIVE_ACK" << endl;
       CalcAppKeepAliveAck* keepAliveAck = new CalcAppKeepAliveAck("CALCAPP_KEEP_ALIVE_ACK", CalcAppProtocol);
@@ -771,7 +771,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppKeepAlive(CalcAppKeepAlive* msg)
       return(true);
    }
    else {
-      ev << Description << "Ignoring CALCAPP_KEEP_ALIVE with invalid source or JobID" << endl;
+      EV << Description << "Ignoring CALCAPP_KEEP_ALIVE with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -783,7 +783,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppCookie(CalcAppCookie* msg)
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getCookie().getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "Cookie for job #"
+      EV << Description << "Cookie for job #"
          << CurrentJob->getJobID() << " received from pool element "
          << CurrentPoolElementDescription << ": completed "
          << msg->getCookie().getJobCompletedCalculations() << " of "
@@ -805,7 +805,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppCookie(CalcAppCookie* msg)
       return(true);
    }
    else {
-      ev << Description << "Ignoring ASAP_COOKIE with invalid source or JobID" << endl;
+      EV << Description << "Ignoring ASAP_COOKIE with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -840,7 +840,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppComplete(CalcAppComplete* msg)
    if((msg->getSrcAddress() == CurrentPoolElement.getUserTransportParameter().getAddress()) &&
       (msg->getSrcPort() == CurrentPoolElement.getUserTransportParameter().getPort()) &&
       (msg->getJobID() == CurrentJob->getJobID())) {
-      ev << Description << "Job #" << CurrentJob->getJobID() << " is complete!" << endl;
+      EV << Description << "Job #" << CurrentJob->getJobID() << " is complete!" << endl;
       if(JobKeepAliveTransmissionTimer) {
          stopJobKeepAliveTransmissionTimer();
       }
@@ -859,7 +859,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppComplete(CalcAppComplete* msg)
       const simtime_t processingTime = simTime() - CurrentJob->getJobAcceptedAt();
       const simtime_t handlingTime   = simTime() - CurrentJob->getJobQueuedAt();
 
-      ev << Description << "--- Job finished after handling="
+      EV << Description << "--- Job finished after handling="
          << handlingTime << "s: "
          << "queuing=" << queuingDelay.dbl() << "s, "
          << "startup=" << startupDelay.dbl() << "s, "
@@ -905,7 +905,7 @@ bool CalcAppQueuingClientProcess::handleCalcAppComplete(CalcAppComplete* msg)
       return(true);
    }
    else {
-      ev << Description << "Ignoring CALCAPP_COMPLETE with invalid source or JobID" << endl;
+      EV << Description << "Ignoring CALCAPP_COMPLETE with invalid source or JobID" << endl;
       return(false);
    }
 }
@@ -927,7 +927,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(START_NEXT_JOB_TIMER):
          colorizeModule(getParentModule(), "#ffff55");
-         ev << Description << "Startup" << endl;
+         EV << Description << "Startup" << endl;
          startJobGeneratorTimer();
          FSM_Goto(State, WAIT_FOR_NEXT_JOB);
        break;
@@ -945,12 +945,12 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(START_NEW_JOB):
          startNewJob();
-         ev << Description << "Starting job #" << CurrentJob->getJobID() << " ..." << endl;
+         EV << Description << "Starting job #" << CurrentJob->getJobID() << " ..." << endl;
          FSM_Goto(State, SEND_SERVER_SELECTION_REQUEST);
        break;
 
       case FSM_Exit(SEND_SERVER_SELECTION_REQUEST):
-         ev << Description << "Sending ServerSelectionRequest ..." << endl;
+         EV << Description << "Sending ServerSelectionRequest ..." << endl;
          CurrentJob->setServerSelections(CurrentJob->getServerSelections() + 1);
          TotalServerSelections++;
          sendServerSelectionRequest();
@@ -964,12 +964,12 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
          }
          else if(dynamic_cast<ServerSelectionSuccess*>(msg)) {
             handleServerSelectionSuccess((ServerSelectionSuccess*)msg);
-            ev << Description << "Handle resolution successfull, selected pool element "
+            EV << Description << "Handle resolution successfull, selected pool element "
                << CurrentPoolElementDescription << endl;
             FSM_Goto(State, SEND_JOB_REQUEST);
          }
          else if(dynamic_cast<ServerSelectionFailure*>(msg)) {
-            ev << Description << "Handle resolution failed, no pool element found" << endl;
+            EV << Description << "Handle resolution failed, no pool element found" << endl;
             FSM_Goto(State, START_SERVER_SELECTION_RETRY_TIMER);
          }
          else {
@@ -978,7 +978,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
        break;
 
       case FSM_Exit(START_SERVER_SELECTION_RETRY_TIMER):
-         ev << Description << "Waiting for handle resolution retry ..." << endl;
+         EV << Description << "Waiting for handle resolution retry ..." << endl;
          startServerSelectionRetryTimer();
          FSM_Goto(State, WAIT_FOR_SERVER_SELECTION_RETRY);
        break;
@@ -990,7 +990,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
          }
          else if(msg == ServerSelectionRetryTimer) {
             ServerSelectionRetryTimer = NULL;
-            ev << Description << "Retrying handle resolution ..." << endl;
+            EV << Description << "Retrying handle resolution ..." << endl;
             FSM_Goto(State, SEND_SERVER_SELECTION_REQUEST);
          }
          else {
@@ -1000,7 +1000,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(SEND_JOB_REQUEST):
          if(HasCookie) {
-            ev << Description << "Sending CookieEcho for job #"
+            EV << Description << "Sending CookieEcho for job #"
                << CurrentJob->getJobID() << " to pool element "
                << CurrentPoolElementDescription << " ..." << endl;
             sendCalcAppCookieEcho();
@@ -1008,7 +1008,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
             TotalCalcAppCookieEchoes++;
          }
          else {
-            ev << Description << "Sending JobRequest for job #"
+            EV << Description << "Sending JobRequest for job #"
                << CurrentJob->getJobID() << " to pool element "
                << CurrentPoolElementDescription << " ..." << endl;
             sendCalcAppRequest();
@@ -1026,7 +1026,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
          }
          else if(msg == JobRequestTimeoutTimer) {
             JobRequestTimeoutTimer = NULL;
-            ev << Description << "Sending job request for job #"
+            EV << Description << "Sending job request for job #"
                << CurrentJob->getJobID() << " to pool element "
                << CurrentPoolElementDescription << " timed out -> reporing unreachability" << endl;
             colorizeModule(getParentModule(), "#d1a944");
@@ -1054,7 +1054,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
        break;
 
       case FSM_Exit(SEND_ENDPOINT_UNREACHABLE):
-         ev << Description << "Reporting unreachability of pool element "
+         EV << Description << "Reporting unreachability of pool element "
             << CurrentPoolElementDescription << " ..." << endl;
          CurrentJob->setUnreachables(CurrentJob->getUnreachables() + 1);
          TotalUnreachables++;
@@ -1064,7 +1064,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
        break;
 
       case FSM_Exit(SEND_CACHE_PURGE):
-         ev << Description << "Cache purging of pool element "
+         EV << Description << "Cache purging of pool element "
             << CurrentPoolElementDescription << " ..." << endl;
          sendCachePurge();
          OPP_CHECK(JobRetryTimer != NULL);
@@ -1092,14 +1092,14 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
          }
          else if(msg == JobKeepAliveTransmissionTimer) {
             JobKeepAliveTransmissionTimer = NULL;
-            ev << Description << "Sending JobKeepAlive for job #"
+            EV << Description << "Sending JobKeepAlive for job #"
                << CurrentJob->getJobID() << " to pool element " << CurrentPoolElementDescription << endl;
             sendCalcAppKeepAlive();
             startJobKeepAliveTimeoutTimer();
          }
          else if(msg == JobKeepAliveTimeoutTimer) {
             JobKeepAliveTimeoutTimer = NULL;
-            ev << Description << "JobKeepAliveAck for job #"
+            EV << Description << "JobKeepAliveAck for job #"
                << CurrentJob->getJobID() << " timed out -> pool element "
                << CurrentPoolElementDescription << " is dead!" << endl;
             colorizeModule(getParentModule(), "#ffff55");
@@ -1119,7 +1119,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
          }
          else if(dynamic_cast<CalcAppAbort*>(msg)) {
             if(handleCalcAppAbort((CalcAppAbort*)msg)) {
-               ev << Description << "CalcAppAbort for job #"
+               EV << Description << "CalcAppAbort for job #"
                   << CurrentJob->getJobID() << " timed out -> pool element "
                   << CurrentPoolElementDescription << " is shutting down!" << endl;
                colorizeModule(getParentModule(), "#0000ff");
@@ -1151,11 +1151,11 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
       case FSM_Exit(FINISH_JOB):
          colorizeModule(getParentModule(), "#ffff55");
          if(JobQueue.empty()) {
-            ev << Description << "Waiting for next job ..." << endl;
+            EV << Description << "Waiting for next job ..." << endl;
             FSM_Goto(State, WAIT_FOR_NEXT_JOB);
          }
          else {
-            ev << Description << "There are already jobs in the queue -> starting a new job immediately" << endl;
+            EV << Description << "There are already jobs in the queue -> starting a new job immediately" << endl;
             FSM_Goto(State, START_NEW_JOB);
          }
        break;

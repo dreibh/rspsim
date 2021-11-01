@@ -82,7 +82,7 @@ void RegistrarTableProcess::initialize()
       }
    }
 
-   ev << Description;
+   EV << Description;
    RegistrarTable->print();
 
    // ------ Bind to port ---------------------------------------------------
@@ -120,12 +120,12 @@ void RegistrarTableProcess::handleRegistrarHuntRequest(RegistrarHuntRequest* msg
    cPeerListNode* node = RegistrarTable->getRandomPeerListNode();
    if(node) {
       response->setRegistrarAddress(node->getAddress());
-      ev << Description << "Selected registrar at "
+      EV << Description << "Selected registrar at "
          << response->getRegistrarAddress() << endl;
    }
    else {
       response->setRegistrarAddress(0);
-      ev << Description << "No registrar available!" << endl;
+      EV << Description << "No registrar available!" << endl;
    }
    // printf("Selection of PR at %u for module %u\n",response->getRegistrarAddress(),getId());
    send(response, "toUser");
@@ -135,7 +135,7 @@ void RegistrarTableProcess::handleRegistrarHuntRequest(RegistrarHuntRequest* msg
 // ###### Handle message ####################################################
 void RegistrarTableProcess::handleMessage(cMessage* msg)
 {
-   ev << Description << "Received message \"" << msg->getName() << endl;
+   EV << Description << "Received message \"" << msg->getName() << endl;
    if(dynamic_cast<RegistrarHuntRequest*>(msg)) {
       handleRegistrarHuntRequest((RegistrarHuntRequest*)msg);
    }

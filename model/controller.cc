@@ -68,14 +68,14 @@ void Controller::initialize()
 
    const simtime_t statisticsResetTime = (simtime_t)par("statisticsResetTime");
    if(statisticsResetTime >= 0.0) {
-      ev << "Reset statistics at: " << statisticsResetTime.dbl() << "s" << endl;
+      EV << "Reset statistics at: " << statisticsResetTime.dbl() << "s" << endl;
       ResetStatisticsTimer = new cMessage("ResetStatisticsMessage");
       scheduleAt(statisticsResetTime, ResetStatisticsTimer);
    }
 
    const simtime_t statisticsWriteTime = (simtime_t)par("statisticsWriteTime");
    if(statisticsWriteTime >= 0.0) {
-      ev << "Write statistics at: " << statisticsWriteTime.dbl() << "s" << endl;
+      EV << "Write statistics at: " << statisticsWriteTime.dbl() << "s" << endl;
       WriteStatisticsTimer = new cMessage("WriteStatisticsMessage");
       scheduleAt(statisticsWriteTime, WriteStatisticsTimer);
    }
@@ -215,13 +215,13 @@ void Controller::writeStatistics()
 // ###### Handle timer message ###############################################
 void Controller::handleMessage(cMessage* msg)
 {
-   ev << "Controller: Received message \"" << msg->getName() << "\"" << endl;
+   EV << "Controller: Received message \"" << msg->getName() << "\"" << endl;
 
    const std::vector<std::string> statisticsForModules = cStringTokenizer("RegistrarProcess CalcAppServerProcess CalcAppQueuingClientProcess AttackerProcess TransportNode").asVector();
 
    if(msg == ResetStatisticsTimer) {
       ResetStatisticsTimer = NULL;
-      ev << "--- Reset Statistics ---" << endl;
+      EV << "--- Reset Statistics ---" << endl;
 
       // Reset statistics of all modules
       cTopology topology;
@@ -238,7 +238,7 @@ void Controller::handleMessage(cMessage* msg)
    }
    else if(msg == WriteStatisticsTimer) {
       WriteStatisticsTimer = NULL;
-      ev << "--- Writing Statistics ---" << endl;
+      EV << "--- Writing Statistics ---" << endl;
 
       // Write statistics of all modules (except the Controller!)
       cTopology topology;
