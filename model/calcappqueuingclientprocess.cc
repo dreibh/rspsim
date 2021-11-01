@@ -388,7 +388,7 @@ void CalcAppQueuingClientProcess::writeStatistics()
 
    AbstractController* controller = AbstractController::getController();
    if(controller) {
-      controller->GlobalJobQueueLength      += JobQueue.length();
+      controller->GlobalJobQueueLength      += JobQueue.getLength();
       controller->GlobalJobsQueued          += TotalJobsQueued;
       controller->GlobalJobsStarted         += TotalJobsStarted;
       controller->GlobalJobsCompleted       += TotalJobsCompleted;
@@ -556,7 +556,7 @@ void CalcAppQueuingClientProcess::handleJobGeneratorTimer()
    job->setCalcAppRejects(0);
 
    JobQueue.insert(job);
-   QueueLengthVector->record(JobQueue.length());
+   QueueLengthVector->record(JobQueue.getLength());
    TotalJobsQueued++;
    TotalJobSizeQueued += job->getJobCalculations();
 
@@ -822,7 +822,7 @@ void CalcAppQueuingClientProcess::startNewJob()
    TotalJobSizeStarted += CurrentJob->getJobCalculations();
 
    CurrentJob->setJobStartedAt(simTime());
-   QueueLengthVector->record(JobQueue.length());
+   QueueLengthVector->record(JobQueue.getLength());
 
    const simtime_t queuingDelay = simTime() - CurrentJob->getJobQueuedAt();
    TotalJobQueuingDelay += queuingDelay;
@@ -1150,7 +1150,7 @@ void CalcAppQueuingClientProcess::handleMessage(cMessage* msg)
 
       case FSM_Exit(FINISH_JOB):
          colorizeModule(getParentModule(), "#ffff55");
-         if(JobQueue.empty()) {
+         if(JobQueue.isEmpty()) {
             EV << Description << "Waiting for next job ..." << endl;
             FSM_Goto(State, WAIT_FOR_NEXT_JOB);
          }

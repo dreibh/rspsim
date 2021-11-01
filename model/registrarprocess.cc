@@ -191,10 +191,10 @@ class RegistrarProcess : public StatisticsWriterInterface,
    cOutVector*                PoolElementCountVector;
    cOutVector*                OwnedPoolElementCountVector;
 
-   cWeightedStdDev            NumberOfPoolsStat;
-   cWeightedStdDev            NumberOfPEsStat;
-   cWeightedStdDev            NumberOfOwnedPEsStat;
-   cWeightedStdDev            NumberOfPeersStat;
+   cStdDev                    NumberOfPoolsStat;
+   cStdDev                    NumberOfPEsStat;
+   cStdDev                    NumberOfOwnedPEsStat;
+   cStdDev                    NumberOfPeersStat;
    simtime_t                  LastNumberUpdate;
    size_t                     NumberOfPools;
    size_t                     NumberOfPEs;

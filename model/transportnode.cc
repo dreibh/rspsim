@@ -66,7 +66,7 @@ SwitchingTableEntry::SwitchingTableEntry(const unsigned int destinationAddress,
 // ###### Clean up ##########################################################
 SwitchingTableEntry::~SwitchingTableEntry()
 {
-   OPP_CHECK(!simpleRedBlackTreeNodeIsLinked(&Node));
+   CHECK(!simpleRedBlackTreeNodeIsLinked(&Node));
    simpleRedBlackTreeNodeDelete(&Node);
 }
 
