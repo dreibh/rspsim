@@ -66,4 +66,11 @@ inline void colorizeModule(cModule* module, const char* colorString = "")
 }
 
 
+// ###### WeightedStdDev class ##############################################
+class WeightedStdDev : public cStdDev
+{
+   public:
+   WeightedStdDev() : cStdDev(nullptr, true) {};
+};
+
 #endif
