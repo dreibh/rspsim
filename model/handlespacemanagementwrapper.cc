@@ -130,7 +130,7 @@ void cPoolHandlespace::killPoolElement(TMPL_CLASS(PoolElementNode, SimpleRedBlac
                                        void*                                            userData)
 {
    cPoolElement* poolElement = (cPoolElement*)poolElementNode->UserData;
-   if(getSimulation()->getContextModule()) {
+   if(getSimulation()->getActivityModule()) {
       // The endpoint keepalive timers may still be scheduled. If this is the
       // case, it is now time to cancel them.
       // NOTE: This may not be executed by getSimulation()->deleteNetwork(), since
