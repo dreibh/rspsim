@@ -28,6 +28,7 @@
  */
 
 #include <omnetpp.h>
+#include <algorithm>
 #include "messages_m.h"
 #include "calcappservermessages_m.h"
 
@@ -826,7 +827,7 @@ void CalcAppServerProcess::killAllJobs(const bool sendAbortMsg)
       if(iterator.end()) {
          break;
       }
-      CalcAppServerJob* job = (CalcAppServerJob*)iterator();
+      CalcAppServerJob* job = (CalcAppServerJob*)*iterator;
       if(sendAbortMsg) {
          sendCookie(job);
          sendAbort(job);
@@ -847,7 +848,7 @@ CalcAppServerJob* CalcAppServerProcess::findJob(const unsigned int address,
                                                 const unsigned int jobID)
 {
    for(cQueue::Iterator iterator(JobQueue);!iterator.end();iterator++) {
-      CalcAppServerJob* job = (CalcAppServerJob*)iterator();
+      CalcAppServerJob* job = (CalcAppServerJob*)*iterator;
       if((job->getJobID() == jobID) && (job->getClientAddress() == address) &&
          (job->getClientPort() == port)) {
          return(job);
@@ -870,7 +871,7 @@ void CalcAppServerProcess::updateAccounting()
       const double powerPerJob = ServiceCapacity / JobQueue.getLength();
       EV << Description << "Update:" << endl;
       for(cQueue::Iterator iterator(JobQueue);!iterator.end();iterator++) {
-         CalcAppServerJob* job = (CalcAppServerJob*)iterator();
+         CalcAppServerJob* job = (CalcAppServerJob*)*iterator;
          if(job->JobCompleteTimer) {
             stopJobCompleteTimer(job);
          }
@@ -879,8 +880,8 @@ void CalcAppServerProcess::updateAccounting()
          }
 
          const simtime_t duration = simTime() - job->getLastAccountingAt();
-         const double completed   = min(rint(duration.dbl() * powerPerJob),
-                                        job->getJobCalculations() - job->getJobCompletedCalculations());
+         const double completed   = std::min(rint(duration.dbl() * powerPerJob),
+                                             job->getJobCalculations() - job->getJobCompletedCalculations());
          job->setLastAccountingAt(simTime());
          job->setJobCompletedCalculations(job->getJobCompletedCalculations() + completed);
          if(job->getJobCalculations() - job->getJobCompletedCalculations() < -0.0001) {
@@ -894,8 +895,8 @@ void CalcAppServerProcess::updateAccounting()
 
          TotalCalculations += completed;
       }
-      ev.printf("   Total calculations: %f\n", TotalCalculations);
-      ev.printf("   Service runtime:    %f\n", ServiceUptime.dbl());
+      EV << format("   Total calculations: %f\n", TotalCalculations);
+      EV << format("   Service runtime:    %f\n", ServiceUptime.dbl());
    }
 }
 
@@ -908,7 +909,7 @@ void CalcAppServerProcess::scheduleJobs()
 
       EV << Description << "Schedule:" << endl;
       for(cQueue::Iterator iterator(JobQueue);!iterator.end();iterator++) {
-         CalcAppServerJob* job = (CalcAppServerJob*)iterator();
+         CalcAppServerJob* job = (CalcAppServerJob*)*iterator;
          simtime_t duration = (job->getJobCalculations() - job->getJobCompletedCalculations()) / powerPerJob;
 
          startJobCompleteTimer(job, duration);
@@ -917,10 +918,10 @@ void CalcAppServerProcess::scheduleJobs()
          const simtime_t timeSinceLastCookie         = simTime() - job->getLastCookieAt();
          const double nextByCalculations_dbl = ((double)par("serviceCookieMaxCalculations") - calculationsSinceLastCookie) / powerPerJob;
          const simtime_t nextByCalculations =
-            (simtime_t)max(0.0, min(nextByCalculations_dbl, floor(simtime_t::getMaxTime().dbl())));
+            std::max((simtime_t)0.0, (simtime_t)std::min(nextByCalculations_dbl, floor(simtime_t::getMaxTime().dbl())));
          const simtime_t nextByTime =
-            max((simtime_t)0.0, (simtime_t)par("serviceCookieMaxTime") - timeSinceLastCookie);
-         const simtime_t nextCookie = min(nextByCalculations, nextByTime);
+            std::max((simtime_t)0.0, (simtime_t)par("serviceCookieMaxTime") - timeSinceLastCookie);
+         const simtime_t nextCookie = std::min(nextByCalculations, nextByTime);
          startCookieTransmissionTimer(job, nextCookie);
 
          EV << "   " << getJobDescription(job)
