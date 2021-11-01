@@ -700,7 +700,7 @@ void RegistrarProcess::handleLastHeardTimeoutTimer(cPeerListNode* node)
    EV << Description << "LastHeard timeout for peer " << node->getIdentifier()
       << " -> requesting Presence" << endl;
 
-   if(EV.isGUI()) {
+   if(hasGUI()) {
       char str[256];
       snprintf((char*)&str, sizeof(str), "Peer %u (%u:%u) seems to be dead. Requesting ENRP Presence.",
                node->getIdentifier(), node->getAddress(), node->getPort());
@@ -720,7 +720,7 @@ void RegistrarProcess::handleResponseTimeoutTimer(cPeerListNode* node)
       << " -> starting takeover" << endl;
    TotalTakeoversStarted++;
 
-   if(EV.isGUI()) {
+   if(hasGUI()) {
       char str[256];
       snprintf((char*)&str, sizeof(str), "Starting takeover of %u (%u:%u)",
                node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1340,7 +1340,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
       node->setStatus(node->getStatus() | PLNS_MENTOR);
       MentorServerID = node->getIdentifier();
 
-      if(EV.isGUI()) {
+      if(hasGUI()) {
          char str[256];
          snprintf((char*)&str, sizeof(str), "Using peer at %u (%u:%u) as mentor",
                   node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1356,7 +1356,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
    // ====== Resolve handlespace inconsistencies ============================
    if(!(node->getStatus() & PLNS_HTSYNC)) {
       if(node->getOwnershipChecksum() != msg->getChecksum()) {
-         if(EV.isGUI()) {
+         if(hasGUI()) {
             char str[256];
             snprintf((char*)&str, sizeof(str), "Synchronizing with %u (%u:%u)",
                      node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1369,7 +1369,7 @@ void RegistrarProcess::handleENRPPresence(ENRPPresence* msg)
 
    // ====== Get peer's server list =========================================
    if(!(node->getStatus() & PLNS_LISTSYNC)) {
-      if(EV.isGUI()) {
+      if(hasGUI()) {
          char str[256];
          snprintf((char*)&str, sizeof(str), "Requesting list from %u (%u:%u)",
                   node->getIdentifier(), node->getAddress(), node->getPort());
@@ -1589,7 +1589,7 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
    // ====== We are the takeover target -> try to stop it by Presence =======
    if(msg->getTargetServerID() == MyIdentifier) {
       EV << Description << "We are takeover target -> trying to stop this" << endl;
-      if(EV.isGUI()) {
+      if(hasGUI()) {
          char str[256];
          snprintf((char*)&str, sizeof(str), "%u (%u:%u) is trying to take me over!!!",
                   msg->getSenderServerID(), msg->getSrcAddress(), msg->getSrcPort());
@@ -1613,7 +1613,7 @@ void RegistrarProcess::handleENRPInitTakeover(ENRPInitTakeover* msg)
                EV << Description << "Peer " << msg->getSenderServerID()
                   << ", also trying takeover of " << msg->getTargetServerID()
                   << ", has lower ID -> we (" << MyIdentifier << ") abort our takeover" << endl;
-               if(EV.isGUI()) {
+               if(hasGUI()) {
                   char str[256];
                   snprintf((char*)&str, sizeof(str), "%u has higher ID than me (%u) -> aborting takeover of %u (%u:%u)",
                            msg->getSenderServerID(), MyIdentifier,
@@ -1690,7 +1690,7 @@ void RegistrarProcess::handleENRPInitTakeoverAck(ENRPInitTakeoverAck* msg)
             << " acknowledges takeover of target "
             << msg->getTargetServerID() << ". "
             << node->Takeover->getOutstandingAcks() << " to go." << endl;
-         if(EV.isGUI()) {
+         if(hasGUI()) {
             char str[256];
             snprintf((char*)&str, sizeof(str), "Still waiting for %u acknowledgements for takeover of %u (%u:%u)",
                      (unsigned int)node->Takeover->getOutstandingAcks(),
@@ -1700,7 +1700,7 @@ void RegistrarProcess::handleENRPInitTakeoverAck(ENRPInitTakeoverAck* msg)
       }
       else {
          EV << Description << "Ready for takeover of target " << msg->getTargetServerID() << endl;
-         if(EV.isGUI()) {
+         if(hasGUI()) {
             char str[256];
             snprintf((char*)&str, sizeof(str), "Taking over %u (%u:%u)",
                      node->getIdentifier(), node->getAddress(), node->getPort());

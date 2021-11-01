@@ -130,17 +130,17 @@ void cPoolHandlespace::killPoolElement(TMPL_CLASS(PoolElementNode, SimpleRedBlac
                                        void*                                            userData)
 {
    cPoolElement* poolElement = (cPoolElement*)poolElementNode->UserData;
-   if(simulation.getContextModule()) {
+   if(getSimulation()->getContextModule()) {
       // The endpoint keepalive timers may still be scheduled. If this is the
       // case, it is now time to cancel them.
-      // NOTE: This may not be executed by simulation.deleteNetwork(), since
+      // NOTE: This may not be executed by getSimulation()->deleteNetwork(), since
       //       the FES entries are already deleted when this part is executed!
       if(poolElement->EndpointKeepAliveTransmissionTimer) {
-         delete simulation.getActivityModule()->cancelEvent(poolElement->EndpointKeepAliveTransmissionTimer);
+         delete getSimulation()->getActivityModule()->cancelEvent(poolElement->EndpointKeepAliveTransmissionTimer);
          poolElement->EndpointKeepAliveTransmissionTimer = NULL;
       }
       if(poolElement->EndpointKeepAliveTimeoutTimer) {
-         delete simulation.getActivityModule()->cancelEvent(poolElement->EndpointKeepAliveTimeoutTimer);
+         delete getSimulation()->getActivityModule()->cancelEvent(poolElement->EndpointKeepAliveTimeoutTimer);
          poolElement->EndpointKeepAliveTimeoutTimer = NULL;
       }
    }
@@ -278,7 +278,7 @@ unsigned int cPoolHandlespace::registerPoolElement(
                                userTransport,
                                registratorTransport,
                                -1, 0,
-                               (unsigned long long)(1000000.0 * simulation.getSimTime().dbl()),
+                               (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl()),
                                &poolElementNode);
    if(errorCode == RSPERR_OKAY) {
       updated = (poolElementNode->Flags &= PENF_UPDATED);
@@ -438,7 +438,7 @@ size_t cPoolHandlespace::purgeExpiredPoolElements()
 {
    const size_t purged = TMPL_CLASS(poolHandlespaceManagementPurgeExpiredPoolElements, SimpleRedBlackTree)(
                             &Handlespace,
-                            (unsigned long long)(1000000.0 * simulation.getSimTime().dbl()));
+                            (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl()));
    // TMPL_CLASS(poolHandlespaceManagementPrint, SimpleRedBlackTree)(&Handlespace,stdout,~0);
 #ifdef VERIFY
    TMPL_CLASS(poolHandlespaceManagementVerify, SimpleRedBlackTree)(&Handlespace);
@@ -595,7 +595,7 @@ TMPL_CLASS(PoolUserNode, SimpleRedBlackTree)* cPoolUserList::registerPoolUser(
    if(addedPoolUserNode == NewPoolUserNode) {
       NewPoolUserNode = NULL;
    }
-   addedPoolUserNode->LastUpdateTimeStamp = (unsigned long long)(1000000.0 * simulation.getSimTime().dbl());
+   addedPoolUserNode->LastUpdateTimeStamp = (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl());
    return(addedPoolUserNode);
 }
 
@@ -641,7 +641,7 @@ double cPoolUserList::noteHandleResolutionOfPoolUser(const char*        poolHand
    const double rate = TMPL_CLASS(poolUserNodeNoteHandleResolution, SimpleRedBlackTree)(
       poolUserNode,
       &poolHandleStruct,
-      (unsigned long long)(1000000.0 * simulation.getSimTime().dbl()),
+      (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl()),
       buckets, maxEntries);
    return(rate);
 }
@@ -665,7 +665,7 @@ double cPoolUserList::noteEndpointUnreachableOfPoolUser(const char*        poolH
       poolUserNode,
       &poolHandleStruct,
       peIdentifier,
-      (unsigned long long)(1000000.0 * simulation.getSimTime().dbl()),
+      (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl()),
       buckets, maxEntries);
    return(rate);
 }
@@ -789,7 +789,7 @@ unsigned int cPeerList::registerPeerListNode(ServerInformationParameter& serverI
                                serverInformationParameter.getServerID(),
                                (serverInformationParameter.getServerID() == UNDEFINED_REGISTRAR_IDENTIFIER) ? 0 : PLNF_DYNAMIC,
                                registrarTransport,
-                               (unsigned long long)(1000000.0 * simulation.getSimTime().dbl()),
+                               (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl()),
                                &peerListNode);
    if(errorCode == RSPERR_OKAY) {
       if(peerListNode->UserData != NULL) {
@@ -901,7 +901,7 @@ cPeerListNode* cPeerList::getRandomPeerListNode()
 // ###### Purge #############################################################
 void cPeerList::purge()
 {
-   const unsigned long long now = (unsigned long long)(1000000.0 * simulation.getSimTime().dbl());
+   const unsigned long long now = (unsigned long long)(1000000.0 * getSimulation()->getSimTime().dbl());
 
    TMPL_CLASS(peerListManagementPurgeExpiredPeerListNodes, SimpleRedBlackTree)(
       &List, now);

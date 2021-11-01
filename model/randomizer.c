@@ -86,7 +86,7 @@ uint32_t random32()
 {
 #ifdef NDEBUG
 #warning Using OMNeT++ random generator instead of time-seeded one!
-   const double value = uniform(0.0, (double)0xffffffff);
+   const double value = uniform(getSimulation()->getContextModule()->getRNG(0), 0.0, (double)0xffffffff);
    return((uint32_t)rint(value));
 #else
    uint32_t number;
