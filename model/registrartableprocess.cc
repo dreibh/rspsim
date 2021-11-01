@@ -27,8 +27,8 @@
  */
 
 #include <omnetpp.h>
-#include "messages_m.h"
 
+#include "messages_m.h"
 #include "utilities.h"
 #include "handlespacemanagementwrapper.h"
 

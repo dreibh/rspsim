@@ -29,9 +29,12 @@
 #ifndef ABSTRACTCONTROLLER_H
 #define ABSTRACTCONTROLLER_H
 
+#include <omnetpp.h>
+
+#include "utilities.h"
+
 
 #define SCALAR_OUTPUT_VERSION 1000UL
-
 
 class AbstractController
 {

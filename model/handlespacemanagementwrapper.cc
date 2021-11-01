@@ -31,6 +31,7 @@
 #endif
 
 #include "handlespacemanagementwrapper.h"
+#include "utilities.h"
 
 
 

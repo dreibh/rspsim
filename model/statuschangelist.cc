@@ -28,8 +28,8 @@
 
 #include <omnetpp.h>
 
-#include "statuschangelist.h"
 #include "utilities.h"
+#include "statuschangelist.h"
 
 
 // ###### Constructor #######################################################

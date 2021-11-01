@@ -27,7 +27,10 @@
  */
 
 #include <omnetpp.h>
+
+#include "utilities.h"
 #include "messages_m.h"
+
 
 class Terminator : public cSimpleModule
 {
@@ -35,7 +38,6 @@ class Terminator : public cSimpleModule
 };
 
 Define_Module(Terminator);
-
 
 
 // ###### Handle message ####################################################

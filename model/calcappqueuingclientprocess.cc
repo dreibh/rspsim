@@ -27,11 +27,11 @@
  */
 
 #include <omnetpp.h>
-#include "messages_m.h"
 
+#include "utilities.h"
+#include "messages_m.h"
 #include "statisticswriterinterface.h"
 #include "abstractcontroller.h"
-#include "utilities.h"
 #include "handlespacemanagementwrapper.h"
 #include "calcappqueuingclientmessages_m.h"
 

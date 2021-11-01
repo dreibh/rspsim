@@ -36,6 +36,9 @@
 #include "debug.h"
 
 
+using namespace omnetpp;
+
+
 #define handleUnexpectedMsg(msg) error("Received unexpected message %s", msg->getName())
 #define handleUnexpectedMsgState(msg, fsm) error("Received unexpected message %s in state %s", msg->getName(), (fsm).getStateName())
 

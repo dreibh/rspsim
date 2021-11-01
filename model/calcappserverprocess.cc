@@ -28,14 +28,13 @@
 
 #include <omnetpp.h>
 #include <algorithm>
+
+#include "utilities.h"
 #include "messages_m.h"
 #include "calcappservermessages_m.h"
-
-
 #include "statisticswriterinterface.h"
 #include "abstractcontroller.h"
 #include "statuschangelist.h"
-#include "utilities.h"
 #include "randomizer.h"
 #include "handlespacemanagementwrapper.h"
 

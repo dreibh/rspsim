@@ -10,7 +10,7 @@ Welcome to the RSPSIM simulation model!
 2. How to compile and run a simple model test
 
 cd model/
-opp_makemake -f -DAUTOIMPORT_OMNETPP_NAMESPACE -I.
+opp_makemake -f -I.
 make
 ./model -f test1.ini
 

@@ -29,6 +29,8 @@
 #ifndef HANDLESPACEMANAGEMENTWRAPPER_H
 #define HANDLESPACEMANAGEMENTWRAPPER_H
 
+#include <omnetpp.h>
+
 #include "config.h"
 #include "utilities.h"
 #include "poolhandlespacemanagement.h"
@@ -36,7 +38,6 @@
 #include "messages_m.h"
 #include "registrarmessages_m.h"
 
-#include <omnetpp.h>
 
 
 // ##########################################################################

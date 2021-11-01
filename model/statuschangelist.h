@@ -31,6 +31,8 @@
 
 #include <omnetpp.h>
 
+#include "utilities.h"
+
 
 struct StatusChange {
    StatusChange* Next;

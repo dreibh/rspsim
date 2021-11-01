@@ -27,14 +27,13 @@
  */
 
 #include <omnetpp.h>
+
+#include "utilities.h"
 #include "messages_m.h"
-
-
 #include "handlespacemanagementwrapper.h"
 #include "statisticswriterinterface.h"
 #include "abstractcontroller.h"
 #include "statuschangelist.h"
-#include "utilities.h"
 
 
 class AttackerProcess : public StatisticsWriterInterface,

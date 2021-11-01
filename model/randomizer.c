@@ -37,6 +37,9 @@
 #undef min
 #undef max
 #include <omnetpp.h>
+
+using namespace omnetpp;
+
 #else
 /*
    It is tried to use /dev/urandom as random source first, since
