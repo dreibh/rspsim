@@ -220,12 +220,12 @@ void cPoolHandlespace::print(const unsigned int homeRegistrarIdentifier)
 
 // ###### Register pool element #############################################
 unsigned int cPoolHandlespace::registerPoolElement(
-                                const char*            poolHandle,
-                                cPoolElementParameter& poolElementParameter,
-                                const unsigned int     registratorAddress,
-                                const unsigned int     registratorPort,
-                                cPoolElement*&         poolElement,
-                                bool&                  updated)
+                                const char*                  poolHandle,
+                                const cPoolElementParameter& poolElementParameter,
+                                const unsigned int           registratorAddress,
+                                const unsigned int           registratorPort,
+                                cPoolElement*&               poolElement,
+                                bool&                        updated)
 {
    struct sockaddr_testaddr address1;
    address1.ta_family = AF_TEST;
@@ -767,8 +767,8 @@ void cPeerList::print()
 
 
 // ###### Register peer #####################################################
-unsigned int cPeerList::registerPeerListNode(ServerInformationParameter& serverInformationParameter,
-                                             cPeerListNode*&             node)
+unsigned int cPeerList::registerPeerListNode(const ServerInformationParameter& serverInformationParameter,
+                                             cPeerListNode*&                   node)
 {
    struct sockaddr_testaddr address1;
    address1.ta_family = AF_TEST;

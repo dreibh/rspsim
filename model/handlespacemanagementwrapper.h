@@ -198,12 +198,12 @@ class cPoolHandlespace
    void clear();
    void print(const unsigned int homeRegistrarIdentifier = 0);
 
-   unsigned int registerPoolElement(const char*            poolHandle,
-                                    cPoolElementParameter& poolElementParameter,
-                                    const unsigned int     registratorAddress,
-                                    const unsigned int     registratorPort,
-                                    cPoolElement*&         poolElement,
-                                    bool&                  updated);
+   unsigned int registerPoolElement(const char*                  poolHandle,
+                                    const cPoolElementParameter& poolElementParameter,
+                                    const unsigned int           registratorAddress,
+                                    const unsigned int           registratorPort,
+                                    cPoolElement*&               poolElement,
+                                    bool&                        updated);
    cPoolElement* findPoolElement(const char*        poolHandle,
                                  const unsigned int peIdentifier);
    unsigned int deregisterPoolElement(cPoolElement* poolElement);
@@ -393,8 +393,8 @@ class cPeerList
    // ====== PeerList management ============================================
    void clear();
    void print();
-   unsigned int registerPeerListNode(ServerInformationParameter& serverInformationParameter,
-                                     cPeerListNode*&             node);
+   unsigned int registerPeerListNode(const ServerInformationParameter& serverInformationParameter,
+                                     cPeerListNode*&                   node);
    unsigned int deregisterPeerListNode(cPeerListNode* peerListEntry);
    unsigned int deregisterPeerListNode(unsigned int identifier);
    cPeerListNode* findPeerListNode(const unsigned int identifier);
