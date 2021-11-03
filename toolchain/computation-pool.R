@@ -4,7 +4,6 @@
 #
 #           Author: Thomas Dreibholz, dreibh@exp-math.uni-essen.de
 # ###########################################################################
-# $Id$
 
 distributionPool  <- "ScriptingPool"
 distributionProcs <- 0
