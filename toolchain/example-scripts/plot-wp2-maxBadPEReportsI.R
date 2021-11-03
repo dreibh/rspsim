@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-maxBadPEReportsI
 # Description: Reducing monitoring overhead with MaxBadPEReports
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-het-uniformI
 # Description: Uniform capacity distribution
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

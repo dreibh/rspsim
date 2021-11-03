@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-jobkeepaliveI
 # Description: Varying the job keep-alive interval
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

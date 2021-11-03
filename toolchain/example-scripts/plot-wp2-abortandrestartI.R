@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-abortandrestartI
 # Description: Using "Abort and Restart" as failover mechanism
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

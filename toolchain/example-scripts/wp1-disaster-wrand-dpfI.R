@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-disaster-wrand-dpfI
 # Description: Disaster scenario with WRAND-DPF
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

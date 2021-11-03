@@ -3,7 +3,6 @@
 # Description: The implications of a dynamic pool
 #              Settings according to lab/PlanetLab setup:
 #              50% utilization, PU:PE Ratio 3, network delay 25ms
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-hom-lu-dpfI
 # Description: LU-DPF policy proof of concept: WAN delay variation
-# Revision:    $Id$
 # ###########################################################################
 
 

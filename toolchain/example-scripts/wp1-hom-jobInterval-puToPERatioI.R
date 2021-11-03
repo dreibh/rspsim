@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-hom-jobInterval-puToPERatioI
 # Description: Variation of request interval and PU:PE ratio
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

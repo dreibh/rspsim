@@ -2,7 +2,6 @@
 # Name:        wp1-maxIncrementII
 # Description: Max Increment and the Round Robin Policy
 #              (for randomized MaxHResItems)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

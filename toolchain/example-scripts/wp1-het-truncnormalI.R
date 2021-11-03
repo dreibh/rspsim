@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-het-truncnormalI
 # Description: Truncated normal capacity distribution
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -4,7 +4,6 @@
 #              PR #1 is always available, PRs #2 to #5 have problems
 #                 => Distribution of PEs among PRs using Takeover Suggestion.
 #                    Otherwise: PR #1 will take them all.
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

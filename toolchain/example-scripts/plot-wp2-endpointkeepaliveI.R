@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-endpointkeepaliveI
 # Description: Varying the ASAP Endpoint Keep-Alive interval
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        attack-handleResolutionsI
 # Description: Handle resolution attack
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

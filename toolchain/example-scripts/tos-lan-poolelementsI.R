@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        tos-lan-poolelementsI
 # Description: Varying the number of PEs (LAN setup)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -5,7 +5,6 @@
 #                 => Distribution of PEs among PRs using Takeover Suggestion.
 #                    Otherwise: PR #1 will take them all.
 #              Parameters corresponding to lab setup (50%, delay, PU:PE ratio 3)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

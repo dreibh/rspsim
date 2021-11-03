@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-het-linearI
 # Description: Linear capacity distribution
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -3,7 +3,6 @@
 # Description: What happens in case of registration attacks?
 #              (LoadDeg is 25%, Attacker 0%, MinCapPerReq=250000)
 #              Parameters corresponding to lab setup (50%, delay, PU:PE ratio 3)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        attack-handleResolutionsII
 # Description: Handle Resolution attack with Endpoint Unreachable
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

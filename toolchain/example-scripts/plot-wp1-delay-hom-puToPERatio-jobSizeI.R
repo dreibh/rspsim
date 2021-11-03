@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-delay-hom-puToPERatio-jobSizeI
 # Description: The impact of delay variation
-# Revision:    $Id$
 # ###########################################################################
 
 

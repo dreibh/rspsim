@@ -3,7 +3,6 @@
 # Description: Endpoint Unreachable attack countermeasure
 #              - Handle Resolution Rate not limited!
 #              - Only RegLife of 30s (300s would be much more worse!)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")
