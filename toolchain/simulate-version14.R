@@ -32,14 +32,14 @@ rspsim5WriteHeader <- function(iniFile, simulationRun, scalarName, vectorName, d
    cat(sep="", "simtime-resolution = 10ns   # 10ns time scale\n", file=iniFile)
    cat(sep="", "\n\n", file=iniFile)
 
-   cat(sep="", "cmdenv-express-mode = yes\n", file=iniFile)
+   cat(sep="", "cmdenv-express-mode = true\n", file=iniFile)
    cat(sep="", "\n", file=iniFile)
 
    if(simulationStoreVectors) {
-      cat(sep="", "**.vector-recording = yes\n", file=iniFile)
+      cat(sep="", "**.vector-recording = true\n", file=iniFile)
    }
    else {
-      cat(sep="", "**.vector-recording = no\n", file=iniFile)
+      cat(sep="", "**.vector-recording = false\n", file=iniFile)
    }
    cat(sep="", "**.vector-recording-intervals = ", simCreatorSimulationStartup, "..", simCreatorSimulationStartup, " ", duration, "s\n", file=iniFile)
    cat(sep="", "\n", file=iniFile)

@@ -111,7 +111,7 @@ module CalcAppPoolElement
         }
         calcAppServer: CalcAppServerProcess {
             parameters:
-                componentStartupDelay = componentStartupDelay;
+                componentStartupDelay = parent.componentStartupDelay;
                 componentRuns = default(1);
                 componentUptime = default(365d);
                 componentDowntime = default(0s);

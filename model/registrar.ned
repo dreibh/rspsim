@@ -93,7 +93,7 @@ module Registrar
         }
         registrarProcess: RegistrarProcess {
             parameters:
-                componentStartupDelay = componentStartupDelay;
+                componentStartupDelay = parent.componentStartupDelay;
                 componentRuns = default(1);
                 componentStatusChanges = default("");
                 componentUptime = default(1000001d);

@@ -91,7 +91,7 @@ module CalcAppPoolUser
         }
         calcAppQueuingClient: CalcAppQueuingClientProcess {
             parameters:
-                componentStartupDelay = componentStartupDelay;
+                componentStartupDelay = parent.componentStartupDelay;
 
                 serviceJobCount = default(1000000000);
                 serviceJobSize = default(10000000);
