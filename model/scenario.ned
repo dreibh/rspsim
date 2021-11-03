@@ -61,12 +61,12 @@ module GammaSwitch
         transportNode: TransportNode {
             parameters:
                 interfaceAddress;
-                interfaceUptime = interfaceUptime;
-                interfaceDowntime = interfaceDowntime;
+                interfaceUptime = parent.interfaceUptime;
+                interfaceDowntime = parent.interfaceDowntime;
                 @display("p=134,64;i=abstract/switch");
             gates:
-                fromNetwork[(((numberOfRegistrars+numberOfCalcAppPoolElements)+numberOfCalcAppPoolUsers)+numberOfAttackers)+numberOfBlocks];
-                toNetwork[(((numberOfRegistrars+numberOfCalcAppPoolElements)+numberOfCalcAppPoolUsers)+numberOfAttackers)+numberOfBlocks];
+                fromNetwork[(((parent.numberOfRegistrars+parent.numberOfCalcAppPoolElements)+parent.numberOfCalcAppPoolUsers)+parent.numberOfAttackers)+parent.numberOfBlocks];
+                toNetwork[(((parent.numberOfRegistrars+parent.numberOfCalcAppPoolElements)+parent.numberOfCalcAppPoolUsers)+parent.numberOfAttackers)+parent.numberOfBlocks];
                 toApplication[0];
                 fromApplication[0];
         }
@@ -133,10 +133,10 @@ module GammaScenarioNetwork
         switch: GammaSwitch {
             parameters:
                 numberOfBlocks = 2;
-                numberOfRegistrars = numberOfRegistrars;
-                numberOfCalcAppPoolElements = numberOfCalcAppPoolElements;
-                numberOfCalcAppPoolUsers = numberOfCalcAppPoolUsers;
-                numberOfAttackers = numberOfAttackers;
+                numberOfRegistrars = parent.numberOfRegistrars;
+                numberOfCalcAppPoolElements = parent.numberOfCalcAppPoolElements;
+                numberOfCalcAppPoolUsers = parent.numberOfCalcAppPoolUsers;
+                numberOfAttackers = parent.numberOfAttackers;
                 interfaceUptime = 100d;
                 interfaceDowntime = 0s;
                 @display("i=device/router;p=137,183");
@@ -154,22 +154,22 @@ module GammaScenarioNetwork
         }
         registrarArray[numberOfRegistrars]: Registrar {
             parameters:
-                componentStartupDelay = (index*networkRegistrarStartTimeIncrement1+networkRegistrarStartTimeIncrement0)+networkRegistrarStartTimeBase;
+                componentStartupDelay = (index*parent.networkRegistrarStartTimeIncrement1+parent.networkRegistrarStartTimeIncrement0)+parent.networkRegistrarStartTimeBase;
                 @display("i=misc/globe;p=298,113,row");
         }
         calcAppPoolElementArray[numberOfCalcAppPoolElements]: CalcAppPoolElement {
             parameters:
-                componentStartupDelay = (index*networkCalcAppPoolElementStartTimeIncrement1+networkCalcAppPoolElementStartTimeIncrement0)+networkCalcAppPoolElementStartTimeBase;
+                componentStartupDelay = (index*parent.networkCalcAppPoolElementStartTimeIncrement1+parent.networkCalcAppPoolElementStartTimeIncrement0)+parent.networkCalcAppPoolElementStartTimeBase;
                 @display("i=device/server2;p=138,50,row");
         }
         calcAppPoolUserArray[numberOfCalcAppPoolUsers]: CalcAppPoolUser {
             parameters:
-                componentStartupDelay = (index*networkCalcAppPoolUserStartTimeIncrement1+networkCalcAppPoolUserStartTimeIncrement0)+networkCalcAppPoolUserStartTimeBase;
+                componentStartupDelay = (index*parent.networkCalcAppPoolUserStartTimeIncrement1+parent.networkCalcAppPoolUserStartTimeIncrement0)+parent.networkCalcAppPoolUserStartTimeBase;
                 @display("i=device/pc2;p=137,283,row");
         }
         attackerArray[numberOfAttackers]: Attacker {
             parameters:
-                componentStartupDelay = (index*networkAttackerStartTimeIncrement1+networkAttackerStartTimeIncrement0)+networkAttackerStartTimeBase;
+                componentStartupDelay = (index*parent.networkAttackerStartTimeIncrement1+parent.networkAttackerStartTimeIncrement0)+parent.networkAttackerStartTimeBase;
                 @display("i=block/control;p=297,227,row");
         }
     connections:
