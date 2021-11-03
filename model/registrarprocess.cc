@@ -771,6 +771,8 @@ void RegistrarProcess::printHandlespace()
 // ###### Handle ASAP_REGISTRATION message ##################################
 void RegistrarProcess::handleASAPRegistration(ASAPRegistration* msg)
 {
+   cPoolElementParameter poolElementParameter = msg->getPoolElementParameter();
+
    TotalRegistrations++;
 
    // ====== Create response ================================================
@@ -780,24 +782,26 @@ void RegistrarProcess::handleASAPRegistration(ASAPRegistration* msg)
    response->setSrcPort(RegistrarPort);
    response->setDstPort(msg->getSrcPort());
    response->setPoolHandle(msg->getPoolHandle());
-   response->setIdentifier(msg->getPoolElementParameter().getIdentifier());
+   response->setIdentifier(poolElementParameter.getIdentifier());
 
    if( (!inStartupPhase()) || ((bool)par("asapNoServiceDuringStartup") == false) ) {
-      msg->getPoolElementParameter().setHomeRegistrarIdentifier(MyIdentifier);
-      if(msg->getSrcAddress() != msg->getPoolElementParameter().getUserTransportParameter().getAddress()) {
+      poolElementParameter.setHomeRegistrarIdentifier(MyIdentifier);
+      if(msg->getSrcAddress() != poolElementParameter.getUserTransportParameter().getAddress()) {
          error("Registration for address %u from address %u!",
-               msg->getPoolElementParameter().getUserTransportParameter().getAddress(), msg->getSrcAddress());
+               poolElementParameter.getUserTransportParameter().getAddress(), msg->getSrcAddress());
       }
 
       // ====== Set distance ===================================================
       const simtime_t delay = simTime() - msg->getTimestamp();
-      msg->getPoolElementParameter().getPoolPolicyParameter().setDistance((unsigned int)ceil(1000.0 * delay.dbl()));
+      cPoolPolicyParameter poolPolicyParameter = poolElementParameter.getPoolPolicyParameter();
+      poolPolicyParameter.setDistance((unsigned int)ceil(1000.0 * delay.dbl()));
+      poolElementParameter.setPoolPolicyParameter(poolPolicyParameter);
 
       // ====== Register pool element ==========================================
       cPoolElement* poolElement;
       bool          updated;
       response->setError(Handlespace->registerPoolElement(msg->getPoolHandle(),
-                                                          msg->getPoolElementParameter(),
+                                                          poolElementParameter,
                                                           msg->getSrcAddress(),
                                                           msg->getSrcPort(),
                                                           poolElement, updated));
@@ -1438,25 +1442,29 @@ void RegistrarProcess::handleENRPHandleUpdate(ENRPHandleUpdate* msg)
       return;
    }
 
+   cPoolElementParameter poolElementParameter = msg->getPoolElementParameter();
+
    TotalHandleUpdates++;
 
    EV << Description << "Received Handle Update: "
       << ((msg->getUpdateAction() == ADD_PE) ? "ADD_PE" : "DEL_PE")
-      << " for pool element " << msg->getPoolElementParameter().getIdentifier()
+      << " for pool element " << poolElementParameter.getIdentifier()
       << " of pool " << msg->getPoolHandle() << endl;
-   OPP_CHECK(msg->getPoolElementParameter().getHomeRegistrarIdentifier() != MyIdentifier);
+   OPP_CHECK(poolElementParameter.getHomeRegistrarIdentifier() != MyIdentifier);
 
    if(msg->getUpdateAction() == ADD_PE) {
       // ====== Set distance ================================================
       const simtime_t delay = simTime() - msg->getTimestamp();
-      msg->getPoolElementParameter().getPoolPolicyParameter().setDistance(
-         msg->getPoolElementParameter().getPoolPolicyParameter().getDistance() +
-         (unsigned int)ceil(1000.0 * delay.dbl()));
+
+      cPoolPolicyParameter poolPolicyParameter   = poolElementParameter.getPoolPolicyParameter();
+      poolPolicyParameter.setDistance( poolPolicyParameter.getDistance() +
+                                          (unsigned int)ceil(1000.0 * delay.dbl()) );
+      poolElementParameter.setPoolPolicyParameter(poolPolicyParameter);
 
       // ====== Register pool element =======================================
       cPoolElement* poolElement;
       bool          updated;
-      if(Handlespace->registerPoolElement(msg->getPoolHandle(), msg->getPoolElementParameter(),
+      if(Handlespace->registerPoolElement(msg->getPoolHandle(), poolElementParameter,
                                           0, 0, poolElement, updated) == RSPERR_OKAY) {
          if(poolElement->EndpointKeepAliveTransmissionTimer) {
             stopEndpointKeepAliveTransmissionTimer(poolElement);
@@ -1478,7 +1486,7 @@ void RegistrarProcess::handleENRPHandleUpdate(ENRPHandleUpdate* msg)
    else {
       cPoolElement* poolElement = Handlespace->findPoolElement(
                                      msg->getPoolHandle(),
-                                     msg->getPoolElementParameter().getIdentifier());
+                                     poolElementParameter.getIdentifier());
       if(poolElement) {
          if(poolElement->EndpointKeepAliveTransmissionTimer) {
             stopEndpointKeepAliveTransmissionTimer(poolElement);
