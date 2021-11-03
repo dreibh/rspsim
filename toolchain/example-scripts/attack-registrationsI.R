@@ -2,7 +2,6 @@
 # Name:        attack-registrationsI
 # Description: What happens in case of registration attacks?
 #              (LoadDeg is 25%, MinCapPerReq=250000)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

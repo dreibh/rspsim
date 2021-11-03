@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        lud-puToPERatioI.R
 # Description: LUD performance for variation of PU:PE ratio
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version11.R")

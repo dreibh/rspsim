@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-shutdownI
 # Description: The impact of unclean shutdowns
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-hom-lu-dpfII
 # Description: LU-DPF policy proof of concept: request size variation
-# Revision:    $Id$
 # ###########################################################################
 
 

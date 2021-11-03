@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-cache-hom-jobInterval-puToPERatioI
 # Description: The impact of the PU-side cache
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-dynpool-mtbfI
 # Description: The implications of a dynamic pool
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

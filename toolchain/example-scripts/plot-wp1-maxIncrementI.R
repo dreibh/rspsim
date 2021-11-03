@@ -2,7 +2,6 @@
 # Name:        wp1-maxIncrementI
 # Description: Max Increment and the Round Robin Policy
 #              (for constant MaxHResItems)
-# Revision:    $Id$
 # ###########################################################################
 
 

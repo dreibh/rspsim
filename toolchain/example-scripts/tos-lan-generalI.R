@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        tos-lan-generalI
 # Description: Varying the number of registrars (LAN setup)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-reject-delay-cache-puToPERatio-jobIntervalI
 # Description: Improving performance using the PU-side cache
-# Revision:    $Id$
 # ###########################################################################
 
 

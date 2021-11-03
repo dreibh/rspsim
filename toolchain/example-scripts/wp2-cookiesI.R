@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp2-cookiesI
 # Description: Using "Client-Based State Sharing" as failover mechanism
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

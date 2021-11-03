@@ -2,7 +2,6 @@
 # Name:        lud-loaddegradationI.R
 # Description: LoadDeg Variation:
 #              How to configure LoadDeg for different puPERatios?
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version11.R")

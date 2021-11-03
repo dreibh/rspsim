@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-het-fastserversII
 # Description: 1/3 fast servers capacity distribution
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

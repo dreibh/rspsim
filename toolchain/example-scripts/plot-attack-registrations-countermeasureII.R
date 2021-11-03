@@ -3,7 +3,6 @@
 # Description: Countermeasure for registration attacks:
 #              only a single PE per user (by fixed user-specific PE ID)
 #              Parameters corresponding to lab setup (50%, delay, PU:PE ratio 3)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

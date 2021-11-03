@@ -2,7 +2,6 @@
 # Name:        attack-registrations-countermeasureI
 # Description: Countermeasure for registration attacks:
 #              only a single PE per user (by fixed user-specific PE ID)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-hom-wrand-dpfII
 # Description: WRAND-DPF policy proof of concept: request size variation
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

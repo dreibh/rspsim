@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-hom-wrand-dpfI
 # Description: WRAND-DPF policy proof of concept: WAN delay variation
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

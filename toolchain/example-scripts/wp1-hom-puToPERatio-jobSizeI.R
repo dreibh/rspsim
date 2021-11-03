@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        wp1-hom-puToPERatio-jobSizeI
 # Description: Variation of PU:PE ratio and request size
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")

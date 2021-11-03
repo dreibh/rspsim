@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        plot-wp1-hom-jobSize-jobIntervalI
 # Description: Variation of request size and request interval
-# Revision:    $Id$
 # ###########################################################################
 
 

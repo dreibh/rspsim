@@ -1,7 +1,6 @@
 # ###########################################################################
 # Name:        lud-requestSizeI.R
 # Description: LUD performance for variation of request size
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version11.R")

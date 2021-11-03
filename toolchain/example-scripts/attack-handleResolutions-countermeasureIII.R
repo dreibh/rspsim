@@ -2,7 +2,6 @@
 # Name:        attack-handleResolutions-countermeasureIII
 # Description: Handle resolution attack
 #              Parameters corresponding to lab setup (50%, delay, PU:PE ratio 3)
-# Revision:    $Id$
 # ###########################################################################
 
 source("simulate-version14.R")
