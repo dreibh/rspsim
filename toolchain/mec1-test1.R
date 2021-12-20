@@ -32,8 +32,8 @@ mecCalcAppPoolElementsDistribution <- function(currentBlock, totalBlocks,
       stop("mecCalcAppPoolElementsDistribution: Invalid setting of totalBlocks!")
    }
 
-   if(currentBlock == 1) {   # Local
-      return(c("mecCalcAppPoolElementsDistribution", 1, 1))
+   if(currentBlock == 1) {   # Local: As many PEs as PUs!
+      return(c("mecCalcAppPoolElementsDistribution", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
    }
    else if(currentBlock == 2) {   # MEC
       return(c("mecCalcAppPoolElementsDistribution", as.numeric(mecNumberOfMECPoolElements), as.numeric(mecNumberOfMECPoolElements)))
@@ -75,10 +75,6 @@ mecDelayDistribution <- function(currentNetwork, totalNetworks,
       (variable < 0.0)) {
       stop("mecDelayDistribution: Check parameters!")
    }
-
-      cat(currentNetwork, totalNetworks,"\n")
-      cat(currentComponent, totalComponents,"\n")
-      cat(variable,"\n")
 
    if(currentNetwork == 1) {
       return(c("MECDelayDistribution",
@@ -150,7 +146,7 @@ simulationConfigurations <- list(
    # , "Random", "RoundRobin"),
    list("calcAppPoolElementServiceCapacityVariable", 1000000),
 
-   list("puToPERatio", 1),
+   list("puToPERatio", 3),   # !!! Based on scenarioNumberOfCalcAppPoolElementsVariable ONLY! !!!
    #, 10, 20),
 
    list("calcAppPoolUserServiceJobSizeVariable", 1e7),
