@@ -219,17 +219,19 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
       }
 
       # ------ Registrars ---------------------------------------------------
-      for(j in seq(1, as.numeric(PRs[i]))) {
-         result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PR", j, as.numeric(PRs[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
-         lanDelay <- as.numeric(result[2])
-         # ------ Component address -----------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].registrarArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
-         localPRAddressList <- append(localPRAddressList, c(nextComponentAddress))
-         globalPRAddressList <- append(globalPRAddressList, c(nextComponentAddress))
-         nextComponentAddress <- nextComponentAddress + 1
-         # ------ Component link delay --------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toRegistrar[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
-         cat(sep="", "gammaScenario.lan[", i - 1, "].registrarArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+      if(as.numeric(PRs[i]) > 0) {
+         for(j in seq(1, as.numeric(PRs[i]))) {
+            result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PR", j, as.numeric(PRs[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
+            lanDelay <- as.numeric(result[2])
+            # ------ Component address -----------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].registrarArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
+            localPRAddressList <- append(localPRAddressList, c(nextComponentAddress))
+            globalPRAddressList <- append(globalPRAddressList, c(nextComponentAddress))
+            nextComponentAddress <- nextComponentAddress + 1
+            # ------ Component link delay --------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toRegistrar[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+            cat(sep="", "gammaScenario.lan[", i - 1, "].registrarArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+         }
       }
 
       staticRegistrars <- ""
@@ -248,31 +250,35 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
       }
 
       # ------ CalcAppPEs ---------------------------------------------------
-      for(j in seq(1, as.numeric(CalcAppPEs[i]))) {
-         result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PE", j, as.numeric(CalcAppPEs[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
-         lanDelay <- as.numeric(result[2])
-         # ------ Component address -----------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
-         nextComponentAddress <- nextComponentAddress + 1
-         # ------ Registrar list --------------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].registrarTable.staticRegistrarsList = \"", calcAppPoolElementStaticRegistrarList, "\"\n", file=iniFile)
-         # ------ Component link delay --------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toCalcAppPoolElement[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+      if(as.numeric(CalcAppPEs[i]) > 0) {
+         for(j in seq(1, as.numeric(CalcAppPEs[i]))) {
+            result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PE", j, as.numeric(CalcAppPEs[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
+            lanDelay <- as.numeric(result[2])
+            # ------ Component address -----------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
+            nextComponentAddress <- nextComponentAddress + 1
+            # ------ Registrar list --------------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].registrarTable.staticRegistrarsList = \"", calcAppPoolElementStaticRegistrarList, "\"\n", file=iniFile)
+            # ------ Component link delay --------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toCalcAppPoolElement[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+         }
       }
 
       # ------ CalcAppPUs ---------------------------------------------------
-      for(j in seq(1, as.numeric(CalcAppPUs[i]))) {
-         result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PU", j, as.numeric(CalcAppPUs[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
-         lanDelay <- as.numeric(result[2])
-         # ------ Component address -----------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
-         nextComponentAddress <- nextComponentAddress + 1
-         # ------ Registrar list --------------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].registrarTable.staticRegistrarsList = \"", calcAppPoolUserStaticRegistrarList, "\"\n", file=iniFile)
-         # ------ Component link delay --------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toCalcAppPoolUser[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+      if(as.numeric(CalcAppPUs[i]) > 0) {
+         for(j in seq(1, as.numeric(CalcAppPUs[i]))) {
+            result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PU", j, as.numeric(CalcAppPUs[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
+            lanDelay <- as.numeric(result[2])
+            # ------ Component address -----------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
+            nextComponentAddress <- nextComponentAddress + 1
+            # ------ Registrar list --------------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].registrarTable.staticRegistrarsList = \"", calcAppPoolUserStaticRegistrarList, "\"\n", file=iniFile)
+            # ------ Component link delay --------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toCalcAppPoolUser[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+         }
       }
 
       # ------ Attackers ---------------------------------------------------
@@ -304,12 +310,18 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
 
 
    # ------ WAN settings ----------------------------------------------------
-   for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
-      cat(sep="", "# ----- WAN links of LAN #", i, " -----\n", file=iniFile)
-      result <- eval(call(scenarioNetworkWANDelayDistribution, i, scenarioNumberOfLANs, "LAN", 1, 1, scenarioNetworkWANDelayVariable, scenarioNetworkWANDelayGamma, scenarioNetworkWANDelayLambda))
-      wanDelay <- as.numeric(result[2])
-      cat(sep="", "gammaScenario.lan[", i - 1, "].toRightNetwork.channel.delay = ", wanDelay, "ms\n", file=iniFile)
-      cat(sep="", "gammaScenario.lan[", i - 1, "].toLeftNetwork.channel.delay  = ", wanDelay, "ms\n", file=iniFile)
+   if(as.numeric(scenarioNumberOfLANs) > 0) {
+      for(i in seq(1, as.numeric(scenarioNumberOfLANs) - 1)) {
+         result <- eval(call(scenarioNetworkWANDelayDistribution, i, scenarioNumberOfLANs, "WAN", 1, 1, scenarioNetworkWANDelayVariable, scenarioNetworkWANDelayGamma, scenarioNetworkWANDelayLambda))
+         wanDelay <- as.numeric(result[2])
+         if(i > 0) {
+            cat(sep="", "# ----- WAN link of LAN #", i, " <-> LAN #", i + 1, " -----\n", file=iniFile)
+            cat(sep="", "gammaScenario.lan[", i - 1, "].toRightNetwork.channel.delay = ", wanDelay, "ms\n", file=iniFile)
+         }
+         if(i < as.numeric(scenarioNumberOfLANs) ) {
+            cat(sep="", "gammaScenario.lan[", i, "].toLeftNetwork.channel.delay  = ", wanDelay, "ms\n", file=iniFile)
+         }
+      }
    }
    cat(sep="", "\n\n", file=iniFile)
 
@@ -447,15 +459,17 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobRequestTimeout = ", calcAppProtocolServiceJobRequestTimeout, "s\n", file=iniFile)
    cat(sep="", "gammaScenario.lan[*].calcAppPoolUserArray[*].calcAppQueuingClient.serviceJobCount = 1000000000\n", file=iniFile)
    for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
-      for(j in seq(1, as.numeric(CalcAppPUs[i]))) {
-         result <- eval(call(calcAppPoolUserServiceJobSizeDistribution, i, as.numeric(scenarioNumberOfLANs), j, as.numeric(CalcAppPUs[i]), as.numeric(calcAppPoolUserServiceJobSizeVariable), calcAppPoolUserServiceJobSizeGamma, calcAppPoolUserServiceJobSizeLambda))
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].calcAppQueuingClient.serviceJobSize = ",
-            result[2],
-            "\n", file=iniFile)
-         result <- eval(call(calcAppPoolUserServiceJobIntervalDistribution, i, as.numeric(scenarioNumberOfLANs), j, as.numeric(CalcAppPUs[i]), as.numeric(calcAppPoolUserServiceJobIntervalVariable), calcAppPoolUserServiceJobIntervalGamma, calcAppPoolUserServiceJobIntervalLambda))
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].calcAppQueuingClient.serviceJobInterval = ",
-            result[2],
-            "\n", file=iniFile)
+      if(as.numeric(CalcAppPUs[i]) > 0) {
+         for(j in seq(1, as.numeric(CalcAppPUs[i]))) {
+            result <- eval(call(calcAppPoolUserServiceJobSizeDistribution, i, as.numeric(scenarioNumberOfLANs), j, as.numeric(CalcAppPUs[i]), as.numeric(calcAppPoolUserServiceJobSizeVariable), calcAppPoolUserServiceJobSizeGamma, calcAppPoolUserServiceJobSizeLambda))
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].calcAppQueuingClient.serviceJobSize = ",
+               result[2],
+               "\n", file=iniFile)
+            result <- eval(call(calcAppPoolUserServiceJobIntervalDistribution, i, as.numeric(scenarioNumberOfLANs), j, as.numeric(CalcAppPUs[i]), as.numeric(calcAppPoolUserServiceJobIntervalVariable), calcAppPoolUserServiceJobIntervalGamma, calcAppPoolUserServiceJobIntervalLambda))
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolUserArray[", j - 1, "].calcAppQueuingClient.serviceJobInterval = ",
+               result[2],
+               "\n", file=iniFile)
+         }
       }
    }
 
