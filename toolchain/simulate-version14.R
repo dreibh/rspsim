@@ -276,17 +276,19 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
       }
 
       # ------ Attackers ---------------------------------------------------
-      for(j in seq(1, as.numeric(Attackers[i]))) {
-         result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PU", j, as.numeric(Attackers[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
-         lanDelay <- as.numeric(result[2])
-         # ------ Component address -----------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].attackerArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
-         nextComponentAddress <- nextComponentAddress + 1
-         # ------ Registrar list --------------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].attackerArray[", j - 1, "].attackerProcess.attackTargetRegistrarsList = \"", attackerStaticRegistrarList, "\"\n", file=iniFile)
-         # ------ Component link delay --------------------------------------
-         cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toAttacker[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
-         cat(sep="", "gammaScenario.lan[", i - 1, "].attackerArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+      if(as.numeric(Attackers[i]) > 0) {
+         for(j in seq(1, as.numeric(Attackers[i]))) {
+            result <- eval(call(scenarioNetworkLANDelayDistribution, i, scenarioNumberOfLANs, "PU", j, as.numeric(Attackers[i]), scenarioNetworkLANDelayVariable, scenarioNetworkLANDelayGamma, scenarioNetworkLANDelayLambda))
+            lanDelay <- as.numeric(result[2])
+            # ------ Component address -----------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].attackerArray[", j - 1, "].transportNode.interfaceAddress = ", nextComponentAddress, "\n", file=iniFile)
+            nextComponentAddress <- nextComponentAddress + 1
+            # ------ Registrar list --------------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].attackerArray[", j - 1, "].attackerProcess.attackTargetRegistrarsList = \"", attackerStaticRegistrarList, "\"\n", file=iniFile)
+            # ------ Component link delay --------------------------------------
+            cat(sep="", "gammaScenario.lan[", i - 1, "].switch.toAttacker[", j - 1, "].channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+            cat(sep="", "gammaScenario.lan[", i - 1, "].attackerArray[", j - 1, "].toNetwork.channel.delay = ", lanDelay / 2, "ms\n", file=iniFile)
+         }
       }
 
       # ------ Switch address -----------------------------------------------
@@ -306,7 +308,7 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    # ------ WAN settings ----------------------------------------------------
    for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
       cat(sep="", "# ----- WAN links of LAN #", i, " -----\n", file=iniFile)
-      result <- eval(call(scenarioNetworkWANDelayDistribution, i, scenarioNumberOfLANs, "LAN", 1, 1, scenarioNetworkWANDelayVariable, scenarioNetworkWANDelayGamma, scenarioNetworkWANDelayLambda))
+      result <- eval(call(scenarioNetworkWANDelayDistribution, i, scenarioNumberOfLANs, "WAN", 1, 1, scenarioNetworkWANDelayVariable, scenarioNetworkWANDelayGamma, scenarioNetworkWANDelayLambda))
       wanDelay <- as.numeric(result[2])
       cat(sep="", "gammaScenario.lan[", i - 1, "].toRightNetwork.channel.delay = ", wanDelay, "ms\n", file=iniFile)
       cat(sep="", "gammaScenario.lan[", i - 1, "].toLeftNetwork.channel.delay  = ", wanDelay, "ms\n", file=iniFile)
