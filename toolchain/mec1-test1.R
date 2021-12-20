@@ -76,10 +76,6 @@ mecDelayDistribution <- function(currentNetwork, totalNetworks,
       stop("mecDelayDistribution: Check parameters!")
    }
 
-      cat(currentNetwork, totalNetworks,"\n")
-      cat(currentComponent, totalComponents,"\n")
-      cat(variable,"\n")
-
    if(currentNetwork == 1) {
       return(c("MECDelayDistribution",
              as.numeric(mecMECDelayVariable),
@@ -146,11 +142,11 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsVariable", 10),
    list("mecNumberOfMECPoolElements", 4),
 
-   list("calcAppPoolElementSelectionPolicy", "LeastUsed"),
+   list("calcAppPoolElementSelectionPolicy", "LeastUsed", "PriorityLeastUsed"),
    # , "Random", "RoundRobin"),
    list("calcAppPoolElementServiceCapacityVariable", 1000000),
 
-   list("puToPERatio", 1),
+   list("puToPERatio", 1, 5, 10),
    #, 10, 20),
 
    list("calcAppPoolUserServiceJobSizeVariable", 1e7),
@@ -158,10 +154,14 @@ simulationConfigurations <- list(
 
    list("scenarioNetworkLANDelayVariable", 1.0),     # LAN (i.e. also: Local)
    list("mecMECDelayVariable", 10.0),                # MEC
-   list("scenarioNetworkWANDelayVariable", 250.0),   # Cloud
+   list("scenarioNetworkWANDelayVariable", 200.0),   # Cloud
 
    list("mecLocalCapacityFactor", 0.1),
-   list("mecMECCapacityFactor", 0.5)
+   list("mecMECCapacityFactor", 0.5),
+
+   list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
+   list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
+   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.50")    # Cloud: 50%
 )
 
 # ###########################################################################
