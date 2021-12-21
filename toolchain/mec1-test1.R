@@ -33,7 +33,13 @@ mecCalcAppPoolElementsDistribution <- function(currentBlock, totalBlocks,
    }
 
    if(currentBlock == 1) {   # Local: As many PEs as PUs!
-      return(c("mecCalcAppPoolElementsDistribution", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
+
+
+#     !!!!!!!!!!!!!!!!!!!!!
+      return(c("mecCalcAppPoolElementsDistribution", 1, 1))
+#     !!!!!!!!!!!!!!!!!!!!!
+
+#       return(c("mecCalcAppPoolElementsDistribution", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
    }
    else if(currentBlock == 2) {   # MEC
       return(c("mecCalcAppPoolElementsDistribution", as.numeric(mecNumberOfMECPoolElements), as.numeric(mecNumberOfMECPoolElements)))
@@ -57,7 +63,7 @@ mecCalcAppPoolUsersDistribution <- function(currentBlock, totalBlocks,
    }
 
    if(currentBlock == 1) {   # PUs are local-only!
-      return(c("mecCalcAppPoolUsersDistribution", 1, 1))
+      return(c("mecCalcAppPoolUsersDistribution", variable, variable))
    }
    else {   # No PU in MEC or Cloud!
       return(c("mecCalcAppPoolUsersDistribution", 0, 0))
@@ -142,12 +148,11 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsVariable", 10),
    list("mecNumberOfMECPoolElements", 4),
 
-   list("calcAppPoolElementSelectionPolicy", "PriorityLeastUsed"),
+   list("calcAppPoolElementSelectionPolicy", "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed"),
    # , "Random", "RoundRobin", "LeastUsed", ),
    list("calcAppPoolElementServiceCapacityVariable", 1000000),
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable"),
-   list("puToPERatio", 0.1, 0.5, 1, 2, 5, 10),   # !!! Based on scenarioNumberOfCalcAppPoolElementsVariable ONLY! !!!
+   list("scenarioNumberOfCalcAppPoolUsersVariable", 1, 5, 10, 25, 50, 75, 100),
 
    list("calcAppPoolUserServiceJobSizeVariable",     1000000),
 #    1e6, 1e8)
@@ -157,8 +162,8 @@ simulationConfigurations <- list(
    list("mecMECDelayVariable", 10.0),                # MEC
    list("scenarioNetworkWANDelayVariable", 200.0),   # Cloud
 
-   list("mecLocalCapacityFactor", 0.1),
-   list("mecMECCapacityFactor",   0.5),
+   list("mecLocalCapacityFactor", 0.2),   # !!!!!!!
+   list("mecMECCapacityFactor",   1.0),   # !!!!!!!
 
    list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%

@@ -115,7 +115,7 @@ plotPEUtilisation <- function(name)
                y     = "Average Utilisation [%]") +
          facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
 #          facet_wrap(~calcAppPoolElementSelectionPolicy) +
-         geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
+         geom_line(aes(color = lan.calcAppPoolElementArray), size = 1) +
          geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=lan),
                         size=1.5, width=.5) +
          geom_errorbar(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan),

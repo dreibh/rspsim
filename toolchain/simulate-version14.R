@@ -133,19 +133,19 @@ rspsim5AutoParameters <- function(simulationConfigurations)
       }
    }
 
-   # ------Set number of PUs by number of PEs -------------------------------
-   else if(checkVariableType(simulationConfigurations, "scenarioNumberOfCalcAppPoolUsersVariable", CVT_Auto)) {
-      if(simulationScriptOutputVerbosity > 6) {
-         cat(sep="", "\n   AUTO:NumberOfPUs")
-         cat(sep="", " puToPERatio=", getGlobalVariable("puToPERatio"), " ")
-         cat(sep="", " CalcAppPEs=", getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"), " => ")
-      }
-      setGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable",
-         round(as.numeric(getGlobalVariable("puToPERatio")) * as.numeric(getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"))))
-      if(simulationScriptOutputVerbosity > 6) {
-         cat(sep="", " CalcAppPUs=", getGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable"), "\n")
-      }
-   }
+#    # ------Set number of PUs by number of PEs -------------------------------
+#    else if(checkVariableType(simulationConfigurations, "scenarioNumberOfCalcAppPoolUsersVariable", CVT_Auto)) {
+#       if(simulationScriptOutputVerbosity > 6) {
+#          cat(sep="", "\n   AUTO:NumberOfPUs")
+#          cat(sep="", " puToPERatio=", getGlobalVariable("puToPERatio"), " ")
+#          cat(sep="", " CalcAppPEs=", getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"), " => ")
+#       }
+#       setGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable",
+#          round(as.numeric(getGlobalVariable("puToPERatio")) * as.numeric(getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"))))
+#       if(simulationScriptOutputVerbosity > 6) {
+#          cat(sep="", " CalcAppPUs=", getGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable"), "\n")
+#       }
+#    }
 
    # ------ Job Request Timeout from Job Keep-Alive Timeout -----------------
    if(checkVariableType(simulationConfigurations, "calcAppProtocolServiceJobRequestTimeout", CVT_Auto)) {
