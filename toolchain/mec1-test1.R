@@ -12,7 +12,7 @@ simulationRuns <- 1
 simulationDuration <- 120
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
-simulationScriptOutputVerbosity <- 3
+simulationScriptOutputVerbosity <- 8
 simulationSummaryCompressionLevel <- 9
 simulationSummarySkipList <- c()
 # -------------------------------------
@@ -142,21 +142,23 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsVariable", 10),
    list("mecNumberOfMECPoolElements", 4),
 
-   list("calcAppPoolElementSelectionPolicy", "RoundRobin", "LeastUsed", "PriorityLeastUsed"),
-   # , "Random", "RoundRobin"),
+   list("calcAppPoolElementSelectionPolicy", "PriorityLeastUsed"),
+   # , "Random", "RoundRobin", "LeastUsed", ),
    list("calcAppPoolElementServiceCapacityVariable", 1000000),
 
-   list("puToPERatio", 0.1, 0.5, 1),   # !!! Based on scenarioNumberOfCalcAppPoolElementsVariable ONLY! !!!
+   list("scenarioNumberOfCalcAppPoolUsersVariable"),
+   list("puToPERatio", 0.1, 0.5, 1, 2, 5, 10),   # !!! Based on scenarioNumberOfCalcAppPoolElementsVariable ONLY! !!!
 
-   list("calcAppPoolUserServiceJobSizeVariable", 1e7),
+   list("calcAppPoolUserServiceJobSizeVariable",     1000000),
 #    1e6, 1e8)
+   list("calcAppPoolUserServiceJobIntervalVariable", 10),
 
    list("scenarioNetworkLANDelayVariable", 1.0),     # LAN (i.e. also: Local)
    list("mecMECDelayVariable", 10.0),                # MEC
    list("scenarioNetworkWANDelayVariable", 200.0),   # Cloud
 
    list("mecLocalCapacityFactor", 0.1),
-   list("mecMECCapacityFactor", 0.5),
+   list("mecMECCapacityFactor",   0.5),
 
    list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
