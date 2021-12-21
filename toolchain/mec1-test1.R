@@ -14,7 +14,7 @@ simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
 simulationScriptOutputVerbosity <- 3
 simulationSummaryCompressionLevel <- 9
-simulationSummarySkipList <- c("lan.")
+simulationSummarySkipList <- c()
 # -------------------------------------
 source("computation-pool.R")
 # -------------------------------------
@@ -142,11 +142,11 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsVariable", 10),
    list("mecNumberOfMECPoolElements", 4),
 
-   list("calcAppPoolElementSelectionPolicy", "LeastUsed", "PriorityLeastUsed"),
+   list("calcAppPoolElementSelectionPolicy", "RoundRobin", "LeastUsed", "PriorityLeastUsed"),
    # , "Random", "RoundRobin"),
    list("calcAppPoolElementServiceCapacityVariable", 1000000),
 
-   list("puToPERatio", 1, 5, 10),   # !!! Based on scenarioNumberOfCalcAppPoolElementsVariable ONLY! !!!
+   list("puToPERatio", 0.1, 0.5, 1),   # !!! Based on scenarioNumberOfCalcAppPoolElementsVariable ONLY! !!!
 
    list("calcAppPoolUserServiceJobSizeVariable", 1e7),
 #    1e6, 1e8)
