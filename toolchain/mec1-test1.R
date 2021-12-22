@@ -145,25 +145,22 @@ simulationConfigurations <- list(
    list("scenarioNetworkWANDelayDistribution",             "mecDelayDistribution"),
    list("calcAppPoolElementServiceCapacityDistribution",   "mecCapacityDistribution"),
 
-   list("scenarioNumberOfCalcAppPoolElementsVariable", 10),
-   list("mecNumberOfMECPoolElements", 4),
+   list("scenarioNumberOfCalcAppPoolElementsVariable",     10),
+   list("mecNumberOfMECPoolElements",                      4),
 
-   list("calcAppPoolElementSelectionPolicy", "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed"),
-   # , "Random", "RoundRobin", "LeastUsed", ),
-   list("calcAppPoolElementServiceCapacityVariable", 1000000),
+   list("calcAppPoolElementSelectionPolicy",               "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed"),
+   list("calcAppPoolElementServiceCapacityVariable",       1000000),
+   list("calcAppPoolElementServiceMinCapacityPerJob",      200000),
+   list("mecLocalCapacityFactor",                          0.2),   # !!!!!!!
+   list("mecMECCapacityFactor",                            1.0),   # !!!!!!!
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable", 1, 5, 10, 25, 50, 75, 100),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 20, 50, 75, 100),
+   list("calcAppPoolUserServiceJobSizeVariable",           1e6),
+   list("calcAppPoolUserServiceJobIntervalVariable",       10),
 
-   list("calcAppPoolUserServiceJobSizeVariable",     1000000),
-#    1e6, 1e8)
-   list("calcAppPoolUserServiceJobIntervalVariable", 10),
-
-   list("scenarioNetworkLANDelayVariable", 1.0),     # LAN (i.e. also: Local)
-   list("mecMECDelayVariable", 10.0),                # MEC
-   list("scenarioNetworkWANDelayVariable", 200.0),   # Cloud
-
-   list("mecLocalCapacityFactor", 0.2),   # !!!!!!!
-   list("mecMECCapacityFactor",   1.0),   # !!!!!!!
+   list("scenarioNetworkLANDelayVariable",                 1.0),     # LAN (i.e. also: Local)
+   list("mecMECDelayVariable",                             10.0),    # MEC
+   list("scenarioNetworkWANDelayVariable",                 200.0),   # Cloud
 
    list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
