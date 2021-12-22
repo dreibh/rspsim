@@ -59,8 +59,8 @@ plotPEUtilisation <- function(name)
    calcAppPETotalWastedCapacity <- data.table(loadResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2")))
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
-   cairo_pdf(paste(sep="", name, "-CalcAppPETotalUsedCapacity.pdf"),
-            width=12, height=8, family="Helvetica", pointsize=22)
+   cairo_pdf(paste(sep="", name, "-Utilisation.pdf"),
+             width=24, height=8, family="Helvetica", pointsize=22)
 
    title <- ""
 

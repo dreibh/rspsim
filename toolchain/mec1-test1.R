@@ -8,11 +8,11 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec1-test1"
-simulationRuns <- 1
+simulationRuns <- 3
 simulationDuration <- 120
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
-simulationScriptOutputVerbosity <- 8
+simulationScriptOutputVerbosity <- 3
 simulationSummaryCompressionLevel <- 9
 simulationSummarySkipList <- c()
 # -------------------------------------
@@ -36,10 +36,10 @@ mecCalcAppPoolElementsDistribution <- function(currentBlock, totalBlocks,
 
 
 #     !!!!!!!!!!!!!!!!!!!!!
-      return(c("mecCalcAppPoolElementsDistribution", 1, 1))
+#       return(c("mecCalcAppPoolElementsDistribution", 1, 1))
 #     !!!!!!!!!!!!!!!!!!!!!
 
-#       return(c("mecCalcAppPoolElementsDistribution", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
+      return(c("mecCalcAppPoolElementsDistribution", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
    }
    else if(currentBlock == 2) {   # MEC
       return(c("mecCalcAppPoolElementsDistribution", as.numeric(mecNumberOfMECPoolElements), as.numeric(mecNumberOfMECPoolElements)))
@@ -71,31 +71,49 @@ mecCalcAppPoolUsersDistribution <- function(currentBlock, totalBlocks,
 }
 
 
-# ###### Identity distribution ##############################################
-mecDelayDistribution <- function(currentNetwork, totalNetworks,
-                                 componentType, currentComponent, totalComponents,
-                                 variable, gamma, lambda)
+# ###### MEC WAN delay distribution #########################################
+mecWANDelayDistribution <- function(currentNetwork, totalNetworks,
+                                    componentType, currentComponent, totalComponents,
+                                    variable, gamma, lambda)
 {
    if((currentNetwork < 1) || (currentNetwork > totalNetworks) ||
       (currentComponent < 1) || (currentComponent > totalComponents) ||
       (variable < 0.0)) {
-      stop("mecDelayDistribution: Check parameters!")
+      stop("mecWANDelayDistribution: Check parameters!")
+   }
+
+   return(c("MECWANDelayDistribution",
+            as.numeric(variable), as.numeric(variable)))
+}
+
+
+# ###### MEC LAN delay distribution #########################################
+mecLANDelayDistribution <- function(currentNetwork, totalNetworks,
+                                    componentType, currentComponent, totalComponents,
+                                    variable, gamma, lambda)
+{
+   if((currentNetwork < 1) || (currentNetwork > totalNetworks) ||
+      (currentComponent < 1) || (currentComponent > totalComponents) ||
+      (variable < 0.0)) {
+      stop("mecLANDelayDistribution: Check parameters!")
    }
 
    if(currentNetwork == 1) {
-      return(c("MECDelayDistribution",
-             as.numeric(mecMECDelayVariable),
-             as.numeric(mecMECDelayVariable)))
+      return(c("MECLANDelayDistribution",
+             as.numeric(variable), as.numeric(variable)))
+   }
+   else if(currentNetwork == 2) {
+      r <- runif(1, as.numeric(scenarioNetworkMECMinDelay), as.numeric(scenarioNetworkMECMaxDelay))
+      return(c("MECLANDelayDistribution", r, r))
    }
    else {
-      return(c("MECDelayDistribution",
-               as.numeric(variable),
-               as.numeric(variable)))
+      r <- runif(1, as.numeric(scenarioNetworkCloudMinDelay), as.numeric(scenarioNetworkCloudMaxDelay))
+      return(c("MECLANDelayDistribution", r, r))
    }
 }
 
 
-# ###### Identity distribution ##############################################
+# ###### MEC capacity distribution ##########################################
 mecCapacityDistribution <- function(currentBlock, totalBlocks,
                                     currentElement, totalElements,
                                     variable, gamma, lambda)
@@ -118,8 +136,7 @@ mecCapacityDistribution <- function(currentBlock, totalBlocks,
    }
    else {
       return(c("MECCapacityDistribution",
-               as.numeric(variable),
-               as.numeric(variable)))
+               as.numeric(variable), as.numeric(variable)))
    }
 }
 
@@ -127,13 +144,16 @@ mecCapacityDistribution <- function(currentBlock, totalBlocks,
 # ###########################################################################
 
 rspsim5DefaultConfiguration <- append(rspsim5DefaultConfiguration, list(
-   list("mecNumberOfMECPoolElements", 4),
+   list("mecNumberOfMECPoolElements",   4),
 
-   list("mecLocalDelayVariable", 1.0),
-   list("mecMECDelayVariable", 10.0),
+   list("mecLocalDelayVariable",         1.0),
+   list("scenarioNetworkMECMinDelay",    5.0),
+   list("scenarioNetworkMECMaxDelay",   15.0),
+   list("scenarioNetworkCloudMinDelay", 30.0),
+   list("scenarioNetworkCloudMaxDelay", 300.0),
 
-   list("mecLocalCapacityFactor", 0.1),
-   list("mecMECCapacityFactor", 0.5)
+   list("mecLocalCapacityFactor",       0.1),
+   list("mecMECCapacityFactor",         0.5)
 ))
 
 simulationConfigurations <- list(
@@ -142,13 +162,18 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsDistribution", "mecCalcAppPoolElementsDistribution"),
    list("scenarioNumberOfCalcAppPoolUsersDistribution",    "mecCalcAppPoolUsersDistribution"),
 
-   list("scenarioNetworkWANDelayDistribution",             "mecDelayDistribution"),
+   list("scenarioNetworkWANDelayDistribution",             "mecWANDelayDistribution"),
+   list("scenarioNetworkLANDelayDistribution",             "mecLANDelayDistribution"),
    list("calcAppPoolElementServiceCapacityDistribution",   "mecCapacityDistribution"),
 
    list("scenarioNumberOfCalcAppPoolElementsVariable",     10),
    list("mecNumberOfMECPoolElements",                      4),
 
-   list("calcAppPoolElementSelectionPolicy",               "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed"),
+   list("calcAppPoolElementSelectionPolicy",               "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed", "PriorityLeastUsedDPF"),
+   # list("calcAppPoolElementSelectionPolicy",               "PriorityLeastUsed", "PriorityLeastUsedDegradation", "LeastUsedDegradationDPF", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+   list("calcAppPoolElementSelectionPolicyLoadDPF",        0.01),
+   list("calcAppPoolElementSelectionPolicyWeightDPF",      0.01),
+
    list("calcAppPoolElementServiceCapacityVariable",       1000000),
    list("calcAppPoolElementServiceMinCapacityPerJob",      200000),
    list("mecLocalCapacityFactor",                          0.2),   # !!!!!!!
@@ -158,13 +183,15 @@ simulationConfigurations <- list(
    list("calcAppPoolUserServiceJobSizeVariable",           1e6),
    list("calcAppPoolUserServiceJobIntervalVariable",       10),
 
-   list("scenarioNetworkLANDelayVariable",                 1.0),     # LAN (i.e. also: Local)
-   list("mecMECDelayVariable",                             10.0),    # MEC
-   list("scenarioNetworkWANDelayVariable",                 200.0),   # Cloud
+   list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
+   list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)
+   list("scenarioNetworkMECMaxDelay",                       15.0),   # MEC (lower bound)
+   list("scenarioNetworkCloudMinDelay",                     30.0),   # Cloud (lower bound)
+   list("scenarioNetworkCloudMaxDelay",                    300.0),   # Cloud (upper bound)
 
    list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
-   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.50")    # Cloud: 50%
+   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 50%  !!!!!!!!!!!!!
 )
 
 # ###########################################################################
