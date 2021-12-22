@@ -257,7 +257,7 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
       for(prAddress in localPRAddressList) {
          staticRegistrars <- paste(sep="", prAddress, " ", staticRegistrars)
       }
-      cat(paste(sep="", "   => LAN #", i, ": ", staticRegistrars, "\n"))
+      # cat(paste(sep="", "   => LAN #", i, ": staticRegistrars =", staticRegistrars, "\n"))
 
       if( (calcAppPoolElementStaticRegistrarList == "") | (calcAppPoolElementStaticRegistrarList == "-")) {
          calcAppPoolElementStaticRegistrarList <- staticRegistrars
