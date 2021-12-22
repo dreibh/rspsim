@@ -206,8 +206,14 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    Attackers <- c()
    nextComponentAddress <- 1
    globalPRAddressList <- c()
+   originalCalcAppPoolElementStaticRegistrarList <- calcAppPoolElementStaticRegistrarList
+   originalCalcAppPoolUserStaticRegistrarList <- calcAppPoolUserStaticRegistrarList
+   originalAttackerStaticRegistrarList <- attackerStaticRegistrarList
    for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
       localPRAddressList <- c()
+      calcAppPoolElementStaticRegistrarList <- originalCalcAppPoolElementStaticRegistrarList
+      calcAppPoolUserStaticRegistrarList    <- originalCalcAppPoolUserStaticRegistrarList
+      attackerStaticRegistrarList           <- originalAttackerStaticRegistrarList
 
       # ------ Numbers of components ----------------------------------------
       cat(sep="", "# ----- LAN #", i, " -----\n", file=iniFile)
@@ -249,8 +255,9 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
 
       staticRegistrars <- ""
       for(prAddress in localPRAddressList) {
-         staticRegistrars <- paste(sep="", staticRegistrars, prAddress, " ")
+         staticRegistrars <- paste(sep="", prAddress, " ", staticRegistrars)
       }
+      cat(paste(sep="", "   => LAN #", i, ": ", staticRegistrars, "\n"))
 
       if( (calcAppPoolElementStaticRegistrarList == "") | (calcAppPoolElementStaticRegistrarList == "-")) {
          calcAppPoolElementStaticRegistrarList <- staticRegistrars
