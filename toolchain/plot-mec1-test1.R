@@ -70,7 +70,10 @@ plotPEUtilisation <- function(name)
    calcAppPETotalUsedCapacity <- cbind(calcAppPETotalUsedCapacity, utilisation)
 
    # ====== Use factors for LAN and LAN.CalcAppPoolElementArray =============
-   calcAppPETotalUsedCapacity$lan <- factor(calcAppPETotalUsedCapacity$lan)
+   calcAppPETotalUsedCapacity$lan <- recode_factor(as.factor(calcAppPETotalUsedCapacity$lan),
+                                                   "0" = "UE",
+                                                   "1" = "MEC",
+                                                   "2" = "PMC")
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
 
@@ -111,7 +114,7 @@ plotPEUtilisation <- function(name)
                panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances on the UEs [1]",
+               x     = "Number of Pool User Instances [1]",
                y     = "Average Utilisation [%]") +
          facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
 #          facet_wrap(~calcAppPoolElementSelectionPolicy) +
@@ -132,6 +135,85 @@ plotPEUtilisation <- function(name)
 }
 
 
+# ###### Plot results #######################################################
+plotPUHandlingSpeed <- function(name, createPDF = TRUE)
+{
+
+   # ====== Plot as PDF file ================================================
+   systemAverageHandlingSpeed <- data.table(loadResults(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2")))
+   print(sort(colnames(systemAverageHandlingSpeed)))
+
+   if(createPDF) {
+      cairo_pdf(paste(sep="", name, "-HandlingSpeed.pdf"),
+               width=24, height=8, family="Helvetica", pointsize=22)
+      title <- ""
+   }
+
+   # ====== Use factors for LAN and LAN.CalcAppPoolElementArray =============
+#    systemAverageHandlingSpeed$lan <- factor(systemAverageHandlingSpeed$lan)
+#    systemAverageHandlingSpeed$lan.calcAppPoolUserArray <- factor(systemAverageHandlingSpeed$lan.calcAppPoolUserArray)
+
+
+   plotColours <- c(
+      "red1",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+   )
+
+
+   # ====== Use dplyr to summarise results ==================================
+   summarised <- systemAverageHandlingSpeed %>%
+                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable) %>%
+                    summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
+                              MeanCalcAppPUHandlingSpeed = mean(controller.SystemAverageHandlingSpeed),
+                              MinCalcAppPUHandlingSpeed  = min(controller.SystemAverageHandlingSpeed),
+                              MaxCalcAppPUHandlingSpeed  = max(controller.SystemAverageHandlingSpeed),
+                              Q10CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.10),
+                              Q90CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.90))
+   print(summarised)
+
+
+   # ====== Create plots ====================================================
+   p <- ggplot(summarised,
+               aes(x = scenarioNumberOfCalcAppPoolUsersVariable,
+                   y = MeanCalcAppPUHandlingSpeed)
+            ) +
+         theme(title             = element_text(size=32),
+               plot.title        = element_text(size=20, hjust = 0.5, face="bold"),
+               axis.title        = element_text(size=20, face="bold"),
+               strip.text        = element_text(size=18, face="bold"),
+               axis.text.x       = element_text(size=16, angle=90, face="bold", colour="black"),
+               axis.text.y       = element_text(size=16, angle=90, hjust=0.5, colour="black"),
+               legend.title      = element_blank(),
+               legend.text       = element_text(size=18, face="bold"),
+#                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
+#                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
+               panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
+               panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               ) +
+         labs(title = title,
+               x     = "Number of Pool User Instances [1]",
+               y     = "Handling Speed [Calculations/s]") +
+#          facet_grid( ~ calcAppPoolElementSelectionPolicy) +
+#          facet_wrap(~calcAppPoolElementSelectionPolicy) +
+         geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
+         geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
+                        size=1.5, width=.5) +
+         geom_errorbar(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
+                        size=0.5, width=.25)
+         geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
+                     size=0.01, linetype=2, alpha=0.1)
+         # xlim(0, 120) +
+#          scale_color_manual(values = plotColours)   # Line colour
+
+   print(p)
+
+   if(createPDF) {
+      dev.off()
+   }
+   return(summarised)
+}
+
+
 # ###### Main program #######################################################
 
 data <- plotPEUtilisation("mec1-test1/Results")
+data <- plotPUHandlingSpeed("mec1-test1/Results")

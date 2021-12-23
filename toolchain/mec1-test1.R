@@ -170,6 +170,7 @@ simulationConfigurations <- list(
    list("mecNumberOfMECPoolElements",                      4),
 
    list("calcAppPoolElementSelectionPolicy",               "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed", "PriorityLeastUsedDPF"),
+#    list("calcAppPoolElementSelectionPolicy",               "LeastUsed", "PriorityLeastUsed"),
    # list("calcAppPoolElementSelectionPolicy",               "PriorityLeastUsed", "PriorityLeastUsedDegradation", "LeastUsedDegradationDPF", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.01),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.01),
