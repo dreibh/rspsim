@@ -57,6 +57,12 @@
 #define PPT_PRIORITY_LEASTUSED_DEGRADATION_DPF        0xb0002005
 
 
+/*
+ * NOTE:
+ * Make sure to adapt the following macro when adding a new dynamic policy!
+ * Otherwise, the PE will not update its status!
+ */
+
 #define PPT_IS_ADAPTIVE(p) \
    ( ((p) == PPT_LEASTUSED) || \
      ((p) == PPT_LEASTUSED_DPF) || \
@@ -64,6 +70,8 @@
      ((p) == PPT_LEASTUSED_DEGRADATION_DPF) || \
      ((p) == PPT_PRIORITY_LEASTUSED) || \
      ((p) == PPT_PRIORITY_LEASTUSED_DEGRADATION) || \
+     ((p) == PPT_PRIORITY_LEASTUSED_DPF) || \
+     ((p) == PPT_PRIORITY_LEASTUSED_DEGRADATION_DPF) || \
      ((p) == PPT_RANDOMIZED_LEASTUSED) || \
      ((p) == PPT_RANDOMIZED_LEASTUSED_DEGRADATION) || \
      ((p) == PPT_RANDOMIZED_PRIORITY_LEASTUSED) || \
