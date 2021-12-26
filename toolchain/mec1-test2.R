@@ -170,7 +170,6 @@ simulationConfigurations <- list(
    list("mecNumberOfMECPoolElements",                      4),
 
    list("calcAppPoolElementSelectionPolicy",               "PriorityLeastUsed", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
-#    "Random", "RoundRobin", "LeastUsed",
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.0001),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.0001),
 
@@ -179,8 +178,8 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.2),   # !!!!!!!
    list("mecMECCapacityFactor",                            1.0),   # !!!!!!!
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 20, 50, 75, 100),
-   list("calcAppPoolUserServiceJobSizeVariable",           1e5, 5e5, 1e6),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20),
+   list("calcAppPoolUserServiceJobSizeVariable",           5e4, 1e5, 5e5, 1e6, 1e7),
    list("calcAppPoolUserServiceJobIntervalVariable",       10),
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
