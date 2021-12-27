@@ -8,7 +8,7 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec1-test1"
-simulationRuns <- 3
+simulationRuns <- 24
 simulationDuration <- 120
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
@@ -178,7 +178,7 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.2),   # !!!!!!!
    list("mecMECCapacityFactor",                            1.0),   # !!!!!!!
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 20, 50, 70, 100),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100),
    list("calcAppPoolUserServiceJobSizeVariable",           1e6),
    list("calcAppPoolUserServiceJobIntervalVariable",       10),
 
