@@ -39,28 +39,20 @@ readResults <- function(directory)
    dataName <- paste(sep="/", directory, "controller-CalcAppPEGlobalUsedCapacity.data.bz2")
    print(paste(sep="", "Trying to read ", dataName, " ..."))
    data <- read.table(pipe(paste(sep="", "bzcat ", dataName)))
-   # names(dataData)[names(dataData) == "data.flow"] <- "FlowID"
-   # names(dataData)[names(dataData) == "data.flow.ReceivedBitRate"] <- "flow.ReceivedBitRate"
-#
-#    data <- rbind(dataData, passiveData)
-
-   # Convert time stamp with anytime() (time is in UTC!):
-   # data$TimeStamp <- anytime(data$TimeStamp, tz="UTC")
-
    return(data)
 }
 
 
 # ###### Plot results #######################################################
-plotPEUtilisation <- function(name)
+plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
    calcAppPETotalUsedCapacity <- data.table(loadResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2")))
    calcAppPETotalWastedCapacity <- data.table(loadResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2")))
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
-   cairo_pdf(paste(sep="", name, "-Utilisation.pdf"),
-             width=24, height=8, family="Helvetica", pointsize=22)
+   cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
+             width=24, height=16, family="Helvetica", pointsize=22)
 
    title <- ""
 
@@ -80,7 +72,7 @@ plotPEUtilisation <- function(name)
 
 
    plotColours <- c(
-      "red1",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
    )
 
 
@@ -118,13 +110,14 @@ plotPEUtilisation <- function(name)
                x     = "Number of Pool User Instances [1]",
                y     = "Average Utilisation [%]") +
          facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
-         geom_line(aes(color = calcAppPoolUserServiceJobSizeVariable), size = 1) +
+         geom_line(aes(color = calcAppPoolUserServiceJobSizeVariable), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=calcAppPoolUserServiceJobSizeVariable),
-                        size=1.5, width=.5) +
+                        size=0.5, width=.5) +
          geom_errorbar(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=calcAppPoolUserServiceJobSizeVariable),
-                        size=0.5, width=.25)
+                        size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=calcAppPoolUserServiceJobSizeVariable),
-                     size=0.01, linetype=2, alpha=0.1)
+                     size=0.01, linetype=2, alpha=0.1) +
+         scale_color_manual(values = plotColours)
 
    print(p)
 
@@ -134,7 +127,7 @@ plotPEUtilisation <- function(name)
 
 
 # ###### Plot results #######################################################
-plotPUHandlingSpeed <- function(name, createPDF = TRUE)
+plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 {
 
    # ====== Plot as PDF file ================================================
@@ -142,7 +135,7 @@ plotPUHandlingSpeed <- function(name, createPDF = TRUE)
    print(sort(colnames(systemAverageHandlingSpeed)))
 
    if(createPDF) {
-      cairo_pdf(paste(sep="", name, "-HandlingSpeed.pdf"),
+      cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
                width=24, height=8, family="Helvetica", pointsize=22)
       title <- ""
    }
@@ -153,7 +146,7 @@ plotPUHandlingSpeed <- function(name, createPDF = TRUE)
 
 
    plotColours <- c(
-      "red1",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
    )
 
 
@@ -191,15 +184,14 @@ plotPUHandlingSpeed <- function(name, createPDF = TRUE)
                x     = "Number of Pool User Instances [1]",
                y     = "Handling Speed [Calculations/s]") +
          facet_grid( ~ calcAppPoolElementSelectionPolicy) +
-#          facet_grid( ~ calcAppPoolUserServiceJobSizeVariable) +
-#          facet_wrap(~calcAppPoolElementSelectionPolicy) +
          geom_line(aes(color = calcAppPoolUserServiceJobSizeVariable), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolUserServiceJobSizeVariable),
-                        size=1.5, width=.5) +
+                        size=0.5, width=.5) +
          geom_errorbar(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolUserServiceJobSizeVariable),
-                        size=0.5, width=.25)
+                        size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolUserServiceJobSizeVariable),
-                     size=0.01, linetype=2, alpha=0.1)
+                     size=0.01, linetype=2, alpha=0.1) +
+         scale_color_manual(values = plotColours)
 
    print(p)
 
@@ -212,5 +204,5 @@ plotPUHandlingSpeed <- function(name, createPDF = TRUE)
 
 # ###### Main program #######################################################
 
-data <- plotPEUtilisation("mec1-test2/Results")
-data <- plotPUHandlingSpeed("mec1-test2/Results")
+data <- plotPEUtilisation("mec1-test2/Results", "MEC2")
+data <- plotPUHandlingSpeed("mec1-test2/Results", "MEC2")
