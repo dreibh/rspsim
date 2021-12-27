@@ -47,8 +47,8 @@ readResults <- function(directory)
 plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
-   calcAppPETotalUsedCapacity <- data.table(loadResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2")))
-   calcAppPETotalWastedCapacity <- data.table(loadResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2")))
+   calcAppPETotalUsedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"), "rt"))
+   calcAppPETotalWastedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"), "rt"))
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
@@ -143,7 +143,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 {
 
    # ====== Plot as PDF file ================================================
-   systemAverageHandlingSpeed <- data.table(loadResults(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2")))
+   systemAverageHandlingSpeed <- read.table(bzfile(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2"), "rt"))
    print(sort(colnames(systemAverageHandlingSpeed)))
 
    if(createPDF) {
