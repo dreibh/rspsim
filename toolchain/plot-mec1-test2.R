@@ -103,8 +103,12 @@ plotPEUtilisation <- function(name, prefix)
                legend.text       = element_text(size=18, face="bold"),
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
-               panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
-               panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
+               # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # strip.background = element_blank(),
+               panel.grid.major = element_line(size=0.4, colour = "black"),
+               panel.grid.minor = element_line(size=0.2, colour = "gray"),
+               panel.background = element_blank(),
                ) +
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
@@ -177,8 +181,12 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                legend.text       = element_text(size=18, face="bold"),
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
-               panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
-               panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
+               # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # strip.background = element_blank(),
+               panel.grid.major = element_line(size=0.4, colour = "black"),
+               panel.grid.minor = element_line(size=0.2, colour = "gray"),
+               panel.background = element_blank(),
                ) +
          labs(title = title,
                x     = "Number of Pool User Instances [1]",

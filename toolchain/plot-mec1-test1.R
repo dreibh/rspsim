@@ -77,9 +77,6 @@ plotPEUtilisation <- function(name, prefix)
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
-# calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy[calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy == "PriorityLeastUsedDegradationDPF"] <- "Pri.LeastUsedDegr.DPF"
-
-
    plotColours <- c(
       "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
    )
@@ -114,14 +111,18 @@ plotPEUtilisation <- function(name, prefix)
                legend.position   = "none",   # NOTE: Legned turned OFF!
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
-               panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
-               panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
+               # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # strip.background = element_blank(),
+               panel.grid.major = element_line(size=0.4, colour = "black"),
+               panel.grid.minor = element_line(size=0.2, colour = "gray"),
+               panel.background = element_blank(),
                ) +
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
                y     = "Average Utilisation [%]") +
          facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
-         geom_line(aes(color = lan.calcAppPoolElementArray), size = 1) +
+         geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                         size=0.5, width=.5) +
          geom_errorbar(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
@@ -150,6 +151,16 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                width=24, height=8, family="Helvetica", pointsize=22)
       title <- ""
    }
+
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
+      recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
+                    "LeastUsed"                       = "LeastUsed",
+                    "PriorityLeastUsed"               = "PriorityLeastUsed",
+                    "PriorityLeastUsedDPF"            = "PriorityLeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF",
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin"
+                   )
 
    plotColours <- c(
       "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
@@ -183,8 +194,12 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                legend.text       = element_text(size=18, face="bold"),
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
-               panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
-               panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
+               # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
+               # strip.background = element_blank(),
+               panel.grid.major = element_line(size=0.4, colour = "black"),
+               panel.grid.minor = element_line(size=0.2, colour = "gray"),
+               panel.background = element_blank(),
                ) +
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
