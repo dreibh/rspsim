@@ -68,12 +68,12 @@ plotPEUtilisation <- function(name, prefix)
                                                    "2" = "PMC")
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
                     "LeastUsed"                       = "LeastUsed",
                     "PriorityLeastUsed"               = "PriorityLeastUsed",
                     "PriorityLeastUsedDPF"            = "PriorityLeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF",
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin"
+                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF"
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
@@ -154,12 +154,12 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
                     "LeastUsed"                       = "LeastUsed",
                     "PriorityLeastUsed"               = "PriorityLeastUsed",
                     "PriorityLeastUsedDPF"            = "PriorityLeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF",
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin"
+                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF"
                    )
 
    plotColours <- c(
