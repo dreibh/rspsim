@@ -8,7 +8,7 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec1-test2"
-simulationRuns <- 24
+simulationRuns <- 48
 simulationDuration <- 120
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
@@ -169,7 +169,7 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsVariable",     10),
    list("mecNumberOfMECPoolElements",                      4),
 
-   list("calcAppPoolElementSelectionPolicy",               "PriorityLeastUsed", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+   list("calcAppPoolElementSelectionPolicy",               "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.0001),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.0001),
 
@@ -179,7 +179,7 @@ simulationConfigurations <- list(
    list("mecMECCapacityFactor",                            1.0),   # !!!!!!!
 
    list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20, 25),
-   list("calcAppPoolUserServiceJobSizeVariable",           5e4, 1e5, 5e5, 1e6, 1e7),
+   list("calcAppPoolUserServiceJobSizeVariable",           5e4, 1e5, 5e5, 1e6, 2.5e6),
    list("calcAppPoolUserServiceJobIntervalVariable",       10),
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
