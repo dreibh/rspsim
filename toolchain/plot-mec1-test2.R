@@ -66,6 +66,17 @@ plotPEUtilisation <- function(name, prefix)
                                                    "0" = "UE",
                                                    "1" = "MEC",
                                                    "2" = "PMC")
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
+      recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
    calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable)
    calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
@@ -144,10 +155,19 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
       title <- ""
    }
 
-   # ====== Use factors for LAN and LAN.CalcAppPoolElementArray =============
    systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
    systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
-
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
+      recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
 
    plotColours <- c(
       "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
