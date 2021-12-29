@@ -52,7 +52,7 @@ plotPEUtilisation <- function(name, prefix)
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=24, height=12, family="Helvetica", pointsize=22)
+             width=24, height=12, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -71,14 +71,16 @@ plotPEUtilisation <- function(name, prefix)
                     "Random"                          = "Random",
                     "RoundRobin"                      = "RoundRobin",
                     "LeastUsed"                       = "LeastUsed",
-                    "PriorityLeastUsed"               = "PriorityLeastUsed",
-                    "PriorityLeastUsedDPF"            = "PriorityLeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF"
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
    plotColours <- c(
-      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4", "goldenrod3"
    )
 
 
@@ -129,7 +131,7 @@ plotPEUtilisation <- function(name, prefix)
                         size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                      size=0.01, linetype=2, alpha=0.1) +
-         scale_color_manual(values = rep("goldenrod3", 100))
+         scale_color_manual(values = rep("goldenrod3", 1024))
 
    print(p)
 
@@ -148,7 +150,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=24, height=8, family="Helvetica", pointsize=22)
+               width=24, height=8, family="Helvetica", pointsize=32)
       title <- ""
    }
 
@@ -157,13 +159,18 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                     "Random"                          = "Random",
                     "RoundRobin"                      = "RoundRobin",
                     "LeastUsed"                       = "LeastUsed",
-                    "PriorityLeastUsed"               = "PriorityLeastUsed",
-                    "PriorityLeastUsedDPF"            = "PriorityLeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "PriorityLeastUsedDegr.DPF"
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
 
    plotColours <- c(
-      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+      "orange",  "green4", "green1",
+      "goldenrod1",
+      "cyan4",      "cyan1",
+      "goldenrod3", "red1"
    )
 
 

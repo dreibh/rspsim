@@ -66,13 +66,24 @@ plotPEUtilisation <- function(name, prefix)
                                                    "0" = "UE",
                                                    "1" = "MEC",
                                                    "2" = "PMC")
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
+      recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
    calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable)
    calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
 
 
    plotColours <- c(
-      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4", "grey60"
    )
 
 
@@ -144,13 +155,30 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
       title <- ""
    }
 
-   # ====== Use factors for LAN and LAN.CalcAppPoolElementArray =============
-   systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
-   systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
 
+
+systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <= 500000)
+
+
+
+   systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
+#    systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
+   systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable <- factor(systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable)
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
+      recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
 
    plotColours <- c(
-      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4"
+      "orange",  "green4", "green1",
+      "blue1", "blue4"
    )
 
 
@@ -168,7 +196,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    # ====== Create plots ====================================================
    p <- ggplot(summarised,
-               aes(x = scenarioNumberOfCalcAppPoolUsersVariable,
+               aes(x = calcAppPoolUserServiceJobSizeVariable,
                    y = MeanCalcAppPUHandlingSpeed)
             ) +
          theme(title             = element_text(size=32),
@@ -191,14 +219,14 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
                y     = "Handling Speed [Calculations/s]") +
-         facet_grid( ~ calcAppPoolElementSelectionPolicy) +
-         geom_line(aes(color = calcAppPoolUserServiceJobSizeVariable), size = 2) +
-         geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolUserServiceJobSizeVariable),
+         facet_grid( ~ scenarioNumberOfCalcAppPoolUsersVariable) +
+         geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
+         geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +
-         geom_errorbar(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolUserServiceJobSizeVariable),
+         geom_errorbar(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=1.5, width=.25) +
-         geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolUserServiceJobSizeVariable),
-                     size=0.01, linetype=2, alpha=0.1) +
+         geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
+                     size=0.01, linetype=2, alpha=0.1)
          scale_color_manual(values = plotColours)
 
    print(p)
