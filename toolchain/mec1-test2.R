@@ -1,6 +1,6 @@
 # ###########################################################################
-# Name:        example1
-# Description:
+# Name:        mec1-test2.R
+# Description: MEC/PMC performance of DPF policies
 # ###########################################################################
 
 source("simulate-version14.R")
@@ -169,7 +169,7 @@ simulationConfigurations <- list(
    list("scenarioNumberOfCalcAppPoolElementsVariable",     10),
    list("mecNumberOfMECPoolElements",                      4),
 
-   list("calcAppPoolElementSelectionPolicy",               "PriorityLeastUsed", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+   list("calcAppPoolElementSelectionPolicy",               "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.0001),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.0001),
 
@@ -178,8 +178,8 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.2),   # !!!!!!!
    list("mecMECCapacityFactor",                            1.0),   # !!!!!!!
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20, 25),
-   list("calcAppPoolUserServiceJobSizeVariable",           5e4, 1e5, 5e5, 1e6, 1e7),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 25, 50, 100),
+   list("calcAppPoolUserServiceJobSizeVariable",           5e4, 1e5, 1.5e5, 2e5, 2.5e5, 3e5, 4e5, 5e5),
    list("calcAppPoolUserServiceJobIntervalVariable",       10),
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
@@ -190,7 +190,7 @@ simulationConfigurations <- list(
 
    list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
-   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 50%  !!!!!!!!!!!!!
+   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 20%
 )
 
 # ###########################################################################
