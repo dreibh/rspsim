@@ -79,11 +79,11 @@ plotPEUtilisation <- function(name, prefix)
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
    calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable)
-   calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
-
+   # calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
 
    plotColours <- c(
-      "orange",  "green4", "green1",  "blue1", "blue4", "purple1", "purple4", "grey60"
+      "orange",  "green4", "green1",
+      "blue1", "blue4"
    )
 
 
@@ -102,7 +102,7 @@ plotPEUtilisation <- function(name, prefix)
 
    # ====== Create plots ====================================================
    p <- ggplot(summarised,
-               aes(x = scenarioNumberOfCalcAppPoolUsersVariable,
+               aes(x = calcAppPoolUserServiceJobSizeVariable,
                    y = MeanCalcAppPEUtilisation)
             ) +
          theme(title             = element_text(size=32),
@@ -123,15 +123,15 @@ plotPEUtilisation <- function(name, prefix)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances [1]",
+               x     = "Average Request Size [Calculations]",
                y     = "Average Utilisation [%]") +
-         facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
-         geom_line(aes(color = calcAppPoolUserServiceJobSizeVariable), size = 2) +
-         geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=calcAppPoolUserServiceJobSizeVariable),
+         facet_grid(lan ~ scenarioNumberOfCalcAppPoolUsersVariable) +
+         geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
+         geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +
-         geom_errorbar(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=calcAppPoolUserServiceJobSizeVariable),
+         geom_errorbar(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=calcAppPoolElementSelectionPolicy),
                         size=1.5, width=.25) +
-         geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=calcAppPoolUserServiceJobSizeVariable),
+         geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=calcAppPoolElementSelectionPolicy),
                      size=0.01, linetype=2, alpha=0.1) +
          scale_color_manual(values = plotColours)
 
@@ -163,7 +163,7 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
 
 
    systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
-#    systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
+   # systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
    systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable <- factor(systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
@@ -218,7 +218,7 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances [1]",
+               x     = "Average Request Size [Calculations]",
                y     = "Handling Speed [Calculations/s]") +
          facet_grid( ~ scenarioNumberOfCalcAppPoolUsersVariable) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
