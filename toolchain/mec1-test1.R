@@ -1,6 +1,6 @@
 # ###########################################################################
-# Name:        example1
-# Description:
+# Name:        mec1-test1.R
+# Description: MEC/PMC performance analysis
 # ###########################################################################
 
 source("simulate-version14.R")
@@ -190,7 +190,7 @@ simulationConfigurations <- list(
 
    list("SPECIAL0", "gammaScenario.lan[0].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 1.00"),   # Local: 100%
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
-   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 50%  !!!!!!!!!!!!!
+   list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 20%
 )
 
 # ###########################################################################
