@@ -52,7 +52,7 @@ plotPEUtilisation <- function(name, prefix)
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=24, height=16, family="Helvetica", pointsize=22)
+             width=24, height=8, family="Helvetica", pointsize=22)
 
    title <- ""
 
@@ -227,7 +227,7 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
          geom_errorbar(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
-                     size=0.01, linetype=2, alpha=0.1)
+                     size=0.01, linetype=2, alpha=0.1) +
          scale_color_manual(values = plotColours)
 
    print(p)
