@@ -131,7 +131,7 @@ plotPEUtilisation <- function(name, prefix)
                         size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                      size=0.01, linetype=2, alpha=0.1) +
-         scale_color_manual(values = rep("goldenrod3", 100))
+         scale_color_manual(values = rep("goldenrod3", 1024))
 
    print(p)
 
