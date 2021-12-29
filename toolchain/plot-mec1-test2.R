@@ -89,6 +89,7 @@ plotPEUtilisation <- function(name, prefix)
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- calcAppPETotalUsedCapacity %>%
+                    filter(lan != "UE") %>%
                     group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,lan,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPEUtilisation = mean(utilisation),
