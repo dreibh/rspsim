@@ -152,7 +152,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=24, height=8, family="Helvetica", pointsize=22)
+               width=24, height=6, family="Helvetica", pointsize=22)
       title <- ""
    }
 
