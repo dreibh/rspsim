@@ -52,7 +52,7 @@ plotPEUtilisation <- function(name, prefix)
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=24, height=12, family="Helvetica", pointsize=32)
+             width=18, height=10, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -70,12 +70,12 @@ plotPEUtilisation <- function(name, prefix)
       recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
                     "Random"                          = "Random",
                     "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                    "LeastUsed"                       = "LstUsd",
+                    "LeastUsedDegradation"            = "LstUsdDeg",
+                    "PriorityLeastUsed"               = "PrLstUsd",
+                    "PriorityLeastUsedDegradation"    = "PrLstUsdDeg",
+                    "PriorityLeastUsedDPF"            = "PrLstUsdDPF",
+                    "PriorityLeastUsedDegradationDPF" = "PrLstUsdDegDPF"
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
@@ -150,7 +150,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=24, height=8, family="Helvetica", pointsize=32)
+               width=18, height=6, family="Helvetica", pointsize=32)
       title <- ""
    }
 

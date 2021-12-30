@@ -52,7 +52,7 @@ plotPEUtilisation <- function(name, prefix)
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=24, height=8, family="Helvetica", pointsize=22)
+             width=18, height=6, family="Helvetica", pointsize=22)
 
    title <- ""
 
@@ -90,6 +90,7 @@ plotPEUtilisation <- function(name, prefix)
    # ====== Use dplyr to summarise results ==================================
    summarised <- calcAppPETotalUsedCapacity %>%
                     filter(lan != "UE") %>%
+                    filter(scenarioNumberOfCalcAppPoolUsersVariable != 50) %>%
                     group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,lan,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPEUtilisation = mean(utilisation),
@@ -152,7 +153,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=24, height=6, family="Helvetica", pointsize=22)
+               width=18, height=5, family="Helvetica", pointsize=22)
       title <- ""
    }
 
@@ -185,6 +186,7 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- systemAverageHandlingSpeed %>%
+                    filter(scenarioNumberOfCalcAppPoolUsersVariable != 50) %>%
                     group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPUHandlingSpeed = mean(controller.SystemAverageHandlingSpeed),
