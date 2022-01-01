@@ -119,8 +119,7 @@ rspsim5AutoParameters <- function(simulationConfigurations)
       }
 
       setGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable",
-                        round(as.numeric(getGlobalVariable("puToPERatio"))) *
-                              as.numeric(getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable")))
+         round(as.numeric(getGlobalVariable("puToPERatio")) * as.numeric(getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"))))
       gamma <- max(1.0, as.numeric(getGlobalVariable("puToPERatio")))
       setGlobalVariable("calcAppPoolUserServiceJobSizeVariable",
                         (as.numeric(getGlobalVariable("calcAppPoolUserServiceJobIntervalVariable")) *
@@ -133,6 +132,20 @@ rspsim5AutoParameters <- function(simulationConfigurations)
          cat(sep="", " jobSize=", getGlobalVariable("calcAppPoolUserServiceJobSizeVariable"), " ")
       }
    }
+
+#    # ------Set number of PUs by number of PEs -------------------------------
+#    else if(checkVariableType(simulationConfigurations, "scenarioNumberOfCalcAppPoolUsersVariable", CVT_Auto)) {
+#       if(simulationScriptOutputVerbosity > 6) {
+#          cat(sep="", "\n   AUTO:NumberOfPUs")
+#          cat(sep="", " puToPERatio=", getGlobalVariable("puToPERatio"), " ")
+#          cat(sep="", " CalcAppPEs=", getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"), " => ")
+#       }
+#       setGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable",
+#          round(as.numeric(getGlobalVariable("puToPERatio")) * as.numeric(getGlobalVariable("scenarioNumberOfCalcAppPoolElementsVariable"))))
+#       if(simulationScriptOutputVerbosity > 6) {
+#          cat(sep="", " CalcAppPUs=", getGlobalVariable("scenarioNumberOfCalcAppPoolUsersVariable"), "\n")
+#       }
+#    }
 
    # ------ Job Request Timeout from Job Keep-Alive Timeout -----------------
    if(checkVariableType(simulationConfigurations, "calcAppProtocolServiceJobRequestTimeout", CVT_Auto)) {
@@ -193,8 +206,14 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    Attackers <- c()
    nextComponentAddress <- 1
    globalPRAddressList <- c()
+   originalCalcAppPoolElementStaticRegistrarList <- calcAppPoolElementStaticRegistrarList
+   originalCalcAppPoolUserStaticRegistrarList <- calcAppPoolUserStaticRegistrarList
+   originalAttackerStaticRegistrarList <- attackerStaticRegistrarList
    for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
       localPRAddressList <- c()
+      calcAppPoolElementStaticRegistrarList <- originalCalcAppPoolElementStaticRegistrarList
+      calcAppPoolUserStaticRegistrarList    <- originalCalcAppPoolUserStaticRegistrarList
+      attackerStaticRegistrarList           <- originalAttackerStaticRegistrarList
 
       # ------ Numbers of components ----------------------------------------
       cat(sep="", "# ----- LAN #", i, " -----\n", file=iniFile)
@@ -236,8 +255,9 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
 
       staticRegistrars <- ""
       for(prAddress in localPRAddressList) {
-         staticRegistrars <- paste(sep="", staticRegistrars, prAddress, " ")
+         staticRegistrars <- paste(sep="", prAddress, " ", staticRegistrars)
       }
+      # cat(paste(sep="", "   => LAN #", i, ": staticRegistrars =", staticRegistrars, "\n"))
 
       if( (calcAppPoolElementStaticRegistrarList == "") | (calcAppPoolElementStaticRegistrarList == "-")) {
          calcAppPoolElementStaticRegistrarList <- staticRegistrars
@@ -405,11 +425,13 @@ rspsim5WriteParameterSection <- function(filePrefix, iniFile, simulationRun, dur
    cat(sep="", "\n", file=iniFile)
 
    for(i in seq(1, as.numeric(scenarioNumberOfLANs))) {
-      for(j in seq(1, as.numeric(CalcAppPEs[i]))) {
-         result <- eval(call(calcAppPoolElementServiceCapacityDistribution, i, scenarioNumberOfLANs, j, as.numeric(CalcAppPEs[i]), calcAppPoolElementServiceCapacityVariable, calcAppPoolElementServiceCapacityGamma, calcAppPoolElementServiceCapacityLambda))
-         cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].calcAppServer.serviceCapacity = ",
-            result[2],
-            "\n", file=iniFile)
+      if(as.numeric(CalcAppPEs[i]) > 0) {
+         for(j in seq(1, as.numeric(CalcAppPEs[i]))) {
+            result <- eval(call(calcAppPoolElementServiceCapacityDistribution, i, scenarioNumberOfLANs, j, as.numeric(CalcAppPEs[i]), calcAppPoolElementServiceCapacityVariable, calcAppPoolElementServiceCapacityGamma, calcAppPoolElementServiceCapacityLambda))
+            cat(sep="", "gammaScenario.lan[", i - 1, "].calcAppPoolElementArray[", j - 1, "].calcAppServer.serviceCapacity = ",
+               result[2],
+               "\n", file=iniFile)
+         }
       }
    }
    cat(sep="", "gammaScenario.lan[*].calcAppPoolElementArray[*].calcAppServer.serviceMaxJobs = ", calcAppPoolElementServiceMaxJobs, "\n", file=iniFile)
