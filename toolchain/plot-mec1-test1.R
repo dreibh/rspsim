@@ -20,6 +20,7 @@
 
 library("anytime")
 library("data.table")
+library("plyr",  warn.conflicts = FALSE)
 library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 
@@ -31,6 +32,17 @@ plotColours <- c("steelblue4", "steelblue1",
                  "gray40",     "gray10",
                  "cyan4",      "cyan1",
                  "yellow4",    "yellow1")
+
+
+# ###### Get policy types ###################################################
+getPolicyType <- function(policies)
+{
+   return(as.factor(mapvalues(as.vector(policies),
+          from = c("Random", "RoundRobin",
+                   "LeastUsed", "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+          to   = c("Non-Adaptive", "Non-Adaptive",
+                   "Adaptive", "Adaptive",              "Adaptive",          "Adaptive",                     "Adaptive with DPF",    "Adaptive with DPF"))))
+}
 
 
 # ###### Read output file ###################################################
@@ -47,12 +59,12 @@ readResults <- function(directory)
 plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
-   calcAppPETotalUsedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"), "rt"))
+   calcAppPETotalUsedCapacity   <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"), "rt"))
    calcAppPETotalWastedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"), "rt"))
-   print(sort(colnames(calcAppPETotalUsedCapacity)))
+   # print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=18, height=10, family="Helvetica", pointsize=32)
+             width=12, height=20, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -66,16 +78,17 @@ plotPEUtilisation <- function(name, prefix)
                                                    "0" = "UE",
                                                    "1" = "MEC",
                                                    "2" = "PMC")
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
                     "Random"                          = "Random",
                     "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LstUsd",
-                    "LeastUsedDegradation"            = "LstUsdDeg",
-                    "PriorityLeastUsed"               = "PrLstUsd",
-                    "PriorityLeastUsedDegradation"    = "PrLstUsdDeg",
-                    "PriorityLeastUsedDPF"            = "PrLstUsdDPF",
-                    "PriorityLeastUsedDegradationDPF" = "PrLstUsdDegDPF"
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
@@ -86,14 +99,14 @@ plotPEUtilisation <- function(name, prefix)
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- calcAppPETotalUsedCapacity %>%
-                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,lan,lan.calcAppPoolElementArray) %>%
+                    group_by(calcAppPoolElementSelectionPolicyType, calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable, lan, lan.calcAppPoolElementArray) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPEUtilisation = mean(utilisation),
                               MinCalcAppPEUtilisation  = min(utilisation),
                               MaxCalcAppPEUtilisation  = max(utilisation),
                               Q10CalcAppPEUtilisation  = quantile(utilisation, 0.10),
                               Q90CalcAppPEUtilisation  = quantile(utilisation, 0.90))
-   print(summarised)
+   # print(summarised)
 
 
    # ====== Create plots ====================================================
@@ -123,7 +136,7 @@ plotPEUtilisation <- function(name, prefix)
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
                y     = "Average Utilisation [%]") +
-         facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
+         facet_grid(calcAppPoolElementSelectionPolicyType + calcAppPoolElementSelectionPolicy ~ lan) +
          geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                         size=0.5, width=.5) +
@@ -146,14 +159,18 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    # ====== Plot as PDF file ================================================
    systemAverageHandlingSpeed <- read.table(bzfile(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2"), "rt"))
-   print(sort(colnames(systemAverageHandlingSpeed)))
+   # print(sort(colnames(systemAverageHandlingSpeed)))
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=18, height=6, family="Helvetica", pointsize=32)
+               width=12, height=12, family="Helvetica", pointsize=32)
       title <- ""
    }
 
+   systemAverageHandlingSpeed <- systemAverageHandlingSpeed %>%
+      mutate(controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000)
+
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
                     "Random"                          = "Random",
@@ -176,14 +193,14 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- systemAverageHandlingSpeed %>%
-                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable) %>%
+                    group_by(calcAppPoolElementSelectionPolicyType, calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPUHandlingSpeed = mean(controller.SystemAverageHandlingSpeed),
                               MinCalcAppPUHandlingSpeed  = min(controller.SystemAverageHandlingSpeed),
                               MaxCalcAppPUHandlingSpeed  = max(controller.SystemAverageHandlingSpeed),
                               Q10CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.10),
                               Q90CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.90))
-   print(summarised)
+   # print(summarised)
 
 
    # ====== Create plots ====================================================
@@ -210,7 +227,8 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                ) +
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
-               y     = "Handling Speed [Calculations/s]") +
+               y     = "Handling Speed [1000 Calculations/s]") +
+         facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +
@@ -232,4 +250,4 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 # ###### Main program #######################################################
 
 data <- plotPEUtilisation("mec1-test1/Results", "MEC1")
-data <- plotPUHandlingSpeed("mec1-test1/Results", "MEC1")
+# data <- plotPUHandlingSpeed("mec1-test1/Results", "MEC1")
