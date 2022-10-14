@@ -296,6 +296,46 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 }
 
 
+# ###### Write table ########################################################
+writeTable <- function(table, prefix, label, caption)
+{
+   latexOutputTable <- xtable(table,
+                              align   = getAlignment(table),
+                              label   = paste(sep="", "tab:", prefix, label),
+                              caption = caption)
+   htmlOutputTable  <- xtable(table,
+                              align   = getAlignment(table),
+                              label   = paste(sep="", "tab:", prefix, label),
+                              caption = caption)
+
+   latexName <- paste(sep="", name, "-", prefix, "-", label, ".tex")
+   print(latexOutputTable,
+         size                       = "footnotesize",
+         include.rownames           = FALSE,
+         sanitize.colnames.function = bold.latex,
+         table.placement            = NULL,
+         caption.placement          = "top",
+         hline.after                = c(-1, 0, seq(0, nrow(latexOutputTable))),
+         floating.environment       = "table*",
+         NA.string                  = "--",
+         file                       = latexName,
+         type                       = "latex")
+   cat(sep="", "Wrote ", latexName, "\n")
+
+   htmlName <- paste(sep="", name, "-", prefix, "-", label, ".html")
+   print(htmlOutputTable,
+         include.rownames           = FALSE,
+         table.placement            = NULL,
+         caption.placement          = "top",
+         sanitize.colnames.function = bold.html,
+         hline.after                = c(-1, 0, seq(0, nrow(htmlOutputTable))),
+         NA.string                  = "--",
+         file                       = htmlName,
+         type                       = "html")
+   cat(sep="", "Wrote ", htmlName, "\n")
+}
+
+
 # ###### Plot results #######################################################
 computeDelays <- function(name, prefix, createPDF = TRUE)
 {
@@ -352,6 +392,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
                )
 
    print(processingSummary)
+   writeTable(processingSummary, prefix, "Processing", "Processing Time for each Policy")
 
 
    # ====== Join summaries ==================================================
@@ -364,42 +405,9 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
       select(PolicyType, everything())   # Move PolicyType to front
 
 
-   # ====== Write tables ====================================================
+   # ====== Write full table =================================================
    caption <- "Queuing, Startup and Processing Times for each Policy"
-   latexOutputTable <- xtable(summary,
-                              align   = getAlignment(summary),
-                              label   = paste(sep="", "tab:", prefix, "QSP-Times"),
-                              caption = caption)
-   htmlOutputTable  <- xtable(summary,
-                              align   = getAlignment(summary),
-                              label   = paste(sep="", "tab:", prefix, "QSP-Times"),
-                              caption = caption)
-
-   latexName <- paste(sep="", name, "-", prefix, "-QSP-Times.tex")
-   print(latexOutputTable,
-         size                       = "footnotesize",
-         include.rownames           = FALSE,
-         sanitize.colnames.function = bold.latex,
-         table.placement            = NULL,
-         caption.placement          = "top",
-         hline.after                = c(-1, 0, seq(0, nrow(latexOutputTable))),
-         floating.environment       = "table*",
-         NA.string                  = "--",
-         file                       = latexName,
-         type                       = "latex")
-   cat(sep="", "Wrote ", latexName, "\n")
-
-   htmlName <- paste(sep="", name, "-", prefix, "-QSP-Times.html")
-   print(htmlOutputTable,
-         include.rownames           = FALSE,
-         table.placement            = NULL,
-         caption.placement          = "top",
-         sanitize.colnames.function = bold.html,
-         hline.after                = c(-1, 0, seq(0, nrow(htmlOutputTable))),
-         NA.string                  = "--",
-         file                       = htmlName,
-         type                       = "html")
-   cat(sep="", "Wrote ", htmlName, "\n")
+   writeTable(summary, prefix, "QSP-Times", "Queuing, Startup and Processing Times for each Policy")
 
    return(summary)
 }
