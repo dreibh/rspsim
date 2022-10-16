@@ -483,7 +483,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
    # ====== Line plot =======================================================
    cairo_pdf(paste(sep="", name, "-", prefix, "-Line.pdf"),
-             width=18, height=8, family="Helvetica", pointsize=32)
+             width=18, height=12, family="Helvetica", pointsize=32)
 
    lineplotData <- summary %>%
       # filter(scenarioNumberOfCalcAppPoolUsersVariable <= 160) %>%
@@ -512,7 +512,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
               panel.background = element_blank(),
              ) +
-           coord_cartesian(ylim = c(0, 5)) +   # <<-- Sets y-axis limits without dropping values!
+           coord_cartesian(ylim = c(0, 6)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
            labs(y = "Mean Time [s]") +
            geom_line(aes(color = Policy), size=2)
