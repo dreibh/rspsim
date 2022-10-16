@@ -220,6 +220,7 @@ plotPEUtilisation <- function(name, prefix)
                # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
                # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
                # strip.background = element_blank(),
+               panel.spacing    = unit(1, "cm"),
                panel.grid.major = element_line(size=0.4, colour = "black"),
                panel.grid.minor = element_line(size=0.2, colour = "gray"),
                panel.background = element_blank(),
@@ -311,6 +312,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
                # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
                # strip.background = element_blank(),
+               panel.spacing    = unit(1, "cm"),
                panel.grid.major = element_line(size=0.4, colour = "black"),
                panel.grid.minor = element_line(size=0.2, colour = "gray"),
                panel.background = element_blank(),
@@ -432,18 +434,31 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    summary <- rbind(rbind(queuingSummary, startupSummary), processingSummary)
    summary$Variable <- factor(summary$Variable, levels=c("Queuing Time", "Startup Time", "Processing Time"))
 
+   summary$PolicyType <- getPolicyType(summary$calcAppPoolElementSelectionPolicy)
+   summary$calcAppPoolElementSelectionPolicy <-
+      recode_factor(as.factor(summary$calcAppPoolElementSelectionPolicy),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
 
    # ====== Barplot =========================================================
    barplotData <- summary %>%
       filter(scenarioNumberOfCalcAppPoolUsersVariable %in% c(10, 60, 120)) %>%
       mutate(scenarioNumberOfCalcAppPoolUsersVariable = as.factor(scenarioNumberOfCalcAppPoolUsersVariable),
              calcAppPoolElementSelectionPolicy        = as.factor(calcAppPoolElementSelectionPolicy),
-             PolicyType                               = getPolicyType(calcAppPoolElementSelectionPolicy)) %>%
+             #PolicyType                               = getPolicyType(calcAppPoolElementSelectionPolicy)
+            ) %>%
       rename(Policy = calcAppPoolElementSelectionPolicy,
             PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Barplot.pdf"),
-             width=20, height=10, family="Helvetica", pointsize=32)
+             width=18, height=8, family="Helvetica", pointsize=32)
 
    p <- ggplot(barplotData,
                aes(x    = Policy,
@@ -461,6 +476,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               # panel.grid.major = element_line(size=0.5,  linetype="solid", color="lightgray"),
               # panel.grid.minor = element_line(size=0.25, linetype="solid", color="lightgray")
               # strip.background = element_blank(),
+              panel.spacing    = unit(1, "cm"),
               panel.grid.major = element_line(size=0.4, colour = "black"),
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
               panel.background = element_blank(),
@@ -475,11 +491,11 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
    # ====== Line plot =======================================================
    cairo_pdf(paste(sep="", name, "-", prefix, "-Line.pdf"),
-             width=20, height=10, family="Helvetica", pointsize=32)
+             width=18, height=8, family="Helvetica", pointsize=32)
 
    lineplotData <- summary %>%
-      filter(scenarioNumberOfCalcAppPoolUsersVariable <= 120) %>%
-      mutate(PolicyType = getPolicyType(calcAppPoolElementSelectionPolicy)) %>%
+      # filter(scenarioNumberOfCalcAppPoolUsersVariable <= 160) %>%
+      # mutate(PolicyType = getPolicyType(calcAppPoolElementSelectionPolicy)) %>%
       rename(Policy = calcAppPoolElementSelectionPolicy,
              PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
 
@@ -498,10 +514,12 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               # panel.grid.major = element_line(size=0.5,  linetype="solid", color="lightgray"),
               # panel.grid.minor = element_line(size=0.25, linetype="solid", color="lightgray")
               # strip.background = element_blank(),
+              panel.spacing    = unit(1, "cm"),
               panel.grid.major = element_line(size=0.4, colour = "black"),
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
               panel.background = element_blank(),
              ) +
+           coord_cartesian(ylim = c(0, 5)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
            geom_line(aes(color = Policy), size=2)
    print(p)

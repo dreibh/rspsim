@@ -54,7 +54,7 @@ plotPEUtilisation <- function(name, prefix)
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=18, height=6, family="Helvetica", pointsize=22)
+             width=18, height=8, family="Helvetica", pointsize=22)
 
    title <- ""
 
@@ -68,6 +68,7 @@ plotPEUtilisation <- function(name, prefix)
                                                    "0" = "UE",
                                                    "1" = "MEC",
                                                    "2" = "PMC")
+   # calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
                     "Random"                          = "Random",
@@ -93,6 +94,7 @@ plotPEUtilisation <- function(name, prefix)
    summarised <- calcAppPETotalUsedCapacity %>%
                     filter(lan != "UE") %>%
                     filter(scenarioNumberOfCalcAppPoolUsersVariable != 50) %>%
+                    mutate(calcAppPoolUserServiceJobSizeVariable = calcAppPoolUserServiceJobSizeVariable / 1000) %>%
                     group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,lan,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPEUtilisation = mean(utilisation),
@@ -116,17 +118,19 @@ plotPEUtilisation <- function(name, prefix)
                axis.text.y       = element_text(size=16, angle=90, hjust=0.5, colour="black"),
                legend.title      = element_blank(),
                legend.text       = element_text(size=18, face="bold"),
+               legend.position   = "bottom",
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
                # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
                # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
                # strip.background = element_blank(),
+               panel.spacing    = unit(1, "cm"),
                panel.grid.major = element_line(size=0.4, colour = "black"),
                panel.grid.minor = element_line(size=0.2, colour = "gray"),
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Average Request Size [Calculations]",
+               x     = "Average Request Size [1000 Calculations]",
                y     = "Average Utilisation [%]") +
          facet_grid(lan ~ scenarioNumberOfCalcAppPoolUsersVariable) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
@@ -155,7 +159,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=18, height=5, family="Helvetica", pointsize=22)
+               width=18, height=8, family="Helvetica", pointsize=22)
       title <- ""
    }
 
@@ -188,6 +192,9 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- systemAverageHandlingSpeed %>%
+                    mutate(calcAppPoolUserServiceJobSizeVariable = calcAppPoolUserServiceJobSizeVariable / 1000,
+                           controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000,
+                          ) %>%
                     filter(scenarioNumberOfCalcAppPoolUsersVariable != 50) %>%
                     group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
@@ -212,18 +219,20 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
                axis.text.y       = element_text(size=16, angle=90, hjust=0.5, colour="black"),
                legend.title      = element_blank(),
                legend.text       = element_text(size=18, face="bold"),
+               legend.position   = "bottom",
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
                # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
                # panel.grid.minor  = element_line(size=0.25, linetype="solid", color="lightgray")
                # strip.background = element_blank(),
+               panel.spacing    = unit(1, "cm"),
                panel.grid.major = element_line(size=0.4, colour = "black"),
                panel.grid.minor = element_line(size=0.2, colour = "gray"),
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Average Request Size [Calculations]",
-               y     = "Handling Speed [Calculations/s]") +
+               x     = "Average Request Size [1000 Calculations]",
+               y     = "Handling Speed [1000 Calculations/s]") +
          facet_grid( ~ scenarioNumberOfCalcAppPoolUsersVariable) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
