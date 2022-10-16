@@ -421,6 +421,94 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    writeTable(prepareDelayForTable(summary, FALSE),
               name, prefix, "QSP-Times", "Queuing, Startup and Processing Times for each Policy")
 
+
+   # ====== Summary for plotting ============================================
+   colnames(queuingSummary) <- gsub("^Queuing", "", colnames(queuingSummary))
+   queuingSummary$Variable <- "Queuing Time"
+   colnames(startupSummary) <- gsub("^Startup", "", colnames(startupSummary))
+   startupSummary$Variable <- "Startup Time"
+   colnames(processingSummary) <- gsub("^Processing", "", colnames(processingSummary))
+   processingSummary$Variable <- "Processing Time"
+   summary <- rbind(rbind(queuingSummary, startupSummary), processingSummary)
+   summary$Variable <- factor(summary$Variable, levels=c("Queuing Time", "Startup Time", "Processing Time"))
+
+
+   # ====== Barplot =========================================================
+   barplotData <- summary %>%
+      filter(scenarioNumberOfCalcAppPoolUsersVariable %in% c(10, 60, 120)) %>%
+      mutate(scenarioNumberOfCalcAppPoolUsersVariable = as.factor(scenarioNumberOfCalcAppPoolUsersVariable),
+             calcAppPoolElementSelectionPolicy        = as.factor(calcAppPoolElementSelectionPolicy),
+             PolicyType                               = getPolicyType(calcAppPoolElementSelectionPolicy)) %>%
+      rename(Policy = calcAppPoolElementSelectionPolicy,
+            PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
+
+   cairo_pdf(paste(sep="", name, "-", prefix, "-Barplot.pdf"),
+             width=20, height=10, family="Helvetica", pointsize=32)
+
+   p <- ggplot(barplotData,
+               aes(x    = Policy,
+                   y    = Mean,
+                   fill = Variable)
+              ) +
+        theme(title            = element_text(size=32),
+              plot.title       = element_text(size=20, hjust = 0.5, face="bold"),
+              axis.title       = element_text(size=20, face="bold"),
+              strip.text       = element_text(size=18, face="bold"),
+              axis.text.x      = element_text(size=16, angle=90, hjust=1.0, face="bold", colour="black"),
+              axis.text.y      = element_text(size=16, angle=90, hjust=0.5, colour="black"),
+              legend.title     = element_blank(),
+              legend.text      = element_text(size=18, face="bold"),
+              # panel.grid.major = element_line(size=0.5,  linetype="solid", color="lightgray"),
+              # panel.grid.minor = element_line(size=0.25, linetype="solid", color="lightgray")
+              # strip.background = element_blank(),
+              panel.grid.major = element_line(size=0.4, colour = "black"),
+              panel.grid.minor = element_line(size=0.2, colour = "gray"),
+              panel.background = element_blank(),
+             ) +
+           scale_fill_manual("", values=c("red", "orange", "green")) +
+           facet_grid( ~ PUs) +
+           geom_bar(stat="identity")
+   print(p)
+
+   dev.off()
+
+
+   # ====== Line plot =======================================================
+   cairo_pdf(paste(sep="", name, "-", prefix, "-Line.pdf"),
+             width=20, height=10, family="Helvetica", pointsize=32)
+
+   lineplotData <- summary %>%
+      filter(scenarioNumberOfCalcAppPoolUsersVariable <= 120) %>%
+      mutate(PolicyType = getPolicyType(calcAppPoolElementSelectionPolicy)) %>%
+      rename(Policy = calcAppPoolElementSelectionPolicy,
+             PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
+
+   p <- ggplot(lineplotData,
+               aes(x = PUs,
+                   y = Mean)
+              ) +
+        theme(title            = element_text(size=32),
+              plot.title       = element_text(size=20, hjust = 0.5, face="bold"),
+              axis.title       = element_text(size=20, face="bold"),
+              strip.text       = element_text(size=18, face="bold"),
+              axis.text.x      = element_text(size=16, angle=90, hjust=1.0, face="bold", colour="black"),
+              axis.text.y      = element_text(size=16, angle=90, hjust=0.5, colour="black"),
+              legend.title     = element_blank(),
+              legend.text      = element_text(size=18, face="bold"),
+              # panel.grid.major = element_line(size=0.5,  linetype="solid", color="lightgray"),
+              # panel.grid.minor = element_line(size=0.25, linetype="solid", color="lightgray")
+              # strip.background = element_blank(),
+              panel.grid.major = element_line(size=0.4, colour = "black"),
+              panel.grid.minor = element_line(size=0.2, colour = "gray"),
+              panel.background = element_blank(),
+             ) +
+           facet_grid(PolicyType ~ Variable) +
+           geom_line(aes(color = Policy), size=2)
+   print(p)
+
+   dev.off()
+
+
    return(summary)
 }
 
