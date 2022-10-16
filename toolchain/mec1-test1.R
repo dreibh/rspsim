@@ -178,7 +178,7 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.2),   # !!!!!!!
    list("mecMECCapacityFactor",                            1.0),   # !!!!!!!
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150,   160, 170, 180, 190, 200),
    list("calcAppPoolUserServiceJobSizeVariable",           1e6),
    list("calcAppPoolUserServiceJobIntervalVariable",       10),
 

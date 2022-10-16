@@ -20,8 +20,10 @@
 
 library("anytime")
 library("data.table")
+library("plyr",  warn.conflicts = FALSE)
 library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
+library("xtable")
 
 
 plotColours <- c("steelblue4", "steelblue1",
@@ -31,6 +33,65 @@ plotColours <- c("steelblue4", "steelblue1",
                  "gray40",     "gray10",
                  "cyan4",      "cyan1",
                  "yellow4",    "yellow1")
+
+
+# ###### Get policy types ###################################################
+getPolicyType <- function(policies)
+{
+   return(as.factor(mapvalues(as.vector(policies),
+          from = c("Random", "RoundRobin",
+                   "LeastUsed", "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+          to   = c("Non-Adaptive", "Non-Adaptive",
+                   "Adaptive", "Adaptive",              "Adaptive",          "Adaptive",                     "Adaptive with DPF",    "Adaptive with DPF"))))
+}
+
+
+# ###### Provide alignment setting for xtable() #############################
+getAlignment <- function(data)
+{
+   alignment <- "l|"
+   for(i in seq(1, ncol(data))) {
+      alignment <- paste(sep="", alignment, "c|")
+   }
+   return(alignment)
+}
+
+
+# ###### Text sanitiser for xtable(): some LaTeX markup #####################
+markup.latex <- function(text)
+{
+   return(gsub(" -> ", " $\\rightarrow$ ",
+             gsub(">=", "$\\ge$",
+                gsub("%", "\\%",
+                   gsub("Q([0-9]+)", "Q$_{\\\\mathrm{\\1%}}$", text, fixed = FALSE),
+                   fixed = TRUE),
+                fixed = TRUE),
+             fixed = TRUE))
+}
+
+
+# ###### Text sanitiser for xtable(): some HTML markup ######################
+markup.html <- function(text)
+{
+   return(gsub(" -> ", " → ",
+             gsub(">=", "&ge;",
+                gsub("Q([0-9]+)", "Q<sub>\\1%</sub>", text, fixed = FALSE),
+             fixed = TRUE),
+          fixed = TRUE))
+}
+
+
+# ###### Text sanitiser for xtable(): Use LaTeX bold text ###################
+bold.latex <- function(text)
+{
+   return(paste(sep="", "{\\textbf{", markup.latex(text), "}}"))
+}
+
+
+# ###### Text sanitiser for xtable(): Use HTML bold text ####################
+bold.html <- function(text) {
+   return(paste(sep="", "<strong>", markup.html(text), "</strong>"))
+}
 
 
 # ###### Read output file ###################################################
@@ -47,12 +108,12 @@ readResults <- function(directory)
 plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
-   calcAppPETotalUsedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"), "rt"))
+   calcAppPETotalUsedCapacity   <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"), "rt"))
    calcAppPETotalWastedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"), "rt"))
-   print(sort(colnames(calcAppPETotalUsedCapacity)))
+   # print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=18, height=10, family="Helvetica", pointsize=32)
+             width=12, height=20, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -66,16 +127,17 @@ plotPEUtilisation <- function(name, prefix)
                                                    "0" = "UE",
                                                    "1" = "MEC",
                                                    "2" = "PMC")
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
                     "Random"                          = "Random",
                     "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LstUsd",
-                    "LeastUsedDegradation"            = "LstUsdDeg",
-                    "PriorityLeastUsed"               = "PrLstUsd",
-                    "PriorityLeastUsedDegradation"    = "PrLstUsdDeg",
-                    "PriorityLeastUsedDPF"            = "PrLstUsdDPF",
-                    "PriorityLeastUsedDegradationDPF" = "PrLstUsdDegDPF"
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
@@ -86,14 +148,14 @@ plotPEUtilisation <- function(name, prefix)
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- calcAppPETotalUsedCapacity %>%
-                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,lan,lan.calcAppPoolElementArray) %>%
+                    group_by(calcAppPoolElementSelectionPolicyType, calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable, lan, lan.calcAppPoolElementArray) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPEUtilisation = mean(utilisation),
                               MinCalcAppPEUtilisation  = min(utilisation),
                               MaxCalcAppPEUtilisation  = max(utilisation),
                               Q10CalcAppPEUtilisation  = quantile(utilisation, 0.10),
                               Q90CalcAppPEUtilisation  = quantile(utilisation, 0.90))
-   print(summarised)
+   # print(summarised)
 
 
    # ====== Create plots ====================================================
@@ -123,7 +185,7 @@ plotPEUtilisation <- function(name, prefix)
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
                y     = "Average Utilisation [%]") +
-         facet_grid(lan ~ calcAppPoolElementSelectionPolicy) +
+         facet_grid(calcAppPoolElementSelectionPolicyType + calcAppPoolElementSelectionPolicy ~ lan) +
          geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPEUtilisation, ymax = MaxCalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                         size=0.5, width=.5) +
@@ -146,14 +208,18 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    # ====== Plot as PDF file ================================================
    systemAverageHandlingSpeed <- read.table(bzfile(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2"), "rt"))
-   print(sort(colnames(systemAverageHandlingSpeed)))
+   # print(sort(colnames(systemAverageHandlingSpeed)))
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
-               width=18, height=6, family="Helvetica", pointsize=32)
+               width=12, height=12, family="Helvetica", pointsize=32)
       title <- ""
    }
 
+   systemAverageHandlingSpeed <- systemAverageHandlingSpeed %>%
+      mutate(controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000)
+
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
       recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
                     "Random"                          = "Random",
@@ -176,14 +242,14 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- systemAverageHandlingSpeed %>%
-                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable) %>%
+                    group_by(calcAppPoolElementSelectionPolicyType, calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPUHandlingSpeed = mean(controller.SystemAverageHandlingSpeed),
                               MinCalcAppPUHandlingSpeed  = min(controller.SystemAverageHandlingSpeed),
                               MaxCalcAppPUHandlingSpeed  = max(controller.SystemAverageHandlingSpeed),
                               Q10CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.10),
                               Q90CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.90))
-   print(summarised)
+   # print(summarised)
 
 
    # ====== Create plots ====================================================
@@ -210,7 +276,8 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                ) +
          labs(title = title,
                x     = "Number of Pool User Instances [1]",
-               y     = "Handling Speed [Calculations/s]") +
+               y     = "Handling Speed [1000 Calculations/s]") +
+         facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +
@@ -229,7 +296,125 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 }
 
 
+# ###### Write table ########################################################
+writeTable <- function(table, prefix, label, caption)
+{
+   latexOutputTable <- xtable(table,
+                              align   = getAlignment(table),
+                              label   = paste(sep="", "tab:", prefix, label),
+                              caption = caption)
+   htmlOutputTable  <- xtable(table,
+                              align   = getAlignment(table),
+                              label   = paste(sep="", "tab:", prefix, label),
+                              caption = caption)
+
+   latexName <- paste(sep="", name, "-", prefix, "-", label, ".tex")
+   print(latexOutputTable,
+         size                       = "footnotesize",
+         include.rownames           = FALSE,
+         sanitize.colnames.function = bold.latex,
+         table.placement            = NULL,
+         caption.placement          = "top",
+         hline.after                = c(-1, 0, seq(0, nrow(latexOutputTable))),
+         floating.environment       = "table*",
+         NA.string                  = "--",
+         file                       = latexName,
+         type                       = "latex")
+   cat(sep="", "Wrote ", latexName, "\n")
+
+   htmlName <- paste(sep="", name, "-", prefix, "-", label, ".html")
+   print(htmlOutputTable,
+         include.rownames           = FALSE,
+         table.placement            = NULL,
+         caption.placement          = "top",
+         sanitize.colnames.function = bold.html,
+         hline.after                = c(-1, 0, seq(0, nrow(htmlOutputTable))),
+         NA.string                  = "--",
+         file                       = htmlName,
+         type                       = "html")
+   cat(sep="", "Wrote ", htmlName, "\n")
+}
+
+
+# ###### Plot results #######################################################
+computeDelays <- function(name, prefix, createPDF = TRUE)
+{
+
+   # ====== Queuing =========================================================
+   queuing <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageQueuingDelay.data.bz2"), "rt")) %>%
+                 select(c("calcAppPoolElementSelectionPolicy", "scenarioNumberOfCalcAppPoolUsersVariable", "lan.calcAppPoolUserArray", "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay"))
+   # print(colnames(queuing))
+
+   queuingSummary <- queuing %>%
+      group_by(calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
+      filter(scenarioNumberOfCalcAppPoolUsersVariable %in% c(10, 60, 120)) %>%
+      summarise(QueuingMean = mean(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
+                QueuingMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
+                QueuingMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
+                QueuingQ10  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay, 0.10),
+                QueuingQ90  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay, 0.90)
+               )
+
+   print(queuingSummary)
+
+
+   # ====== Startup =========================================================
+   startup <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageStartupDelay.data.bz2"), "rt")) %>%
+                 select(c("calcAppPoolElementSelectionPolicy", "scenarioNumberOfCalcAppPoolUsersVariable", "lan.calcAppPoolUserArray", "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay"))
+   # print(colnames(startup))
+
+   startupSummary <- startup %>%
+      group_by(calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
+      filter(scenarioNumberOfCalcAppPoolUsersVariable %in% c(10, 60, 120)) %>%
+      summarise(StartupMean = mean(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
+                StartupMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
+                StartupMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
+                StartupQ10  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay, 0.10),
+                StartupQ90  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay, 0.90)
+               )
+
+   print(startupSummary)
+
+
+   # ====== Processing =========================================================
+   processing <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageProcessingTime.data.bz2"), "rt")) %>%
+                 select(c("calcAppPoolElementSelectionPolicy", "scenarioNumberOfCalcAppPoolUsersVariable", "lan.calcAppPoolUserArray", "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime"))
+   # print(colnames(processing))
+
+   processingSummary <- processing %>%
+      group_by(calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
+      filter(scenarioNumberOfCalcAppPoolUsersVariable %in% c(10, 60, 120)) %>%
+      summarise(ProcessingMean = mean(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
+                ProcessingMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
+                ProcessingMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
+                ProcessingQ10  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime, 0.10),
+                ProcessingQ90  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime, 0.90)
+               )
+
+   print(processingSummary)
+   writeTable(processingSummary, prefix, "Processing", "Processing Time for each Policy")
+
+
+   # ====== Join summaries ==================================================
+   summary <- queuingSummary %>%
+      left_join(startupSummary, by = c("calcAppPoolElementSelectionPolicy", "scenarioNumberOfCalcAppPoolUsersVariable")) %>%
+      left_join(processingSummary, by = c("calcAppPoolElementSelectionPolicy", "scenarioNumberOfCalcAppPoolUsersVariable")) %>%
+      rename(Policy = calcAppPoolElementSelectionPolicy,
+             PUs    = scenarioNumberOfCalcAppPoolUsersVariable) %>%
+      mutate(PolicyType = getPolicyType(as.vector(Policy))) %>%
+      select(PolicyType, everything())   # Move PolicyType to front
+
+
+   # ====== Write full table =================================================
+   caption <- "Queuing, Startup and Processing Times for each Policy"
+   writeTable(summary, prefix, "QSP-Times", "Queuing, Startup and Processing Times for each Policy")
+
+   return(summary)
+}
+
+
 # ###### Main program #######################################################
 
-data <- plotPEUtilisation("mec1-test1/Results", "MEC1")
-data <- plotPUHandlingSpeed("mec1-test1/Results", "MEC1")
+# dataUtilisation   <- plotPEUtilisation("mec1-test1/Results", "MEC1")
+# dataHandlingSpeed <- plotPUHandlingSpeed("mec1-test1/Results", "MEC1")
+summary <- computeDelays("mec1-test1/Results", "MEC1")
