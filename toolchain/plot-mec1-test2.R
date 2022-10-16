@@ -33,12 +33,14 @@ plotColours <- c("steelblue4", "steelblue1",
                  "yellow4",    "yellow1")
 
 
-# ###### Read output file ###################################################
-readResults <- function(directory)
+# ###### Read results file ###################################################
+readResults <- function(name)
 {
-   dataName <- paste(sep="/", directory, "controller-CalcAppPEGlobalUsedCapacity.data.bz2")
-   print(paste(sep="", "Trying to read ", dataName, " ..."))
-   data <- read.table(pipe(paste(sep="", "bzcat ", dataName)))
+   cat(sep="", "Reading ", name, " ...\n")
+   data <- fread(name, sep="\t", quote='"')
+   colnames(data) <- gsub("-", ".", colnames(data))
+
+   # print(sort(colnames(data)))
    return(data)
 }
 
@@ -47,8 +49,8 @@ readResults <- function(directory)
 plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
-   calcAppPETotalUsedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"), "rt"))
-   calcAppPETotalWastedCapacity <- read.table(bzfile(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"), "rt"))
+   calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
+   calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
    print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
@@ -148,7 +150,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 {
 
    # ====== Plot as PDF file ================================================
-   systemAverageHandlingSpeed <- read.table(bzfile(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2"), "rt"))
+   systemAverageHandlingSpeed <- readResults(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2"))
    print(sort(colnames(systemAverageHandlingSpeed)))
 
    if(createPDF) {
