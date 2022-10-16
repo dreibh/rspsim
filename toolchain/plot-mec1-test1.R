@@ -483,6 +483,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
              ) +
            scale_fill_manual("", values=c("red", "orange", "green")) +
            facet_grid( ~ PUs) +
+           labs(y = "Mean Time [s]") +
            geom_bar(stat="identity")
    print(p)
 
@@ -521,6 +522,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
              ) +
            coord_cartesian(ylim = c(0, 5)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
+           labs(y = "Mean Time [s]") +
            geom_line(aes(color = Policy), size=2)
    print(p)
 
