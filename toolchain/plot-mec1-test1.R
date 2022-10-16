@@ -99,6 +99,24 @@ getPolicyType <- function(policies)
 }
 
 
+# ###### Get policy abbreviation ############################################
+getPolicyAbbreviations <- function(policies)
+{
+   policies <-
+      recode_factor(as.factor(policies),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
+   return(policies)
+}
+
+
 # ###### Provide alignment setting for xtable() #############################
 getAlignment <- function(data)
 {
@@ -170,17 +188,7 @@ plotPEUtilisation <- function(name, prefix)
                                                    "1" = "MEC",
                                                    "2" = "PMC")
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
-   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
-      recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
-                   )
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
    plotColours <- c(
@@ -262,17 +270,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
       mutate(controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000)
 
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
-   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
-      recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
-                   )
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
 
    plotColours <- c(
       "orange",  "green4", "green1",
@@ -349,6 +347,8 @@ prepareDelayForTable <- function(data, shortenNames = TRUE)
       mutate(PolicyType = getPolicyType(Policy)) %>%
       select(PUs, PolicyType, everything()) %>%  # Move PolicyType to front
       arrange(PUs)
+
+   data$Policy <- getPolicyAbbreviations(data$Policy)
 
    if(shortenNames) {
       colnames(data) <- gsub("^(Queuing|Startup|Processing)", "", colnames(data))
@@ -435,17 +435,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    summary$Variable <- factor(summary$Variable, levels=c("Queuing Time", "Startup Time", "Processing Time"))
 
    summary$PolicyType <- getPolicyType(summary$calcAppPoolElementSelectionPolicy)
-   summary$calcAppPoolElementSelectionPolicy <-
-      recode_factor(as.factor(summary$calcAppPoolElementSelectionPolicy),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
-                   )
+   summary$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(summary$calcAppPoolElementSelectionPolicy)
 
    # ====== Barplot =========================================================
    barplotData <- summary %>%
@@ -473,6 +463,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               axis.text.y      = element_text(size=16, angle=90, hjust=0.5, colour="black"),
               legend.title     = element_blank(),
               legend.text      = element_text(size=18, face="bold"),
+              legend.position  = "bottom",
               # panel.grid.major = element_line(size=0.5,  linetype="solid", color="lightgray"),
               # panel.grid.minor = element_line(size=0.25, linetype="solid", color="lightgray")
               # strip.background = element_blank(),
@@ -512,6 +503,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               axis.text.y      = element_text(size=16, angle=90, hjust=0.5, colour="black"),
               legend.title     = element_blank(),
               legend.text      = element_text(size=18, face="bold"),
+              legend.position  = "bottom",
               # panel.grid.major = element_line(size=0.5,  linetype="solid", color="lightgray"),
               # panel.grid.minor = element_line(size=0.25, linetype="solid", color="lightgray")
               # strip.background = element_blank(),

@@ -45,13 +45,42 @@ readResults <- function(name)
 }
 
 
+# ###### Get policy types ###################################################
+getPolicyType <- function(policies)
+{
+   return(as.factor(mapvalues(as.vector(policies),
+          from = c("Random", "RoundRobin",
+                   "LeastUsed", "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+          to   = c("Non-Adaptive", "Non-Adaptive",
+                   "Adaptive", "Adaptive",              "Adaptive",          "Adaptive",                     "Adaptive with DPF",    "Adaptive with DPF"),
+                   warn_missing = FALSE)))
+}
+
+
+# ###### Get policy abbreviation ############################################
+getPolicyAbbreviations <- function(policies)
+{
+   policies <-
+      recode_factor(as.factor(policies),
+                    "Random"                          = "Random",
+                    "RoundRobin"                      = "RoundRobin",
+                    "LeastUsed"                       = "LeastUsed",
+                    "LeastUsedDegradation"            = "LeastUsedDeg.",
+                    "PriorityLeastUsed"               = "Prio.LeastUsed",
+                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                   )
+   return(policies)
+}
+
+
 # ###### Plot results #######################################################
 plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
    calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
-   print(sort(colnames(calcAppPETotalUsedCapacity)))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
              width=18, height=8, family="Helvetica", pointsize=22)
@@ -69,17 +98,7 @@ plotPEUtilisation <- function(name, prefix)
                                                    "1" = "MEC",
                                                    "2" = "PMC")
    # calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
-   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <-
-      recode_factor(as.factor(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
-                   )
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
    calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobIntervalVariable)
    # calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
@@ -102,7 +121,7 @@ plotPEUtilisation <- function(name, prefix)
                               MaxCalcAppPEUtilisation  = max(utilisation),
                               Q10CalcAppPEUtilisation  = quantile(utilisation, 0.10),
                               Q90CalcAppPEUtilisation  = quantile(utilisation, 0.90))
-   print(summarised)
+   # print(summarised)
 
 
    # ====== Create plots ====================================================
@@ -155,7 +174,6 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
 
    # ====== Plot as PDF file ================================================
    systemAverageHandlingSpeed <- readResults(paste(sep="/", name, "controller-SystemAverageHandlingSpeed.data.bz2"))
-   print(sort(colnames(systemAverageHandlingSpeed)))
 
    if(createPDF) {
       cairo_pdf(paste(sep="", name, "-", prefix, "-HandlingSpeed.pdf"),
@@ -163,26 +181,12 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
       title <- ""
    }
 
-
-
-systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <= 500000)
-
-
-
+   systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <= 500000)
    systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
    # systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
    systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable <- factor(systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable)
-   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <-
-      recode_factor(as.factor(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
-                   )
+   # systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
 
    plotColours <- c(
       "orange",  "green4", "green1",
@@ -203,7 +207,7 @@ systemAverageHandlingSpeed <- subset(systemAverageHandlingSpeed, systemAverageHa
                               MaxCalcAppPUHandlingSpeed  = max(controller.SystemAverageHandlingSpeed),
                               Q10CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.10),
                               Q90CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.90))
-   print(summarised)
+   # print(summarised)
 
 
    # ====== Create plots ====================================================
