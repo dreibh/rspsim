@@ -62,14 +62,23 @@ getPolicyAbbreviations <- function(policies)
 {
    policies <-
       recode_factor(as.factor(policies),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                    "Random"                          = "RAND",
+                    "RoundRobin"                      = "RR",
+                    "LeastUsed"                       = "LU",
+                    "LeastUsedDegradation"            = "LUD",
+                    "PriorityLeastUsed"               = "PLU",
+                    "PriorityLeastUsedDegradation"    = "PLUD",
+                    "PriorityLeastUsedDPF"            = "PLU-DPF",
+                    "PriorityLeastUsedDegradationDPF" = "PLUD-DPF"
+
+#                     "Random"                          = "Random",
+#                     "RoundRobin"                      = "RoundRobin",
+#                     "LeastUsed"                       = "LeastUsed",
+#                     "LeastUsedDegradation"            = "LeastUsedDeg.",
+#                     "PriorityLeastUsed"               = "Prio.LeastUsed",
+#                     "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+#                     "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+#                     "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
    return(policies)
 }
@@ -104,10 +113,9 @@ plotPEUtilisation <- function(name, prefix)
    # calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
 
    plotColours <- c(
-      "orange",  "green4", "green1",
-      "blue1", "blue4"
+      "gray50", "lightblue", "green", "red",
+      "blue", "black", "purple", "orange"
    )
-
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- calcAppPETotalUsedCapacity %>%
@@ -185,14 +193,13 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
    systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
    # systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
    systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable <- factor(systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable)
-   # systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
 
    plotColours <- c(
-      "orange",  "green4", "green1",
-      "blue1", "blue4"
+      "gray50", "lightblue", "green", "red",
+      "blue", "black", "purple", "orange"
    )
-
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- systemAverageHandlingSpeed %>%
@@ -200,7 +207,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                            controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000,
                           ) %>%
                     filter(scenarioNumberOfCalcAppPoolUsersVariable != 50) %>%
-                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,calcAppPoolUserServiceJobSizeVariable) %>%
+                    group_by(calcAppPoolElementSelectionPolicyType,calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPUHandlingSpeed = mean(controller.SystemAverageHandlingSpeed),
                               MinCalcAppPUHandlingSpeed  = min(controller.SystemAverageHandlingSpeed),
@@ -237,7 +244,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
          labs(title = title,
                x     = "Average Request Size [1000 Calculations]",
                y     = "Handling Speed [1000 Calculations/s]") +
-         facet_grid( ~ scenarioNumberOfCalcAppPoolUsersVariable) +
+         facet_grid(calcAppPoolElementSelectionPolicyType ~ scenarioNumberOfCalcAppPoolUsersVariable) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +

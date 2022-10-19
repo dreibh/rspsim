@@ -104,14 +104,23 @@ getPolicyAbbreviations <- function(policies)
 {
    policies <-
       recode_factor(as.factor(policies),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                    "Random"                          = "RAND",
+                    "RoundRobin"                      = "RR",
+                    "LeastUsed"                       = "LU",
+                    "LeastUsedDegradation"            = "LUD",
+                    "PriorityLeastUsed"               = "PLU",
+                    "PriorityLeastUsedDegradation"    = "PLUD",
+                    "PriorityLeastUsedDPF"            = "PLU-DPF",
+                    "PriorityLeastUsedDegradationDPF" = "PLUD-DPF"
+
+#                     "Random"                          = "Random",
+#                     "RoundRobin"                      = "RoundRobin",
+#                     "LeastUsed"                       = "LeastUsed",
+#                     "LeastUsedDegradation"            = "LeastUsedDeg.",
+#                     "PriorityLeastUsed"               = "Prio.LeastUsed",
+#                     "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+#                     "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+#                     "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
    return(policies)
 }
@@ -243,8 +252,8 @@ plotPEUtilisation <- function(name, prefix)
          geom_errorbar(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                         size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
-                     size=0.01, linetype=2, alpha=0.1) +
-         scale_color_manual(values = rep("goldenrod3", 1024))
+                     size=0.01, linetype=2, alpha=0.05) +
+         scale_color_manual(values = rep("blue", 1024))
 
    print(p)
 
@@ -273,10 +282,13 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
 
    plotColours <- c(
-      "orange",  "green4", "green1",
-      "goldenrod1",
-      "cyan4",      "cyan1",
-      "goldenrod3", "red1"
+      "gray50", "lightblue", "green", "red",
+      "blue", "black", "purple", "orange"
+
+#       "orange",  "green4", "green1",
+#       "goldenrod1",
+#       "cyan4",      "cyan1",
+#       "goldenrod3", "red1"
    )
 
 
@@ -305,6 +317,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                axis.text.y       = element_text(size=16, angle=90, hjust=0.5, colour="black"),
                legend.title      = element_blank(),
                legend.text       = element_text(size=18, face="bold"),
+               legend.position   = "bottom",
 #                legend.background = element_rect(colour = bgColor,  fill = lgColor, size=1),
 #                panel.background  = element_rect(fill = paste(sep="", "#", colorCU), color=bgColor, size=2),
                # panel.grid.major  = element_line(size=0.5,  linetype="solid", color="lightgray"),
@@ -368,8 +381,8 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    queuingSummary <- queuing %>%
       group_by(calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
       summarise(QueuingMean = mean(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
-                QueuingMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
-                QueuingMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
+                # QueuingMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
+                # QueuingMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay),
                 QueuingQ10  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay, 0.10),
                 QueuingQ90  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay, 0.90)
                )
@@ -386,8 +399,8 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    startupSummary <- startup %>%
       group_by(calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
       summarise(StartupMean = mean(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
-                StartupMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
-                StartupMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
+                # StartupMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
+                # StartupMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay),
                 StartupQ10  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay, 0.10),
                 StartupQ90  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay, 0.90)
                )
@@ -404,8 +417,8 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    processingSummary <- processing %>%
       group_by(calcAppPoolElementSelectionPolicy, scenarioNumberOfCalcAppPoolUsersVariable) %>%
       summarise(ProcessingMean = mean(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
-                ProcessingMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
-                ProcessingMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
+                # ProcessingMin  = min(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
+                # ProcessingMax  = max(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime),
                 ProcessingQ10  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime, 0.10),
                 ProcessingQ90  = quantile(lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime, 0.90)
                )
@@ -450,6 +463,8 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
    cairo_pdf(paste(sep="", name, "-", prefix, "-Barplot.pdf"),
              width=18, height=8, family="Helvetica", pointsize=32)
 
+   plotColours <- c( "red", "blue", "green" )
+
    p <- ggplot(barplotData,
                aes(x    = Policy,
                    y    = Mean,
@@ -472,7 +487,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
               panel.background = element_blank(),
              ) +
-           scale_fill_manual("", values=c("red", "orange", "green")) +
+           scale_fill_manual("", values=plotColours) +
            facet_grid( ~ PUs) +
            labs(y = "Mean Time [s]") +
            geom_bar(stat="identity")
@@ -490,6 +505,11 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
       # mutate(PolicyType = getPolicyType(calcAppPoolElementSelectionPolicy)) %>%
       rename(Policy = calcAppPoolElementSelectionPolicy,
              PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
+
+   plotColours <- c(
+      "gray50", "lightblue", "green", "red",
+      "blue", "black", "purple", "orange"
+   )
 
    p <- ggplot(lineplotData,
                aes(x = PUs,
@@ -515,7 +535,9 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
            coord_cartesian(ylim = c(0, 6)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
            labs(y = "Mean Time [s]") +
-           geom_line(aes(color = Policy), size=2)
+           geom_line(aes(color = Policy), size=2) +
+           scale_color_manual("", values=plotColours) +
+           guides(colour = guide_legend(nrow = 1))
    print(p)
 
    dev.off()
@@ -529,4 +551,4 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
 dataUtilisation   <- plotPEUtilisation("mec1-test1/Results", "MEC1")
 dataHandlingSpeed <- plotPUHandlingSpeed("mec1-test1/Results", "MEC1")
-summary <- computeDelays("mec1-test1/Results", "MEC1")
+summary           <- computeDelays("mec1-test1/Results", "MEC1")
