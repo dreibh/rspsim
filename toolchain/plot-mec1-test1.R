@@ -194,7 +194,7 @@ plotPEUtilisation <- function(name, prefix)
    # ====== Use factors for LAN and LAN.CalcAppPoolElementArray =============
    calcAppPETotalUsedCapacity$lan <- recode_factor(as.factor(calcAppPETotalUsedCapacity$lan),
                                                    "0" = "UE",
-                                                   "1" = "MEC",
+                                                   "1" = "EC",
                                                    "2" = "PMC")
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)

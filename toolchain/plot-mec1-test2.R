@@ -104,7 +104,7 @@ plotPEUtilisation <- function(name, prefix)
    # ====== Use factors =====================================================
    calcAppPETotalUsedCapacity$lan <- recode_factor(as.factor(calcAppPETotalUsedCapacity$lan),
                                                    "0" = "UE",
-                                                   "1" = "MEC",
+                                                   "1" = "EC",
                                                    "2" = "PMC")
    # calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
@@ -130,6 +130,11 @@ plotPEUtilisation <- function(name, prefix)
                               Q10CalcAppPEUtilisation  = quantile(utilisation, 0.10),
                               Q90CalcAppPEUtilisation  = quantile(utilisation, 0.90))
    # print(summarised)
+
+   # Rename to "<n> PUs", but keep the sorting order:
+   l <- paste(levels(factor(summarised$scenarioNumberOfCalcAppPoolUsersVariable)), "PUs")
+   summarised$scenarioNumberOfCalcAppPoolUsersVariable <- factor(paste(as.vector(summarised$scenarioNumberOfCalcAppPoolUsersVariable), "PUs"),
+   levels=l)
 
 
    # ====== Create plots ====================================================
@@ -215,6 +220,11 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                               Q10CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.10),
                               Q90CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.90))
    # print(summarised)
+
+   # Rename to "<n> PUs", but keep the sorting order:
+   l <- paste(levels(factor(summarised$scenarioNumberOfCalcAppPoolUsersVariable)), "PUs")
+   summarised$scenarioNumberOfCalcAppPoolUsersVariable <- factor(paste(as.vector(summarised$scenarioNumberOfCalcAppPoolUsersVariable), "PUs"),
+   levels=l)
 
 
    # ====== Create plots ====================================================
