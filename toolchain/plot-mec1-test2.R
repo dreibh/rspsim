@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 #
-# SELF — Self-contained User Data Preserving Framework
-# Copyright (C) 2021 by Thomas Dreibholz
+# MEC/PMC performance analysis of DPF policies
+# Copyright (C) 2021-2022 by Thomas Dreibholz
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 library("anytime")
 library("data.table")
+library("plyr",  warn.conflicts = FALSE)
 library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 
