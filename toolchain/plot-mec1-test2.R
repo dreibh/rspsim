@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 #
-# SELF — Self-contained User Data Preserving Framework
-# Copyright (C) 2021 by Thomas Dreibholz
+# MEC/PMC performance analysis of DPF policies
+# Copyright (C) 2021-2022 by Thomas Dreibholz
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 library("anytime")
 library("data.table")
+library("plyr",  warn.conflicts = FALSE)
 library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 
@@ -62,14 +63,23 @@ getPolicyAbbreviations <- function(policies)
 {
    policies <-
       recode_factor(as.factor(policies),
-                    "Random"                          = "Random",
-                    "RoundRobin"                      = "RoundRobin",
-                    "LeastUsed"                       = "LeastUsed",
-                    "LeastUsedDegradation"            = "LeastUsedDeg.",
-                    "PriorityLeastUsed"               = "Prio.LeastUsed",
-                    "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
-                    "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
-                    "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
+                    "Random"                          = "RAND",
+                    "RoundRobin"                      = "RR",
+                    "LeastUsed"                       = "LU",
+                    "LeastUsedDegradation"            = "LUD",
+                    "PriorityLeastUsed"               = "PLU",
+                    "PriorityLeastUsedDegradation"    = "PLUD",
+                    "PriorityLeastUsedDPF"            = "PLU-DPF",
+                    "PriorityLeastUsedDegradationDPF" = "PLUD-DPF"
+
+#                     "Random"                          = "Random",
+#                     "RoundRobin"                      = "RoundRobin",
+#                     "LeastUsed"                       = "LeastUsed",
+#                     "LeastUsedDegradation"            = "LeastUsedDeg.",
+#                     "PriorityLeastUsed"               = "Prio.LeastUsed",
+#                     "PriorityLeastUsedDegradation"    = "Prio.LeastUsedDeg.",
+#                     "PriorityLeastUsedDPF"            = "Prio.LeastUsedDPF",
+#                     "PriorityLeastUsedDegradationDPF" = "Prio.LeastUsedDeg.DPF"
                    )
    return(policies)
 }
@@ -95,7 +105,7 @@ plotPEUtilisation <- function(name, prefix)
    # ====== Use factors =====================================================
    calcAppPETotalUsedCapacity$lan <- recode_factor(as.factor(calcAppPETotalUsedCapacity$lan),
                                                    "0" = "UE",
-                                                   "1" = "MEC",
+                                                   "1" = "EC",
                                                    "2" = "PMC")
    # calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
@@ -104,10 +114,9 @@ plotPEUtilisation <- function(name, prefix)
    # calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable <- factor(calcAppPETotalUsedCapacity$calcAppPoolUserServiceJobSizeVariable)
 
    plotColours <- c(
-      "orange",  "green4", "green1",
-      "blue1", "blue4"
+      "gray50", "lightblue", "green", "red",
+      "blue", "black", "purple", "orange"
    )
-
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- calcAppPETotalUsedCapacity %>%
@@ -122,6 +131,11 @@ plotPEUtilisation <- function(name, prefix)
                               Q10CalcAppPEUtilisation  = quantile(utilisation, 0.10),
                               Q90CalcAppPEUtilisation  = quantile(utilisation, 0.90))
    # print(summarised)
+
+   # Rename to "<n> PUs", but keep the sorting order:
+   l <- paste(levels(factor(summarised$scenarioNumberOfCalcAppPoolUsersVariable)), "PUs")
+   summarised$scenarioNumberOfCalcAppPoolUsersVariable <- factor(paste(as.vector(summarised$scenarioNumberOfCalcAppPoolUsersVariable), "PUs"),
+   levels=l)
 
 
    # ====== Create plots ====================================================
@@ -185,14 +199,13 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
    systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobIntervalVariable)
    # systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable <- factor(systemAverageHandlingSpeed$calcAppPoolUserServiceJobSizeVariable)
    systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable <- factor(systemAverageHandlingSpeed$scenarioNumberOfCalcAppPoolUsersVariable)
-   # systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
+   systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
 
    plotColours <- c(
-      "orange",  "green4", "green1",
-      "blue1", "blue4"
+      "gray50", "lightblue", "green", "red",
+      "blue", "black", "purple", "orange"
    )
-
 
    # ====== Use dplyr to summarise results ==================================
    summarised <- systemAverageHandlingSpeed %>%
@@ -200,7 +213,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                            controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000,
                           ) %>%
                     filter(scenarioNumberOfCalcAppPoolUsersVariable != 50) %>%
-                    group_by(calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,calcAppPoolUserServiceJobSizeVariable) %>%
+                    group_by(calcAppPoolElementSelectionPolicyType,calcAppPoolElementSelectionPolicy,scenarioNumberOfCalcAppPoolUsersVariable,calcAppPoolUserServiceJobSizeVariable) %>%
                     summarise(#.groups = "keep",   # Keep the grouping as is. Otherwise, it would drop the last one!
                               MeanCalcAppPUHandlingSpeed = mean(controller.SystemAverageHandlingSpeed),
                               MinCalcAppPUHandlingSpeed  = min(controller.SystemAverageHandlingSpeed),
@@ -208,6 +221,11 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                               Q10CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.10),
                               Q90CalcAppPUHandlingSpeed  = quantile(controller.SystemAverageHandlingSpeed, 0.90))
    # print(summarised)
+
+   # Rename to "<n> PUs", but keep the sorting order:
+   l <- paste(levels(factor(summarised$scenarioNumberOfCalcAppPoolUsersVariable)), "PUs")
+   summarised$scenarioNumberOfCalcAppPoolUsersVariable <- factor(paste(as.vector(summarised$scenarioNumberOfCalcAppPoolUsersVariable), "PUs"),
+   levels=l)
 
 
    # ====== Create plots ====================================================
@@ -237,7 +255,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
          labs(title = title,
                x     = "Average Request Size [1000 Calculations]",
                y     = "Handling Speed [1000 Calculations/s]") +
-         facet_grid( ~ scenarioNumberOfCalcAppPoolUsersVariable) +
+         facet_grid(calcAppPoolElementSelectionPolicyType ~ scenarioNumberOfCalcAppPoolUsersVariable) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +

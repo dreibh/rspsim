@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 #
-# MEC/PMC performance analysis of DPF policies
+# SELF — Self-contained User Data Preserving Framework
 # Copyright (C) 2021 by Thomas Dreibholz
 #
 # This program is free software: you can redistribute it and/or modify
@@ -99,18 +99,6 @@ getPolicyType <- function(policies)
 }
 
 
-# ###### Get policy types ###################################################
-getPolicyType2 <- function(policies)
-{
-   return(as.factor(mapvalues(as.vector(policies),
-          from = c("Random", "RoundRobin",
-                   "LeastUsed", "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
-          to   = c("Non-Adaptive", "Non-Adaptive",
-                   "Adaptive", "Adaptive",              "Adaptive",          "Adaptive",                     "Adaptive/DPF",    "Adaptive/DPF"),
-                   warn_missing = FALSE)))
-}
-
-
 # ###### Get policy abbreviation ############################################
 getPolicyAbbreviations <- function(policies)
 {
@@ -194,7 +182,7 @@ plotPEUtilisation <- function(name, prefix)
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=12, height=17.5, family="Helvetica", pointsize=32)
+             width=12, height=20, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -208,7 +196,7 @@ plotPEUtilisation <- function(name, prefix)
                                                    "0" = "UE",
                                                    "1" = "EC",
                                                    "2" = "PMC")
-   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType2(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
+   calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicyType <- getPolicyType(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(calcAppPETotalUsedCapacity$calcAppPoolElementSelectionPolicy)
    calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray <- factor(calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray)
 
@@ -235,7 +223,7 @@ plotPEUtilisation <- function(name, prefix)
                    y = MeanCalcAppPEUtilisation,
                    color = lan.calcAppPoolElementArray)
             ) +
-         theme(title             = element_text(size=30),
+         theme(title             = element_text(size=32),
                plot.title        = element_text(size=20, hjust = 0.5, face="bold"),
                axis.title        = element_text(size=20, face="bold"),
                strip.text        = element_text(size=18, face="bold"),
