@@ -470,7 +470,12 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
              #PolicyType                               = getPolicyType(calcAppPoolElementSelectionPolicy)
             ) %>%
       rename(Policy = calcAppPoolElementSelectionPolicy,
-            PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
+             PUs    = scenarioNumberOfCalcAppPoolUsersVariable)
+
+   # Rename to "<n> PUs", but keep the sorting order:
+   l <- paste(levels(factor(barplotData$PUs)), "PUs")
+   barplotData$PUs <- factor(paste(as.vector(barplotData$PUs), "PUs"), levels=l)
+
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Barplot.pdf"),
              width=18, height=8, family="Helvetica", pointsize=32)
