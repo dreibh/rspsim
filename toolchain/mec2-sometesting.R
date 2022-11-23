@@ -135,32 +135,32 @@ mecCapacityDistribution <- function(currentBlock, totalBlocks,
 }
 
 
-# ###### Workload distribution ##############################################
-customJobIntervalDistribution <- function(currentBlock, totalBlocks,
-                                          currentElement, totalElements,
-                                          variable, gamma, lambda)
-{
-   variable <- as.numeric(variable)
-   gamma    <- as.numeric(gamma)
-   lambda   <- as.numeric(lambda)
-
-   if((currentBlock < 1) || (currentBlock > totalBlocks) ||
-      (currentElement < 1) || (currentElement > totalElements) ||
-      (variable <= 0.0)) {
-      stop("customWorkloadDistribution: Check parameters!")
-   }
-
-
-   reqsPerPUperSecond        <- (as.numeric(totalRequestsPerMinute) / as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)) / 60
-   interRequestTimeInSeconds <- 1 / reqsPerPUperSecond
-   variable <- interRequestTimeInSeconds
-
-   cat(sep="", scenarioNumberOfCalcAppPoolUsersVariable, " clients: irt=", interRequestTimeInSeconds, "\n")
-
-   return(c("RandNegExp",
-            sprintf("exponential(%f)", variable),
-            rexp(1, 1 / variable)))
-}
+# # ###### Workload distribution ##############################################
+# customJobIntervalDistribution <- function(currentBlock, totalBlocks,
+#                                           currentElement, totalElements,
+#                                           variable, gamma, lambda)
+# {
+#    variable <- as.numeric(variable)
+#    gamma    <- as.numeric(gamma)
+#    lambda   <- as.numeric(lambda)
+#
+#    if((currentBlock < 1) || (currentBlock > totalBlocks) ||
+#       (currentElement < 1) || (currentElement > totalElements) ||
+#       (variable <= 0.0)) {
+#       stop("customWorkloadDistribution: Check parameters!")
+#    }
+#
+#
+#    reqsPerPUperSecond        <- (as.numeric(totalRequestsPerMinute) / as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)) / 60
+#    interRequestTimeInSeconds <- 1 / reqsPerPUperSecond
+#    variable <- interRequestTimeInSeconds
+#
+#    cat(sep="", scenarioNumberOfCalcAppPoolUsersVariable, " clients: irt=", interRequestTimeInSeconds, "\n")
+#
+#    return(c("RandNegExp",
+#             sprintf("exponential(%f)", variable),
+#             rexp(1, 1 / variable)))
+# }
 
 
 # ###########################################################################
@@ -190,10 +190,10 @@ simulationConfigurations <- list(
    list("scenarioNetworkLANDelayDistribution",             "mecLANDelayDistribution"),
    list("calcAppPoolElementServiceCapacityDistribution",   "mecCapacityDistribution"),
 
-   list("mecNumberOfMECPoolElements",                   0),    # MEC !!!!!!!!!!!!!!!
+   list("mecNumberOfMECPoolElements",                       4),   # MEC
    list("scenarioNumberOfCalcAppPoolElementsVariable",     10),   # Cloud
 
-   list("calcAppPoolElementSelectionPolicy",               "PriorityLeastUsedDegradation"),
+   list("calcAppPoolElementSelectionPolicy",               "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed", "PriorityLeastUsedDegradation"),
    # "Random", "RoundRobin", "LeastUsed", "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.0001),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.0001),
@@ -203,10 +203,10 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.05),   # 0.05*300 = 15
    list("mecMECCapacityFactor",                            0.5),    # 0.5*300  = 150
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        25, 50),
-   list("calcAppPoolUserServiceJobSizeVariable",           45*300*60),
-   list("calcAppPoolUserServiceJobIntervalVariable",       357.1429),
-   list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 25, 50, 60),
+   list("calcAppPoolUserServiceJobSizeVariable",           75*300*60),
+   list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # ca. 73% utilisation for 50 PUs
+#    list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
    list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)

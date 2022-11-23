@@ -255,7 +255,7 @@ plotPEUtilisation <- function(name, prefix)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances [1]",
+               x     = "Number of Clients [1]",
                y     = "Average Utilisation [%]") +
          facet_grid(calcAppPoolElementSelectionPolicyType + calcAppPoolElementSelectionPolicy ~ lan) +
          geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
@@ -288,7 +288,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
    }
 
    systemAverageHandlingSpeed <- systemAverageHandlingSpeed %>%
-      mutate(controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 1000)
+      mutate(controller.SystemAverageHandlingSpeed = controller.SystemAverageHandlingSpeed / 60)
 
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicyType <- getPolicyType(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
    systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy <- getPolicyAbbreviations(systemAverageHandlingSpeed$calcAppPoolElementSelectionPolicy)
@@ -341,8 +341,8 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances [1]",
-               y     = "Handling Speed [1000 Calculations/s]") +
+               x     = "Number of Clients [1]",
+               y     = "Handling Speed [Work Units/min]") +
          facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
