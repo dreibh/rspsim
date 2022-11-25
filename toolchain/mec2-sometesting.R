@@ -8,7 +8,7 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec2-sometesting"
-simulationRuns <- 1
+simulationRuns <- 3
 simulationDuration <- 7*24*60   # 1 week
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
