@@ -255,7 +255,7 @@ plotPEUtilisation <- function(name, prefix)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances [1]",
+               x     = "Number of Pool User Instances",
                y     = "Average Utilisation [%]") +
          facet_grid(calcAppPoolElementSelectionPolicyType + calcAppPoolElementSelectionPolicy ~ lan) +
          geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
@@ -341,7 +341,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Pool User Instances [1]",
+               x     = "Number of Pool User Instances",
                y     = "Handling Speed [1000 Calculations/s]") +
          facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
