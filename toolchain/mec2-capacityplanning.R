@@ -8,7 +8,7 @@ cloudMaxProcsPerServer <-   4
 
 clients                <-  50
 totalReqsPerMin        <-   7
-reqSize                <- 75*300*60   # Work Units
+reqSize                <- 60*300*60   # Work Units
 
 totalServers        <- mecServers + cloudServers
 totalReqsPerSec     <- totalReqsPerMin / 60

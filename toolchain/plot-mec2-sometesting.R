@@ -255,7 +255,7 @@ plotPEUtilisation <- function(name, prefix)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Clients [1]",
+               x     = "Number of Clients",
                y     = "Average Utilisation [%]") +
          facet_grid(calcAppPoolElementSelectionPolicyType + calcAppPoolElementSelectionPolicy ~ lan) +
          geom_line(aes(color = lan.calcAppPoolElementArray), size = 2) +
@@ -341,7 +341,7 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                panel.background = element_blank(),
                ) +
          labs(title = title,
-               x     = "Number of Clients [1]",
+               x     = "Number of Clients",
                y     = "Handling Speed [Work Units/min]") +
          facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
@@ -549,7 +549,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
               panel.background = element_blank(),
              ) +
-           coord_cartesian(ylim = c(0, 6)) +   # <<-- Sets y-axis limits without dropping values!
+           # coord_cartesian(ylim = c(0, 6)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
            labs(y = "Mean Time [s]") +
            geom_line(aes(color = Policy), size=2) +
