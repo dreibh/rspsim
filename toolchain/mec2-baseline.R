@@ -214,7 +214,7 @@ simulationConfigurations <- list(
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 
-   list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # ca. 58.3% utilisation for 50 PUs
+   list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # 62.5% utilisation for 50 PUs
    # list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
    list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
