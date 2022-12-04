@@ -1,5 +1,5 @@
-mecServers             <-   4
-cloudServers           <-  10
+mecServers             <-   0
+cloudServers           <-  14
 
 mecServerCapacity      <- 150*60   # Work Units/s
 mecMaxProcsPerServer   <-   2
@@ -8,7 +8,7 @@ cloudMaxProcsPerServer <-   4
 
 clients                <-  50
 totalReqsPerMin        <-   7
-reqSize                <- 60*300*60   # Work Units
+reqSize                <- 75*300*60   # Work Units
 
 totalServers        <- mecServers + cloudServers
 totalReqsPerSec     <- totalReqsPerMin / 60
@@ -46,7 +46,7 @@ cat(sep="", "Duration for 1 Work Unit at Full Capacity in Cloud:\t", 3600 / clou
 cat(sep="", "Duration for 1 Work Unit at Full Capacity in MEC:  \t", 3600 / mecServerCapacity,   " s = ", 60 / mecServerCapacity,   " min\n")
 cat(sep="", "\n")
 
-cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Full Capacity in Cloud:   \t",   reqSize / cloudServerCapacity, " s\n")
-cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capacity in Cloud:\t",  reqSize / (cloudServerCapacity / cloudMaxProcsPerServer), " s\n")
-cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Full Capacity in MEC:     \t",  reqSize / mecServerCapacity, " s\n")
-cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capacity in MEC:  \t",  reqSize / (mecServerCapacity / mecMaxProcsPerServer), " s\n")
+cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Full Capacity in Cloud:   \t", reqSize / cloudServerCapacity, " s\n")
+cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capacity in Cloud:\t", reqSize / (cloudServerCapacity / cloudMaxProcsPerServer), " s\n")
+cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Full Capacity in MEC:     \t", reqSize / mecServerCapacity, " s\n")
+cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capacity in MEC:  \t", reqSize / (mecServerCapacity / mecMaxProcsPerServer), " s\n")

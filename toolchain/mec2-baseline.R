@@ -210,14 +210,14 @@ simulationConfigurations <- list(
 
    list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60),
 
-   list("calcAppPoolUserServiceJobSizeVariable",           60*300*60),
+   list("calcAppPoolUserServiceJobSizeVariable",           75*300*60),
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 
    list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # ca. 58.3% utilisation for 50 PUs
    # list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
    list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"), 
-   list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.5*jobSize,1.5*IntervalSize)
+   list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
    list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)
