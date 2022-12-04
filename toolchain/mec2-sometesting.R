@@ -1,6 +1,6 @@
 # ###########################################################################
-# Name:        mec1-test1.R
-# Description: MEC/PMC performance analysis
+# Name:        mec2-sometesting.R
+# Description: Baseline scenario with 10 PMC PEs, 4 MEC PEs
 # ###########################################################################
 
 source("simulate-version14.R")
@@ -33,7 +33,8 @@ mecCalcAppPoolElementsDistribution <- function(currentBlock, totalBlocks,
    }
 
    if(currentBlock == 1) {   # Local: As many PEs as PUs!
-      return(c("mecCalcAppPoolElementsDistribution", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
+      return(c("mecCalcAppPoolElementsDistribution", 0,0 ))   # !!! No PEs on UE !!!
+      # return(c("mecCalcAppPoolElementsDistribution",  as.numeric(scenarioNumberOfCalcAppPoolUsersVariable), as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)))
    }
    else if(currentBlock == 2) {   # MEC
       return(c("mecCalcAppPoolElementsDistribution", as.numeric(mecNumberOfMECPoolElements), as.numeric(mecNumberOfMECPoolElements)))
@@ -193,8 +194,12 @@ simulationConfigurations <- list(
    list("mecNumberOfMECPoolElements",                       4),   # MEC
    list("scenarioNumberOfCalcAppPoolElementsVariable",     10),   # Cloud
 
-   list("calcAppPoolElementSelectionPolicy",               "Random", "RoundRobin", "LeastUsed", "PriorityLeastUsed", "PriorityLeastUsedDegradation"),
-   # "Random", "RoundRobin", "LeastUsed", "LeastUsedDegradation", "PriorityLeastUsed", "PriorityLeastUsedDegradation", "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"),
+   list("calcAppPoolElementSelectionPolicy",               
+     "Random", "RoundRobin",
+     "LeastUsed",
+     "PriorityLeastUsed", "PriorityLeastUsedDegradation"
+     # "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"
+   ),
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.0001),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.0001),
 
@@ -203,10 +208,16 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.05),   # 0.05*300 = 15
    list("mecMECCapacityFactor",                            0.5),    # 0.5*300  = 150
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 25, 50, 60),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60),
+
    list("calcAppPoolUserServiceJobSizeVariable",           75*300*60),
-   list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # ca. 73% utilisation for 50 PUs
-#    list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
+   list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
+
+   list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # ca. 58.3% utilisation for 50 PUs
+   # list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"), 
+   list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
    list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)
