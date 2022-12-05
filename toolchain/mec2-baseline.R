@@ -234,7 +234,7 @@ simulationConfigurations <- list(
 
    list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60),
 
-   list("calcAppPoolUserServiceJobSizeVariable",           450*300*60),   # 6*75=450
+   list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60),   # 9 min at full capacity
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 

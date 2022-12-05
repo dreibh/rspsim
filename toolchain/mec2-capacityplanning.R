@@ -8,7 +8,7 @@ mecMaxProcsPerServer   <-   8
 
 clients                <-  50
 totalReqsPerMin        <- 6.619643 / 6   # From 7day_task_req.csv: mean of 6.619643 in 6 minutes
-reqSize                <- 6*75*300*60    # Work Units
+reqSize                <- 6*90*300*60    # Work Units
 
 totalServers        <- mecServers + cloudServers
 totalReqsPerSec     <- totalReqsPerMin / 60
