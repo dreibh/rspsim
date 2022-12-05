@@ -124,12 +124,11 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
             if(relTimeStamp < 0.0) {
                throw omnetpp::cRuntimeError("Non-monotonous time stamp in %s", avgReqsPerMinuteFileName);
             }
-            std::cout << (unsigned long long)timeStamp << "\t" << relTimeStamp << "\t" << requests << "\n";
+            // std::cout << (unsigned long long)timeStamp << "\t" << relTimeStamp << "\t" << requests << "\n";
 
             AvgReqsPerMinute.push_back(std::make_pair(relTimeStamp, requests));
             Entries++;
          }
-         printf("E=%d\n",(unsigned int)Entries);
       }
       else {
          throw omnetpp::cRuntimeError("Failed to read %s", avgReqsPerMinuteFileName);
@@ -167,10 +166,10 @@ std::string cReqDistFromFile::str() const
 }
 
 // ###### Draw random number ################################################
-static double ST=0.0;
+// static double ST=0.0;
 double cReqDistFromFile::draw() const
 {
-   const double now      = ST ; //omnetpp::simTime().dbl();
+   const double now      = omnetpp::simTime().dbl();
    double       requests = -1.0;
    double       duration = 0.0;
 
@@ -202,14 +201,14 @@ double cReqDistFromFile::draw() const
 
 
 // ###### Function ##########################################################
+static omnetpp::cMersenneTwister myRNG;
+static cReqDistFromFile          myRDFF(&myRNG, nullptr);
 double reqdistfromfile(const char* avgReqsPerMinuteFileName)
 {
-   static omnetpp::cMersenneTwister myRNG;
-   static cReqDistFromFile rdff(&myRNG, nullptr);
-   if(!rdff.isInitialised()) {
-      rdff.createRequestSchedule(avgReqsPerMinuteFileName);
+   if(!myRDFF.isInitialised()) {
+      myRDFF.createRequestSchedule(avgReqsPerMinuteFileName);
    }
-   return rdff.draw();
+   return myRDFF.draw();
 }
 
 
@@ -226,7 +225,7 @@ Define_NED_Function2(nedf_reqdistfromfile,
                      "Draws inter-request time");
 
 
-
+#if 0
 #include <iostream>
 
 using namespace omnetpp;
@@ -245,3 +244,4 @@ int main(int argc, char* argv[])
 
    return 0;
 }
+#endif
