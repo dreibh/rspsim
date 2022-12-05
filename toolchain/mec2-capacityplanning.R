@@ -1,5 +1,5 @@
-cloudServers           <-  10
-mecServers             <-  4
+cloudServers           <-  14
+mecServers             <-  0
 
 cloudServerCapacity    <- 300*60   # Work Units/s
 cloudMaxProcsPerServer <-   4
@@ -7,8 +7,8 @@ mecServerCapacity      <- 600*60   # Work Units/s
 mecMaxProcsPerServer   <-   8
 
 clients                <-  50
-totalReqsPerMin        <-   7
-reqSize                <- 75*300*60   # Work Units
+totalReqsPerMin        <-   7 / 6
+reqSize                <- 6*75*300*60   # Work Units
 
 totalServers        <- mecServers + cloudServers
 totalReqsPerSec     <- totalReqsPerMin / 60
