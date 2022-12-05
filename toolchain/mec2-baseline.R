@@ -151,9 +151,15 @@ testJobIntervalDistribution <- function(currentBlock, totalBlocks,
       stop("testJobIntervalDistribution: Check parameters!")
    }
 
-   return(c("Special",
-            sprintf("truncnormal(%f, %f)", as.numeric(variable), as.numeric(gamma)),
-            NA))
+   minCapacity <- variable / (1 + (gamma - 1))
+   maxCapacity <- gamma * minCapacity
+
+   return(c("RandUniform",
+            sprintf("uniform(%f,%f)", minCapacity, maxCapacity),
+
+#    return(c("Special",
+#             sprintf("truncnormal(%f, %f)", as.numeric(variable), as.numeric(gamma)),
+#             NA))
 }
 
 
@@ -237,7 +243,7 @@ simulationConfigurations <- list(
    # list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
 
    list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
-   list("calcAppPoolUserServiceJobIntervalGamma",          50),         # --> stddev
+   list("calcAppPoolUserServiceJobIntervalGamma",          4),         # --> stddev
    list("calcAppPoolUserServiceJobIntervalDistribution",   "testJobIntervalDistribution"),   # <<-- customised, see function above!
 
 
