@@ -243,12 +243,12 @@ simulationConfigurations <- list(
    # list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"),
    # list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
 
-   # list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 62.5% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
-   # list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 62.5% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
+   list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
 
-   list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
-   list("calcAppPoolUserServiceJobIntervalGamma",          4),         # --> stddev
-   list("calcAppPoolUserServiceJobIntervalDistribution",   "testJobIntervalDistribution"),   # <<-- customised, see function above!
+#    list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
+#    list("calcAppPoolUserServiceJobIntervalGamma",          4),         # --> stddev
+#    list("calcAppPoolUserServiceJobIntervalDistribution",   "testJobIntervalDistribution"),   # <<-- customised, see function above!
 
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
