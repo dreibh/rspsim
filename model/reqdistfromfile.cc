@@ -38,31 +38,6 @@
 
 
 // ###### Function ##########################################################
-static omnetpp::cMersenneTwister myRNG;
-static cReqDistFromFile          myRDFF(&myRNG, nullptr);
-double reqdistfromfile(const char* avgReqsPerMinuteFileName)
-{
-   if(!myRDFF.isInitialised()) {
-      myRDFF.createRequestSchedule(avgReqsPerMinuteFileName);
-   }
-   return myRDFF.draw();
-}
-
-
-// ###### NED function ######################################################
-omnetpp::cValue nedf_reqdistfromfile(omnetpp::cExpression::Context* context, omnetpp::cValue argv[], int argc)
-{
-    std::string avgReqsPerMinuteFileName = argv[0].stringValue();
-    return omnetpp::cValue(reqdistfromfile(avgReqsPerMinuteFileName.c_str()));
-}
-
-Define_NED_Function2(nedf_reqdistfromfile,
-                     "quantity reqdistfromfile(string avgReqsPerMinuteFileName)",
-                     "random/continuous",
-                     "Draws inter-request time");
-
-
-// ###### Function ##########################################################
 double uniformgamma(omnetpp::cRNG* rng, double mean, double gamma)
 {
    const double low  = mean / (1 + ((gamma -1) / 2));
@@ -287,11 +262,36 @@ double cReqDistFromFile::draw() const
    // printf("%u:\t%1.3f @ %1.6f  R/s=%1.6f IRT=%1.6f\n", Index, requests, duration, reqsPerSecond, interRequestTime);
 
    // const double value = omnetpp::truncnormal(rng, interRequestTime, sqrt(interRequestTime));
-   const double value = omnetpp::uniformgamma(rng, interRequestTime, 4.0);
+   const double value = uniformgamma(rng, interRequestTime, 4.0);
 
    // printf("v=%1.6f\n", 50.0*value);
    return value;
 }
+
+
+// ###### Function ##########################################################
+static omnetpp::cMersenneTwister myRNG;
+static cReqDistFromFile          myRDFF(&myRNG, nullptr);
+double reqdistfromfile(const char* avgReqsPerMinuteFileName)
+{
+   if(!myRDFF.isInitialised()) {
+      myRDFF.createRequestSchedule(avgReqsPerMinuteFileName);
+   }
+   return myRDFF.draw();
+}
+
+
+// ###### NED function ######################################################
+omnetpp::cValue nedf_reqdistfromfile(omnetpp::cExpression::Context* context, omnetpp::cValue argv[], int argc)
+{
+    std::string avgReqsPerMinuteFileName = argv[0].stringValue();
+    return omnetpp::cValue(reqdistfromfile(avgReqsPerMinuteFileName.c_str()));
+}
+
+Define_NED_Function2(nedf_reqdistfromfile,
+                     "quantity reqdistfromfile(string avgReqsPerMinuteFileName)",
+                     "random/continuous",
+                     "Draws inter-request time");
 
 
 
