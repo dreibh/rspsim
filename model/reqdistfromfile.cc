@@ -222,9 +222,11 @@ double cReqDistFromFile::draw() const
    const double reqsPerSecond    = requests / duration;
    const double interRequestTime = 1.0 / reqsPerSecond;
 
-   printf("%u:\t%1.3f @ %1.6f  R/s=%1.6f IRT=%1.6f\n", Index, requests, duration, reqsPerSecond, interRequestTime);
+   // printf("%u:\t%1.3f @ %1.6f  R/s=%1.6f IRT=%1.6f\n", Index, requests, duration, reqsPerSecond, interRequestTime);
 
-   return omnetpp::truncnormal(rng, interRequestTime, sqrt(interRequestTime));
+   const double value = omnetpp::truncnormal(rng, interRequestTime, sqrt(interRequestTime));
+   // printf("v=%1.6f\n", 50.0*value);
+   return value;
 }
 
 

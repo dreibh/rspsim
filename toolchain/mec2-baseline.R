@@ -136,32 +136,25 @@ mecCapacityDistribution <- function(currentBlock, totalBlocks,
 }
 
 
-# # ###### Workload distribution ##############################################
-# customJobIntervalDistribution <- function(currentBlock, totalBlocks,
-#                                           currentElement, totalElements,
-#                                           variable, gamma, lambda)
-# {
-#    variable <- as.numeric(variable)
-#    gamma    <- as.numeric(gamma)
-#    lambda   <- as.numeric(lambda)
-#
-#    if((currentBlock < 1) || (currentBlock > totalBlocks) ||
-#       (currentElement < 1) || (currentElement > totalElements) ||
-#       (variable <= 0.0)) {
-#       stop("customWorkloadDistribution: Check parameters!")
-#    }
-#
-#
-#    reqsPerPUperSecond        <- (as.numeric(totalRequestsPerMinute) / as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)) / 60
-#    interRequestTimeInSeconds <- 1 / reqsPerPUperSecond
-#    variable <- interRequestTimeInSeconds
-#
-#    cat(sep="", scenarioNumberOfCalcAppPoolUsersVariable, " clients: irt=", interRequestTimeInSeconds, "\n")
-#
-#    return(c("RandNegExp",
-#             sprintf("exponential(%f)", variable),
-#             rexp(1, 1 / variable)))
-# }
+# ###### Workload distribution ##############################################
+reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
+                                                   currentElement, totalElements,
+                                                   variable, gamma, lambda)
+{
+   variable <- as.numeric(variable)
+   gamma    <- as.numeric(gamma)
+   lambda   <- as.numeric(lambda)
+
+   if((currentBlock < 1) || (currentBlock > totalBlocks) ||
+      (currentElement < 1) || (currentElement > totalElements) ||
+      (variable != 0.0)) {
+      stop("customWorkloadDistribution: Check parameters!")
+   }
+
+   return(c("Special",
+            sprintf("reqdistfromfile(\"7day_task_req.csv\") * %d", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)),
+            NA))
+}
 
 
 # ###########################################################################
@@ -214,10 +207,14 @@ simulationConfigurations <- list(
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 
-   list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
-   # list("calcAppPoolUserServiceJobIntervalDistribution",   "customJobIntervalDistribution"),   # <<-- customised, see function above!
-   list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"), 
-   list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
+
+   # list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
+   # list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"),
+   # list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
+
+   list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 62.5% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
+   list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
    list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)
@@ -229,6 +226,8 @@ simulationConfigurations <- list(
    list("SPECIAL1", "gammaScenario.lan[1].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.10"),   # MEC: 10%
    list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 20%
 )
+
+simCreatorMiscFiles <- list(c("7day_task_req.csv", "."))   # <<-- The requests CSV file
 
 # ###########################################################################
 
