@@ -183,7 +183,7 @@ reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
    }
 
    return(c("Special",
-            sprintf("reqdistfromfile(\"7day_task_req.csv\") * %f", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)),
+            sprintf("reqdistfromfile(\"7day_task_req.csv\") * %f", as.numeric(gamma)),
             NA))
 }
 
@@ -245,6 +245,7 @@ simulationConfigurations <- list(
 
    list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 62.5% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
    list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("calcAppPoolUserServiceJobIntervalGamma",          50),
 
 #    list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
 #    list("calcAppPoolUserServiceJobIntervalGamma",          4),         # --> stddev
