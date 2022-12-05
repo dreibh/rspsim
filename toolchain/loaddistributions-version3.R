@@ -228,7 +228,7 @@ workloadUniformRandomizedDistribution <- function(currentBlock, totalBlocks,
        stop("workloadUniformRandomizedDistribution: gamma must be >= 1.0!")
    }
 
-   minCapacity <- variable / (1 + (gamma - 1))
+   minCapacity <- variable / (1 + ((gamma -1) / 2))
    maxCapacity <- gamma * minCapacity
 
    return(c("RandUniform",
