@@ -50,3 +50,14 @@ cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Full Capacity 
 cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capacity in Cloud:\t", reqSize / (cloudServerCapacity / cloudMaxProcsPerServer), " s\n")
 cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Full Capacity in MEC:     \t", reqSize / mecServerCapacity, " s\n")
 cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capacity in MEC:  \t", reqSize / (mecServerCapacity / mecMaxProcsPerServer), " s\n")
+
+
+
+variable <- 2500
+gamma    <- 4
+
+minCapacity <- variable / (1 + ((gamma -1) / 2))
+maxCapacity <- gamma * minCapacity
+
+cat(sep="\t", variable, minCapacity, maxCapacity, "\n")
+print(mean(runif(10000, minCapacity, maxCapacity)))
