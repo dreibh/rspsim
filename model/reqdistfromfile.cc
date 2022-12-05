@@ -255,6 +255,42 @@ Define_NED_Function2(nedf_reqdistfromfile,
                      "Draws inter-request time");
 
 
+// ###### Function ##########################################################
+double uniformgamma(omnetpp::cRNG* rng, double mean, double gamma)
+{
+   const double low  = mean / (1 + ((gamma -1) / 2));
+   const double high = gamma * low;
+   return omnetpp::uniform(rng, low, high);
+}
+
+
+// ###### NED function ######################################################
+omnetpp::cValue nedf_uniformgamma(omnetpp::cComponent* contextComponent, omnetpp::cValue argv[], int argc)
+{
+   if(!contextComponent) {
+      throw omnetpp::cRuntimeError("No context component");
+   }
+   int rng = argc == 3 ? (int)argv[2] : 0;
+
+   const double mean  = argv[0].doubleValueRaw();
+   const double gamma = argv[1].doubleValueInUnit(argv[0].getUnit());
+
+   const double low   = mean / (1 + ((gamma -1) / 2));
+   const double high  = gamma * low;
+
+   const double drawn = contextComponent->uniform(low, high, rng);
+
+   // printf("%1.6f %1.6f mean=%1.6f gamma=%1.6f => %1.6f\n", low, high, mean, gamma, drawn);
+
+   return omnetpp::cValue(drawn);
+}
+
+Define_NED_Function2(nedf_uniformgamma,
+                     "quantity uniformgamma(quantity mean, quantity gamma, int rng?)",
+                     "random/continuous",
+                     "Returns a random number from the Uniform distribution, using gamma parameter");
+
+
 #if 0
 #include <iostream>
 

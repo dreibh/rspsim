@@ -151,10 +151,14 @@ testJobIntervalDistribution <- function(currentBlock, totalBlocks,
       stop("testJobIntervalDistribution: Check parameters!")
    }
 
-   minCapacity <- variable / (1 + ((gamma -1) / 2))
-   maxCapacity <- gamma * minCapacity
-   return(c("RandUniform",
-            sprintf("uniform(%f,%f)", minCapacity, maxCapacity),
+#    minCapacity <- variable / (1 + ((gamma -1) / 2))
+#    maxCapacity <- gamma * minCapacity
+#    return(c("RandUniform",
+#             sprintf("uniform(%f,%f)", minCapacity, maxCapacity),
+#             NA))
+
+   return(c("Special",
+            sprintf("uniformgamma(%f, %f)", as.numeric(variable), as.numeric(gamma)),
             NA))
 
 #    return(c("Special",
