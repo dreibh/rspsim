@@ -232,7 +232,7 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.05),   # 0.05*300 = 15
    list("mecMECCapacityFactor",                            0.5),    # 0.5*300  = 150
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60, 70),
 
    list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60),   # 9 min at full capacity
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
