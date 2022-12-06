@@ -9,7 +9,7 @@ source("simulate-version14.R")
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec2-sometesting"
 simulationRuns <- 3
-simulationDuration <- 7*24*60   # 1 week
+simulationDuration <- 7*24*60 - 21   # 1 week - 21 min
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
 simulationScriptOutputVerbosity <- 3
@@ -137,6 +137,37 @@ mecCapacityDistribution <- function(currentBlock, totalBlocks,
 
 
 # ###### Workload distribution ##############################################
+testJobIntervalDistribution <- function(currentBlock, totalBlocks,
+                                        currentElement, totalElements,
+                                        variable, gamma, lambda)
+{
+   variable <- as.numeric(variable)
+   gamma    <- as.numeric(gamma)
+   lambda   <- as.numeric(lambda)
+
+   if((currentBlock < 1) || (currentBlock > totalBlocks) ||
+      (currentElement < 1) || (currentElement > totalElements) ||
+      (variable <= 0.0)) {
+      stop("testJobIntervalDistribution: Check parameters!")
+   }
+
+#    minCapacity <- variable / (1 + ((gamma -1) / 2))
+#    maxCapacity <- gamma * minCapacity
+#    return(c("RandUniform",
+#             sprintf("uniform(%f,%f)", minCapacity, maxCapacity),
+#             NA))
+
+   return(c("Special",
+            sprintf("uniformgamma(%f, %f)", as.numeric(variable), as.numeric(gamma)),
+            NA))
+
+#    return(c("Special",
+#             sprintf("truncnormal(%f, %f)", as.numeric(variable), as.numeric(gamma)),
+#             NA))
+}
+
+
+# ###### Workload distribution ##############################################
 reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
                                                    currentElement, totalElements,
                                                    variable, gamma, lambda)
@@ -147,12 +178,12 @@ reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
 
    if((currentBlock < 1) || (currentBlock > totalBlocks) ||
       (currentElement < 1) || (currentElement > totalElements) ||
-      (variable <= 0.0)) {
-      stop("customWorkloadDistribution: Check parameters!")
+      (variable != 0.0)) {
+      stop("reqdistfromfileJobIntervalDistribution: Check parameters!")
    }
 
    return(c("Special",
-            sprintf("reqdistfromfile(\"7day_task_req.csv\") * %d", as.numeric(scenarioNumberOfCalcAppPoolUsersVariable)),
+            sprintf("reqdistfromfile(\"7day_task_req.csv\") * %f", as.numeric(gamma)),
             NA))
 }
 
@@ -184,8 +215,8 @@ simulationConfigurations <- list(
    list("scenarioNetworkLANDelayDistribution",             "mecLANDelayDistribution"),
    list("calcAppPoolElementServiceCapacityDistribution",   "mecCapacityDistribution"),
 
-   list("mecNumberOfMECPoolElements",                       4),   # MEC
-   list("scenarioNumberOfCalcAppPoolElementsVariable",     10),   # Cloud
+   list("mecNumberOfMECPoolElements",                      10),   # MEC
+   list("scenarioNumberOfCalcAppPoolElementsVariable",      4),   # Cloud
 
    list("calcAppPoolElementSelectionPolicy",               
      "Random", "RoundRobin",
@@ -201,18 +232,25 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.05),   # 0.05*300 = 15
    list("mecMECCapacityFactor",                            1.5),    # 1.5*300  = 450
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60),   # , 70, 80, 90, 100
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60, 70),
 
-   list("calcAppPoolUserServiceJobSizeVariable",           75*300*60),
+   list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60),   # 9 min at full capacity
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 
-   list("calcAppPoolUserServiceJobIntervalVariable",       428.5714),   # 62.5% utilisation for 50 PUs
-   list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"),
-   list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
 
-   # list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # 62.5% utilisation for 50 PUs
-   # list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+   # list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
+   # list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"),
+   # list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
+
+   list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 62.5% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
+   list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("calcAppPoolUserServiceJobIntervalGamma",          50),
+
+#    list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 62.5% utilisation for 50 PUs
+#    list("calcAppPoolUserServiceJobIntervalGamma",          4),         # --> stddev
+#    list("calcAppPoolUserServiceJobIntervalDistribution",   "testJobIntervalDistribution"),   # <<-- customised, see function above!
+
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
    list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)
