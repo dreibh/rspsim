@@ -266,9 +266,9 @@ plotPEUtilisation <- function(name, prefix)
          geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                      size=0.01, linetype=2, alpha=0.05) +
          scale_color_manual(values = rep("blue", 1024)) +
-         # Capacity planning baseline:
-         geom_vline(xintercept=50, linetype="dotted", color="red", size=2) +
-         geom_hline(yintercept=70.92475, linetype="dotted", color="red", size=2) +
+         # Capacity planning sometesting:
+         geom_vline(xintercept=50, linetype="dotted", color="red", size=2.5) +
+         geom_hline(yintercept=70.92475, linetype="dotted", color="red", size=2.5) +
          # Axis ticks:
          scale_y_continuous(breaks=seq(floor(min(summarised$MeanCalcAppPEUtilisation) / 10) * 10,
                                        ceiling(max(summarised$MeanCalcAppPEUtilisation) / 10) * 10, 10)) +
@@ -365,8 +365,9 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
          geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                      size=0.01, linetype=2, alpha=0.1) +
          scale_color_manual(values = plotColours) +
-         # Capacity planning baseline:
-         geom_vline(xintercept=50, linetype="dotted", color="red", size=2) +
+         # Capacity planning sometesting:
+         geom_vline(xintercept=50, linetype="dotted", color="red", size=2.5) +
+         geom_hline(yintercept=300, linetype="dashed", color="purple", size=2.5) +
          # Axis ticks:
          scale_y_continuous(breaks=seq(floor(min(summarised$MeanCalcAppPUHandlingSpeed) / 25) * 25,
                                        ceiling(max(summarised$MeanCalcAppPUHandlingSpeed) / 25) * 25, 25)) +
@@ -588,6 +589,6 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
 # ###### Main program #######################################################
 
-dataUtilisation   <- plotPEUtilisation("mec2-baseline/Results", "MEC2")
-dataHandlingSpeed <- plotPUHandlingSpeed("mec2-baseline/Results", "MEC2")
-summary           <- computeDelays("mec2-baseline/Results", "MEC2")
+dataUtilisation   <- plotPEUtilisation("mec2-sometesting/Results", "MEC2")
+dataHandlingSpeed <- plotPUHandlingSpeed("mec2-sometesting/Results", "MEC2")
+summary           <- computeDelays("mec2-sometesting/Results", "MEC2")
