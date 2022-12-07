@@ -194,7 +194,7 @@ plotPEUtilisation <- function(name, prefix)
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=12, height=17.5, family="Helvetica", pointsize=32)
+             width=15, height=17.5, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -252,7 +252,7 @@ plotPEUtilisation <- function(name, prefix)
                panel.spacing    = unit(1, "cm"),
                panel.grid.major = element_line(size=0.4, colour = "black"),
                panel.grid.minor = element_line(size=0.2, colour = "gray"),
-               panel.background = element_blank(),
+               panel.background = element_rect(fill="white", color="black", size=2)
                ) +
          labs(title = title,
                x     = "Number of Clients",
@@ -265,7 +265,17 @@ plotPEUtilisation <- function(name, prefix)
                         size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPEUtilisation, ymax = Q90CalcAppPEUtilisation, color=lan.calcAppPoolElementArray),
                      size=0.01, linetype=2, alpha=0.05) +
-         scale_color_manual(values = rep("blue", 1024))
+         scale_color_manual(values = rep("blue", 1024)) +
+         # Capacity planning baseline:
+         geom_vline(xintercept=50, linetype="dotted", color="red", size=2.5) +
+         # geom_hline(yintercept=70.92475, linetype="dotted", color="red", size=2.5) +
+         # Axis ticks:
+         scale_y_continuous(breaks=seq(floor(min(summarised$MeanCalcAppPEUtilisation) / 10) * 10,
+                                       ceiling(max(summarised$MeanCalcAppPEUtilisation) / 10) * 10, 10)) +
+         scale_x_continuous(breaks=seq(floor(min(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 10) * 10,
+                                       ceiling(max(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 10) * 10, 10),
+                            minor_breaks=seq(floor(min(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 5) * 5,
+                                       ceiling(max(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 5) * 5, 5))
 
    print(p)
 
@@ -338,12 +348,12 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                panel.spacing    = unit(1, "cm"),
                panel.grid.major = element_line(size=0.4, colour = "black"),
                panel.grid.minor = element_line(size=0.2, colour = "gray"),
-               panel.background = element_blank(),
+               panel.background = element_rect(fill="white", color="black", size=2)
                ) +
          labs(title = title,
                x     = "Number of Clients",
                y     = "Handling Speed [Work Units/min]") +
-         facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
+         # facet_wrap( ~ calcAppPoolElementSelectionPolicyType, nrow = 3) +
          geom_line(aes(color = calcAppPoolElementSelectionPolicy), size = 2) +
          geom_errorbar(aes(ymin = MinCalcAppPUHandlingSpeed, ymax = MaxCalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                         size=0.5, width=.5) +
@@ -351,7 +361,17 @@ plotPUHandlingSpeed <- function(name, prefix, createPDF = TRUE)
                         size=1.5, width=.25) +
          geom_ribbon(aes(ymin = Q10CalcAppPUHandlingSpeed, ymax = Q90CalcAppPUHandlingSpeed, color = calcAppPoolElementSelectionPolicy),
                      size=0.01, linetype=2, alpha=0.1) +
-         scale_color_manual(values = plotColours)
+         scale_color_manual(values = plotColours) +
+         # Capacity planning baseline:
+         geom_vline(xintercept=50, linetype="dotted", color="red", size=2.5) +
+         geom_hline(yintercept=300, linetype="dashed", color="purple", size=2.5) +
+         # Axis ticks:
+         scale_y_continuous(breaks=seq(floor(min(summarised$MeanCalcAppPUHandlingSpeed) / 25) * 25,
+                                       ceiling(max(summarised$MeanCalcAppPUHandlingSpeed) / 25) * 25, 25)) +
+         scale_x_continuous(breaks=seq(floor(min(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 10) * 10,
+                                       ceiling(max(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 10) * 10, 10),
+                            minor_breaks=seq(floor(min(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 5) * 5,
+                                       ceiling(max(summarised$scenarioNumberOfCalcAppPoolUsersVariable) / 5) * 5, 5))
 
    print(p)
 
@@ -502,7 +522,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               panel.spacing    = unit(1, "cm"),
               panel.grid.major = element_line(size=0.4, colour = "black"),
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
-              panel.background = element_blank(),
+              panel.background = element_rect(fill="white", color="black", size=2)
              ) +
            scale_fill_manual("", values=plotColours) +
            facet_grid( ~ PUs) +
@@ -547,7 +567,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               panel.spacing    = unit(1, "cm"),
               panel.grid.major = element_line(size=0.4, colour = "black"),
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
-              panel.background = element_blank(),
+              panel.background = element_rect(fill="white", color="black", size=2)
              ) +
            # coord_cartesian(ylim = c(0, 6)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
