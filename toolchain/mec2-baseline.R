@@ -8,7 +8,7 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec2-baseline"
-simulationRuns <- 3
+simulationRuns <- 12
 simulationDuration <- 7*24*60 - 21   # 1 week - 21 min
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
@@ -232,7 +232,8 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.05),   # 0.05*300 = 15
    list("mecMECCapacityFactor",                            0.5),    # 0.5*300  = 150
 
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60, 70),
+   # list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60, 70),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80),
 
    list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60),   # 9 min at full capacity
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
