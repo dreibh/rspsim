@@ -31,7 +31,7 @@ p <- ggplot(data) +
               panel.spacing    = unit(1, "cm"),
               panel.grid.major = element_line(size=0.4, colour = "black"),
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
-              panel.background = element_blank(),
+              panel.background = element_rect(fill="white", color="black", size=2)
              ) +
         labs(x = "Time [h]",
              y = "Requests") +

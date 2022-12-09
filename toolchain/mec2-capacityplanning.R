@@ -1,5 +1,5 @@
-cloudServers           <-  14
-mecServers             <-  0
+cloudServers           <-  10
+mecServers             <-  4
 
 cloudServerCapacity    <- 300*60   # Work Units/s
 cloudMaxProcsPerServer <-   4
@@ -53,11 +53,11 @@ cat(sep="", "Duration for 1 Request (", reqSize, " Work Units) at Minimum Capaci
 
 
 
-variable <- 2500
-gamma    <- 4
-
-minCapacity <- variable / (1 + ((gamma -1) / 2))
-maxCapacity <- gamma * minCapacity
-
-cat(sep="\t", variable, minCapacity, maxCapacity, "\n")
-print(mean(runif(10000, minCapacity, maxCapacity)))
+# variable <- 2500
+# gamma    <- 4
+#
+# minCapacity <- variable / (1 + ((gamma -1) / 2))
+# maxCapacity <- gamma * minCapacity
+#
+# cat(sep="\t", variable, minCapacity, maxCapacity, "\n")
+# print(mean(runif(10000, minCapacity, maxCapacity)))

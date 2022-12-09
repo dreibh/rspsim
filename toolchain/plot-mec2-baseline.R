@@ -194,7 +194,7 @@ plotPEUtilisation <- function(name, prefix)
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
    cairo_pdf(paste(sep="", name, "-", prefix, "-Utilisation.pdf"),
-             width=15, height=17.5, family="Helvetica", pointsize=32)
+             width=7.5, height=17.5, family="Helvetica", pointsize=32)
 
    title <- ""
 
@@ -569,7 +569,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
               panel.grid.minor = element_line(size=0.2, colour = "gray"),
               panel.background = element_rect(fill="white", color="black", size=2)
              ) +
-           # coord_cartesian(ylim = c(0, 6)) +   # <<-- Sets y-axis limits without dropping values!
+           coord_cartesian(ylim = c(0, 2000)) +   # <<-- Sets y-axis limits without dropping values!
            facet_grid(PolicyType ~ Variable) +
            labs(y = "Mean Time [s]") +
            geom_line(aes(color = Policy), size=2) +
