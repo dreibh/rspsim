@@ -220,9 +220,9 @@ simulationConfigurations <- list(
 
    list("calcAppPoolElementSelectionPolicy",
      "Random", "RoundRobin",
-     "LeastUsed",
-     "PriorityLeastUsed", "PriorityLeastUsedDegradation"
-     # "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"
+     "LeastUsed", "LeastUsedDegradation",
+     "PriorityLeastUsed", "PriorityLeastUsedDegradation",
+     "PriorityLeastUsedDPF", "PriorityLeastUsedDegradationDPF"
    ),
    list("calcAppPoolElementSelectionPolicyLoadDPF",        0.0001),
    list("calcAppPoolElementSelectionPolicyWeightDPF",      0.0001),
