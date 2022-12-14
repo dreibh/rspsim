@@ -1,5 +1,5 @@
 # ###########################################################################
-# Name:        mec2-sometesting.R
+# Name:        mec2-ec.R
 # Description: Baseline scenario with 10 PMC PEs, 4 MEC PEs
 # ###########################################################################
 
@@ -7,7 +7,7 @@ source("simulate-version14.R")
 
 
 # ====== Simulation Settings ================================================
-simulationDirectory <- "mec2-sometesting"
+simulationDirectory <- "mec2-ec"
 simulationRuns <- 12
 simulationDuration <- 7*24*60 - 21   # 1 week - 21 min
 simulationStoreVectors <- FALSE

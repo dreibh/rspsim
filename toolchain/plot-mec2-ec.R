@@ -586,6 +586,6 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
 # ###### Main program #######################################################
 
-dataUtilisation   <- plotPEUtilisation("mec2-sometesting/Results",   "MEC2-EC")
-dataHandlingSpeed <- plotPUHandlingSpeed("mec2-sometesting/Results", "MEC2-EC")
-summary           <- computeDelays("mec2-sometesting/Results",       "MEC2-EC")
+dataUtilisation   <- plotPEUtilisation("mec2-ec/Results",   "MEC2-EC")
+dataHandlingSpeed <- plotPUHandlingSpeed("mec2-ec/Results", "MEC2-EC")
+summary           <- computeDelays("mec2-ec/Results",       "MEC2-EC")
