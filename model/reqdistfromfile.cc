@@ -92,7 +92,7 @@ template <typename TimePoint> bool stringToTimePoint(
    }
 
    // ====== Handle fractional seconds ======================================
-   double f;
+   double f = 0.0;
    if( (iss.peek() == '.') && (!(iss >> f)) )  {
       return false;
    }
@@ -159,6 +159,7 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
          std::string line;
          getline(is, line);   // Skip header
 
+         int    avgReqsColumn = -1;
          double baseTimeStamp = -1.0;
          while(getline(is, line)) {
             std::stringstream ss(line);
@@ -166,6 +167,24 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
             std::vector<std::string> tuple;
             while(getline(ss, token, ',')) {
                tuple.push_back(token);
+            }
+            if(tuple.size() < 2) {
+               tuple.clear();
+               ss = std::stringstream(line);
+               while(getline(ss, token, '\t')) {
+                  tuple.push_back(token);
+               }
+            }
+            if(tuple.size() < 2) {
+               throw omnetpp::cRuntimeError("Syntax error in %s\n", avgReqsPerMinuteFileName);
+            }
+            if(avgReqsColumn < 0) {
+               avgReqsColumn = tuple.size() - 1;
+            }
+            else {
+               if(avgReqsColumn != tuple.size() - 1) {
+                  throw omnetpp::cRuntimeError("Unexpected number of rows in %s\n", avgReqsPerMinuteFileName);
+               }
             }
 
             std::chrono::time_point<std::chrono::high_resolution_clock> timePoint;
@@ -178,8 +197,8 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
                1000000.0;
 
             std::size_t pos;
-            const unsigned int requests = std::stoul(tuple[1], &pos);
-            assert(pos == tuple[1].size());
+            const double requests = std::stod(tuple[avgReqsColumn], &pos);
+            assert(pos == tuple[avgReqsColumn].size());
 
             if(baseTimeStamp < 0.0) {
                baseTimeStamp = timeStamp;
