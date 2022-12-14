@@ -1,5 +1,5 @@
 # ###########################################################################
-# Name:        mec2-ec.R
+# Name:        mec2-1hr.R
 # Description: Baseline scenario with 10 PMC PEs, 4 MEC PEs
 # ###########################################################################
 
@@ -7,9 +7,9 @@ source("simulate-version14.R")
 
 
 # ====== Simulation Settings ================================================
-simulationDirectory <- "mec2-ec"
+simulationDirectory <- "mec2-1hr"
 simulationRuns <- 12
-simulationDuration <- 7*24*60 - 21   # 1 week - 21 min
+simulationDuration <- 1*60 - 21   # 1 hour - 21 min
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
 simulationScriptOutputVerbosity <- 3
@@ -183,7 +183,7 @@ reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
    }
 
    return(c("Special",
-            sprintf("reqdistfromfile(\"7day_task_req.csv\") * %f", as.numeric(gamma)),
+            sprintf("reqdistfromfile(\"1hr.csv\") * %f", as.numeric(gamma)),
             NA))
 }
 
@@ -218,7 +218,7 @@ simulationConfigurations <- list(
    list("mecNumberOfMECPoolElements",                      10),   # MEC
    list("scenarioNumberOfCalcAppPoolElementsVariable",      4),   # Cloud
 
-   list("calcAppPoolElementSelectionPolicy",
+   list("calcAppPoolElementSelectionPolicy",               
      "Random", "RoundRobin",
      "LeastUsed",
      "PriorityLeastUsed", "PriorityLeastUsedDegradation"
@@ -232,11 +232,11 @@ simulationConfigurations <- list(
    list("mecLocalCapacityFactor",                          0.05),   # 0.05*300 = 15
    list("mecMECCapacityFactor",                            1.5),    # 1.5*300  = 450
 
-   # list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60, 70),
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        20, 50, 80),
+   # list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80),
 
    list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60),   # 9 min at full capacity
-   list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"),
+   list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 
 
@@ -263,7 +263,7 @@ simulationConfigurations <- list(
    list("SPECIAL2", "gammaScenario.lan[2].calcAppPoolElementArray[*].calcAppServer.selectionPolicyLoadDegradation = 0.20")    # Cloud: 20%
 )
 
-simCreatorMiscFiles <- list(c("7day_task_req.csv", "."))   # <<-- The requests CSV file
+simCreatorMiscFiles <- list(c("1hr.csv", "."))   # <<-- The requests CSV file
 
 # ###########################################################################
 

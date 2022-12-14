@@ -189,7 +189,7 @@ bold.html <- function(text) {
 # ###### Plot results #######################################################
 systemSummaryTable <- function(name, prefix)
 {
-   name <- "mec2-ec/Results"
+   name <- "mec2-1hr/Results"
    calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
@@ -661,7 +661,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
 # ###### Main program #######################################################
 
-systemSummary     <- systemSummaryTable("mec2-ec/Results",  "MEC2-EC")
-dataUtilisation   <- plotPEUtilisation("mec2-ec/Results",   "MEC2-EC")
-dataHandlingSpeed <- plotPUHandlingSpeed("mec2-ec/Results", "MEC2-EC")
-summary           <- computeDelays("mec2-ec/Results",       "MEC2-EC")
+systemSummary     <- systemSummaryTable("mec2-1hr/Results",  "MEC2-EC")
+dataUtilisation   <- plotPEUtilisation("mec2-1hr/Results",   "MEC2-EC")
+dataHandlingSpeed <- plotPUHandlingSpeed("mec2-1hr/Results", "MEC2-EC")
+summary           <- computeDelays("mec2-1hr/Results",       "MEC2-EC")
