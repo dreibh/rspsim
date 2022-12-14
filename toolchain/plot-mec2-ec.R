@@ -187,6 +187,81 @@ bold.html <- function(text) {
 
 
 # ###### Plot results #######################################################
+systemSummaryTable <- function(name, prefix)
+{
+   name <- "mec2-ec/Results"
+   calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
+   calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
+
+   calcAppPUAverageHandlingTime <- readResults(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageHandlingTime.data.bz2"))
+   calcAppPUAverageQueuingDelay <- readResults(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageQueuingDelay.data.bz2"))
+   calcAppPUAverageStartupDelay <- readResults(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageStartupDelay.data.bz2"))
+   calcAppPUAverageProcessingTime <- readResults(paste(sep="/", name, "lan.calcAppPoolUserArray.calcAppQueuingClient-CalcAppPUAverageProcessingTime.data.bz2"))
+
+   # ====== Calculate utilisation ===========================================
+   utilisation <- data.table(utilisation = 100.0 * calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray.calcAppServer.CalcAppPETotalUsedCapacity /
+                               (calcAppPETotalUsedCapacity$lan.calcAppPoolElementArray.calcAppServer.CalcAppPETotalUsedCapacity + calcAppPETotalWastedCapacity$lan.calcAppPoolElementArray.calcAppServer.CalcAppPETotalWastedCapacity))
+   calcAppPETotalUsedCapacity <- cbind(calcAppPETotalUsedCapacity, utilisation)
+
+
+   # ====== Aggregate utilisation ===========================================
+   PUs <- c(20, 50, 80)
+
+   aggregation <- calcAppPETotalUsedCapacity %>%
+                     filter(scenarioNumberOfCalcAppPoolUsersVariable %in% PUs) %>%
+                     select(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy, lan, utilisation) %>%
+                     group_by(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy, lan) %>%
+                     summarise(.groups         = "keep",
+                               utilisationMean = mean(utilisation))
+
+   aggregationMEC <- aggregation %>% filter(lan == 1) %>% rename(utilisationMeanMEC = utilisationMean)
+   aggregationPMC <- aggregation %>% filter(lan == 2) %>% rename(utilisationMeanPMC = utilisationMean)
+   aggregation <- merge(aggregationMEC, aggregationPMC, by=c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy")) %>%
+                     group_by(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy) %>%
+                     select(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy, utilisationMeanMEC, utilisationMeanPMC)
+
+
+   # ====== Aggregate times ===========================================
+   prep <- function(data, key) {
+      return(data %>%
+                filter(scenarioNumberOfCalcAppPoolUsersVariable %in% PUs) %>%
+                select(c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy", all_of(key))) %>%
+                group_by(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy) %>%
+                summarise(.groups = "keep",
+                          time    =  mean(eval(parse(text=key)))
+                         )
+            )
+   }
+# #    a <- calcAppPUAverageHandlingTime %>% select("lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageHandlingTime")
+
+   a <- prep(calcAppPUAverageQueuingDelay, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay") %>%
+           rename(AvgQueuingTime = time)
+   b <- prep(calcAppPUAverageStartupDelay, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay") %>%
+           rename(AvgStartupSpeed = time)
+   c <- prep(calcAppPUAverageProcessingTime, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime") %>%
+           rename(AvgProcessingTime = time)
+   d <- prep(calcAppPUAverageHandlingTime, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageHandlingTime") %>%
+           rename(AvgHandlingTime = time)
+
+   combined <- aggregation %>%
+                  merge(a, by=c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy")) %>%
+                  merge(b, by=c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy")) %>%
+                  merge(c, by=c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy")) %>%
+                  merge(d, by=c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy")) %>%
+                  mutate(calcAppPoolElementSelectionPolicy = getPolicyAbbreviations(calcAppPoolElementSelectionPolicy)) %>%
+                  rename("Clients" = scenarioNumberOfCalcAppPoolUsersVariable,
+                         "Policy"  = calcAppPoolElementSelectionPolicy,
+                         "Util. Fog"     = utilisationMeanMEC,
+                         "Util. Cloud"   = utilisationMeanPMC)
+
+
+   # ====== Aggregate times =================================================
+   writeTable(combined,
+               name, prefix, "Summary", "Server Utilisation and Client Request Times")
+}
+
+
+# ###### Plot results #######################################################
 plotPEUtilisation <- function(name, prefix)
 {
    # ====== Plot as PDF file ================================================
@@ -586,6 +661,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
 # ###### Main program #######################################################
 
+systemSummary     <- systemSummaryTable("mec2-ec/Results",  "MEC2-EC")
 dataUtilisation   <- plotPEUtilisation("mec2-ec/Results",   "MEC2-EC")
 dataHandlingSpeed <- plotPUHandlingSpeed("mec2-ec/Results", "MEC2-EC")
 summary           <- computeDelays("mec2-ec/Results",       "MEC2-EC")
