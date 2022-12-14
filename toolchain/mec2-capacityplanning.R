@@ -1,5 +1,5 @@
-cloudServers           <-  10
-mecServers             <-  4
+cloudServers           <-  14
+mecServers             <-  0
 
 cloudServerCapacity    <- 300*60   # Work Units/s
 cloudMaxProcsPerServer <-   4

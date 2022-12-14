@@ -7,9 +7,9 @@ source("simulate-version14.R")
 
 
 # ====== Simulation Settings ================================================
-simulationDirectory <- "mec2-ec"
-simulationRuns <- 12
-simulationDuration <- 7*24*60 - 21   # 1 week - 21 min
+simulationDirectory <- "mec2-test"
+simulationRuns <- 24
+simulationDuration <- 1*60   # !!!!! 7*24*60 - 21   # 1 week - 21 min
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
 simulationScriptOutputVerbosity <- 3
@@ -233,24 +233,28 @@ simulationConfigurations <- list(
    list("mecMECCapacityFactor",                            1.5),    # 1.5*300  = 450
 
    # list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 20, 30, 40, 50, 60, 70),
-   list("scenarioNumberOfCalcAppPoolUsersVariable",        1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80),
+   list("scenarioNumberOfCalcAppPoolUsersVariable",        10, 50, 60),
 
-   list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60),   # 9 min at full capacity
+   list("calcAppPoolUserServiceJobSizeVariable",           6*90*300*60 / 168),   # 9 min at full capacity
    list("calcAppPoolUserServiceJobSizeDistribution",       "workloadUniformRandomizedDistribution"), 
    list("calcAppPoolUserServiceJobSizeGamma",              4),   # --> uniform(0.5*jobSize,1.5*jobSize)
 
 
-   # list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 70.92475% utilisation for 50 PUs
-   # list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"),
-   # list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
+   list("calcAppPoolUserServiceJobIntervalVariable",       2571.429 / 168),   # 70.92475% utilisation for 50 PUs
+   list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadExponentialRandomizedDistribution"),
 
-   list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 70.92475% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
-   list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
-   list("calcAppPoolUserServiceJobIntervalGamma",          50),
+#    list("calcAppPoolUserServiceJobIntervalVariable",       2571.429 / 168),   # 70.92475% utilisation for 50 PUs
+#    list("calcAppPoolUserServiceJobIntervalDistribution",   "workloadUniformRandomizedDistribution"),
+#    list("calcAppPoolUserServiceJobIntervalGamma",          4),   # --> uniform(0.25*jobSize,4*IntervalSize)
+
+#    list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 70.92475% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
+#    list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+#    list("calcAppPoolUserServiceJobIntervalGamma",          50),
 
    # list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 70.92475% utilisation for 50 PUs
    # list("calcAppPoolUserServiceJobIntervalGamma",          4),         # --> stddev
    # list("calcAppPoolUserServiceJobIntervalDistribution",   "testJobIntervalDistribution"),   # <<-- customised, see function above!
+
 
    list("scenarioNetworkLANDelayVariable",                   1.0),   # Local
    list("scenarioNetworkMECMinDelay",                        5.0),   # MEC (lower bound)
