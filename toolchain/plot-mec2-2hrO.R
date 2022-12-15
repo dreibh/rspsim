@@ -189,7 +189,6 @@ bold.html <- function(text) {
 # ###### Plot results #######################################################
 systemSummaryTable <- function(name, prefix)
 {
-   name <- "mec2-2hr/Results"
    calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
@@ -235,13 +234,13 @@ systemSummaryTable <- function(name, prefix)
 # #    a <- calcAppPUAverageHandlingTime %>% select("lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageHandlingTime")
 
    a <- prep(calcAppPUAverageQueuingDelay, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay") %>%
-           rename(AvgQueuingTime = time)
+           rename("Queuing Time" = time)
    b <- prep(calcAppPUAverageStartupDelay, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageStartupDelay") %>%
-           rename(AvgStartupTime = time)
+           rename("Startup Time" = time)
    c <- prep(calcAppPUAverageProcessingTime, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageProcessingTime") %>%
-           rename(AvgProcessingTime = time)
+           rename("Processing Time" = time)
    d <- prep(calcAppPUAverageHandlingTime, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageHandlingTime") %>%
-           rename(AvgHandlingTime = time)
+           rename("Handling Time" = time)
 
    combined <- aggregation %>%
                   merge(a, by=c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy")) %>%
@@ -252,12 +251,13 @@ systemSummaryTable <- function(name, prefix)
                   rename("Clients" = scenarioNumberOfCalcAppPoolUsersVariable,
                          "Policy"  = calcAppPoolElementSelectionPolicy,
                          "Util. Fog"     = utilisationMeanMEC,
-                         "Util. Cloud"   = utilisationMeanPMC)
+                         "Util. Cloud"   = utilisationMeanPMC)  %>%
+                  select(!Clients)   # !!!
 
 
    # ====== Aggregate times =================================================
    writeTable(combined,
-               name, prefix, "Summary", "Server Utilisation and Client Request Times")
+               name, prefix, "Summary", "2-Hour Original: Average server utilisation (\\%) and average request times (s)")
 }
 
 
@@ -661,7 +661,7 @@ computeDelays <- function(name, prefix, createPDF = TRUE)
 
 # ###### Main program #######################################################
 
-systemSummary     <- systemSummaryTable("mec2-2hr/Results",  "MEC2-EC")
-dataUtilisation   <- plotPEUtilisation("mec2-2hr/Results",   "MEC2-EC")
-dataHandlingSpeed <- plotPUHandlingSpeed("mec2-2hr/Results", "MEC2-EC")
-summary           <- computeDelays("mec2-2hr/Results",       "MEC2-EC")
+systemSummary     <- systemSummaryTable("mec2-2hrO/Results",  "MEC2-2hrO")
+dataUtilisation   <- plotPEUtilisation("mec2-2hrO/Results",   "MEC2-2hrO")
+dataHandlingSpeed <- plotPUHandlingSpeed("mec2-2hrO/Results", "MEC2-2hrO")
+summary           <- computeDelays("mec2-2hrO/Results",       "MEC2-2hrO")

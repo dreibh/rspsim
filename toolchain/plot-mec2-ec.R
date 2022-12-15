@@ -189,7 +189,6 @@ bold.html <- function(text) {
 # ###### Plot results #######################################################
 systemSummaryTable <- function(name, prefix)
 {
-   name <- "mec2-ec/Results"
    calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
