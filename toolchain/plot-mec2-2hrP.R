@@ -257,7 +257,7 @@ systemSummaryTable <- function(name, prefix)
 
    # ====== Aggregate times =================================================
    writeTable(combined,
-               name, prefix, "Summary", "2-Hour Predicted: Average server utilisation (\\%) and average request times (s)")
+               name, prefix, "Summary", "2-Hours Predicted: Average server utilisation (\\%) and average request times (s)")
 }
 
 
