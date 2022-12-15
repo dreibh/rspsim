@@ -119,17 +119,23 @@ class cReqDistFromFile : public omnetpp::cRandom
    std::vector<std::pair<double, double>> AvgReqsPerMinute;
    unsigned int                           Index;
    unsigned int                           Entries;
+   int                                    AvgReqsColumn;
 
    private:
    void copy(const cReqDistFromFile& other);
 
    public:
    bool isInitialised() const { return Index > 0; }
-   cReqDistFromFile(omnetpp::cRNG* rng, const char* avgReqsPerMinuteFileName) : omnetpp::cRandom(rng) {
-      createRequestSchedule(avgReqsPerMinuteFileName);
+   cReqDistFromFile(omnetpp::cRNG* rng,
+                    const char*    avgReqsPerMinuteFileName,
+                    const int      avgReqsColumn) : omnetpp::cRandom(rng) {
+      createRequestSchedule(avgReqsPerMinuteFileName, avgReqsColumn);
    }
-   cReqDistFromFile(const char* name = nullptr, omnetpp::cRNG* rng = nullptr, const char* avgReqsPerMinuteFileName = nullptr) : cRandom(rng) {
-      createRequestSchedule(avgReqsPerMinuteFileName);
+   cReqDistFromFile(const char*    name                     = nullptr,
+                    omnetpp::cRNG* rng                      = nullptr,
+                    const char*    avgReqsPerMinuteFileName = nullptr,
+                    const int      avgReqsColumn            = -1) : cRandom(rng) {
+      createRequestSchedule(avgReqsPerMinuteFileName, avgReqsColumn);
    }
    cReqDistFromFile(const cReqDistFromFile& other) : cRandom(other) {
       copy(other);
@@ -140,18 +146,21 @@ class cReqDistFromFile : public omnetpp::cRandom
    cReqDistFromFile& operator=(const cReqDistFromFile& other);
    virtual std::string str() const override;
 
-   void createRequestSchedule(const char* avgReqsPerMinuteFileName);
+   void createRequestSchedule(const char* avgReqsPerMinuteFileName,
+                              const int   avgReqsColumn);
 
    virtual double draw() const override;
 };
 
 
 // ###### Create request schedule ###########################################
-void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileName)
+void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileName,
+                                             const int   avgReqsColumn)
 {
    AvgReqsPerMinute.clear();
-   Index   = 0;
-   Entries = 0;
+   Index         = 0;
+   Entries       = 0;
+   AvgReqsColumn = avgReqsColumn;
 
    if(avgReqsPerMinuteFileName) {
       std::ifstream is(avgReqsPerMinuteFileName);
@@ -159,7 +168,6 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
          std::string line;
          getline(is, line);   // Skip header
 
-         int    avgReqsColumn = -1;
          double baseTimeStamp = -1.0;
          while(getline(is, line)) {
             std::stringstream ss(line);
@@ -178,11 +186,12 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
             if(tuple.size() < 2) {
                throw omnetpp::cRuntimeError("Syntax error in %s\n", avgReqsPerMinuteFileName);
             }
-            if(avgReqsColumn < 0) {
-               avgReqsColumn = tuple.size() - 1;
+            if(AvgReqsColumn < 0) {
+               AvgReqsColumn = tuple.size() - 1;
             }
             else {
-               if(avgReqsColumn != tuple.size() - 1) {
+               if(AvgReqsColumn >= tuple.size()) {
+                  printf("%d >= %d!  <%s>\n", AvgReqsColumn, (int)tuple.size() - 1, line.c_str());
                   throw omnetpp::cRuntimeError("Unexpected number of rows in %s\n", avgReqsPerMinuteFileName);
                }
             }
@@ -197,8 +206,8 @@ void cReqDistFromFile::createRequestSchedule(const char* avgReqsPerMinuteFileNam
                1000000.0;
 
             std::size_t pos;
-            const double requests = std::stod(tuple[avgReqsColumn], &pos);
-            assert(pos == tuple[avgReqsColumn].size());
+            const double requests = std::stod(tuple[AvgReqsColumn], &pos);
+            assert(pos == tuple[AvgReqsColumn].size());
 
             if(baseTimeStamp < 0.0) {
                baseTimeStamp = timeStamp;
@@ -290,11 +299,11 @@ double cReqDistFromFile::draw() const
 
 // ###### Function ##########################################################
 static omnetpp::cMersenneTwister myRNG;
-static cReqDistFromFile          myRDFF(&myRNG, nullptr);
-double reqdistfromfile(const char* avgReqsPerMinuteFileName)
+static cReqDistFromFile          myRDFF(&myRNG, nullptr, -1);
+double reqdistfromfile(const char* avgReqsPerMinuteFileName, const int avgReqsColumn)
 {
    if(!myRDFF.isInitialised()) {
-      myRDFF.createRequestSchedule(avgReqsPerMinuteFileName);
+      myRDFF.createRequestSchedule(avgReqsPerMinuteFileName, avgReqsColumn);
    }
    return myRDFF.draw();
 }
@@ -303,12 +312,13 @@ double reqdistfromfile(const char* avgReqsPerMinuteFileName)
 // ###### NED function ######################################################
 omnetpp::cValue nedf_reqdistfromfile(omnetpp::cExpression::Context* context, omnetpp::cValue argv[], int argc)
 {
-    std::string avgReqsPerMinuteFileName = argv[0].stringValue();
-    return omnetpp::cValue(reqdistfromfile(avgReqsPerMinuteFileName.c_str()));
+    const std::string avgReqsPerMinuteFileName = argv[0].stringValue();
+    const int         avgReqsColumn            = argv[1].intValue();
+    return omnetpp::cValue(reqdistfromfile(avgReqsPerMinuteFileName.c_str(), avgReqsColumn));
 }
 
 Define_NED_Function2(nedf_reqdistfromfile,
-                     "quantity reqdistfromfile(string avgReqsPerMinuteFileName)",
+                     "quantity reqdistfromfile(string avgReqsPerMinuteFileName, int column)",
                      "random/continuous",
                      "Draws inter-request time");
 
