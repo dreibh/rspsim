@@ -8,7 +8,7 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec2-1hrP"
-simulationRuns <- 24
+simulationRuns <- 128
 simulationDuration <- 1*60 - 21   # 1 hour - 21 min
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE

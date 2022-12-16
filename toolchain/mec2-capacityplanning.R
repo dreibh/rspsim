@@ -2,9 +2,9 @@ cloudServers           <-  14
 mecServers             <-  0
 
 cloudServerCapacity    <- 300*60   # Work Units/s
-cloudMaxProcsPerServer <-   4
-mecServerCapacity      <- 600*60   # Work Units/s
-mecMaxProcsPerServer   <-   8
+cloudMaxProcsPerServer <-   2
+mecServerCapacity      <- 450*60   # Work Units/s
+mecMaxProcsPerServer   <-   3
 
 clients                <-  50
 totalReqsPerMin        <- 6.619643 / 6   # From 7day_task_req.csv: mean of 6.619643 in 6 minutes

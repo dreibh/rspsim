@@ -227,7 +227,7 @@ systemSummaryTable <- function(name, prefix)
                 select(c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy", all_of(key))) %>%
                 group_by(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy) %>%
                 summarise(.groups = "keep",
-                          time    =  mean(eval(parse(text=key)))
+                          time    =  mean(eval(parse(text=key)), na.rm = TRUE)
                          )
             )
    }

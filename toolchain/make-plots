@@ -1,0 +1,8 @@
+#!/bin/sh
+R --vanilla <plot-Xhr-comparison.R
+R --vanilla <plot-mec2-1hrO.R
+R --vanilla <plot-mec2-1hrP.R
+R --vanilla <plot-mec2-2hrO.R
+R --vanilla <plot-mec2-2hrP.R
+R --vanilla <plot-mec2-baseline.R
+R --vanilla <plot-mec2-ec.R

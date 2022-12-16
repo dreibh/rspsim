@@ -47,46 +47,6 @@ readResults <- function(name)
 }
 
 
-# ###### Write table ########################################################
-writeTable <- function(table, name, prefix, label, caption)
-{
-   latexOutputTable <- xtable(table,
-                              align   = getAlignment(table),
-                              label   = paste(sep="", "tab:", prefix, label),
-                              caption = caption)
-   htmlOutputTable  <- xtable(table,
-                              align   = getAlignment(table),
-                              label   = paste(sep="", "tab:", prefix, label),
-                              caption = caption)
-
-   latexName <- paste(sep="", name, "-", prefix, "-", label, ".tex")
-   print(latexOutputTable,
-         size                       = "footnotesize",
-         include.rownames           = FALSE,
-         sanitize.colnames.function = bold.latex,
-         table.placement            = NULL,
-         caption.placement          = "top",
-         hline.after                = c(-1, 0, seq(0, nrow(latexOutputTable))),
-         floating.environment       = "table*",
-         NA.string                  = "--",
-         file                       = latexName,
-         type                       = "latex")
-   cat(sep="", "Wrote ", latexName, "\n")
-
-   htmlName <- paste(sep="", name, "-", prefix, "-", label, ".html")
-   print(htmlOutputTable,
-         include.rownames           = FALSE,
-         table.placement            = NULL,
-         caption.placement          = "top",
-         sanitize.colnames.function = bold.html,
-         hline.after                = c(-1, 0, seq(0, nrow(htmlOutputTable))),
-         NA.string                  = "--",
-         file                       = htmlName,
-         type                       = "html")
-   cat(sep="", "Wrote ", htmlName, "\n")
-}
-
-
 # ###### Get policy types ###################################################
 getPolicyType <- function(policies)
 {
@@ -153,9 +113,13 @@ getAlignment <- function(data)
 markup.latex <- function(text)
 {
    return(gsub(" -> ", " $\\rightarrow$ ",
-             gsub(">=", "$\\ge$",
-                gsub("%", "\\%",
-                   gsub("Q([0-9]+)", "Q$_{\\\\mathrm{\\1%}}$", text, fixed = FALSE),
+             gsub("UPARROW", "$\\uparrow$",
+                gsub("DOWNARROW", "$\\downarrow$",
+                   gsub(">=", "$\\ge$",
+                      gsub("%", "\\%",
+                         gsub("Q([0-9]+)", "Q$_{\\\\mathrm{\\1%}}$", text, fixed = FALSE),
+                         fixed = TRUE),
+                      fixed = TRUE),
                    fixed = TRUE),
                 fixed = TRUE),
              fixed = TRUE))
@@ -183,6 +147,47 @@ bold.latex <- function(text)
 # ###### Text sanitiser for xtable(): Use HTML bold text ####################
 bold.html <- function(text) {
    return(paste(sep="", "<strong>", markup.html(text), "</strong>"))
+}
+
+
+# ###### Write table ########################################################
+writeTable <- function(table, name, prefix, label, caption)
+{
+   latexOutputTable <- xtable(table,
+                              align   = getAlignment(table),
+                              label   = paste(sep="", "tab:", prefix, label),
+                              caption = caption)
+   htmlOutputTable  <- xtable(table,
+                              align   = getAlignment(table),
+                              label   = paste(sep="", "tab:", prefix, label),
+                              caption = caption)
+
+   latexName <- paste(sep="", name, "-", prefix, "-", label, ".tex")
+   print(latexOutputTable,
+         size                       = "footnotesize",
+         include.rownames           = FALSE,
+         sanitize.colnames.function = bold.latex,
+         sanitize.text.function     = markup.latex,
+         table.placement            = NULL,
+         caption.placement          = "top",
+         hline.after                = c(-1, 0, seq(0, nrow(latexOutputTable))),
+         floating.environment       = "table*",
+         NA.string                  = "--",
+         file                       = latexName,
+         type                       = "latex")
+   cat(sep="", "Wrote ", latexName, "\n")
+
+   htmlName <- paste(sep="", name, "-", prefix, "-", label, ".html")
+   print(htmlOutputTable,
+         include.rownames           = FALSE,
+         table.placement            = NULL,
+         caption.placement          = "top",
+         sanitize.colnames.function = bold.html,
+         hline.after                = c(-1, 0, seq(0, nrow(htmlOutputTable))),
+         NA.string                  = "--",
+         file                       = htmlName,
+         type                       = "html")
+   cat(sep="", "Wrote ", htmlName, "\n")
 }
 
 
@@ -227,11 +232,10 @@ systemSummaryTable <- function(name, prefix)
                 select(c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy", all_of(key))) %>%
                 group_by(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy) %>%
                 summarise(.groups = "keep",
-                          time    =  mean(eval(parse(text=key)))
+                          time    =  mean(eval(parse(text=key)), na.rm = TRUE)
                          )
             )
    }
-# #    a <- calcAppPUAverageHandlingTime %>% select("lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageHandlingTime")
 
    a <- prep(calcAppPUAverageQueuingDelay, "lan.calcAppPoolUserArray.calcAppQueuingClient.CalcAppPUAverageQueuingDelay") %>%
            rename("Queuing Time" = time)
@@ -250,8 +254,8 @@ systemSummaryTable <- function(name, prefix)
                   mutate(calcAppPoolElementSelectionPolicy = getPolicyAbbreviations(calcAppPoolElementSelectionPolicy)) %>%
                   rename("Clients" = scenarioNumberOfCalcAppPoolUsersVariable,
                          "Policy"  = calcAppPoolElementSelectionPolicy,
-                         "Util. Fog"     = utilisationMeanMEC,
-                         "Util. Cloud"   = utilisationMeanPMC)  %>%
+                         "Util.~Fog"     = utilisationMeanMEC,
+                         "Util.~Cloud"   = utilisationMeanPMC)  %>%
                   select(!Clients)   # !!!
 
 
@@ -267,12 +271,12 @@ for(setup in c("2hr", "1hr")) {
 
    updown <- function(values)
    {
-      return( ifelse(values > 0, sprintf("$\\uparrow$~%1.2f", as.numeric(unlist(values))),
-                                 sprintf("$\\downarrow$~%1.2f", as.numeric(unlist(values)))) )
+      return( ifelse(values > 0, sprintf("UPARROW~%1.2f", as.numeric(unlist(values))),
+                                 sprintf("DOWNARROW~%1.2f", abs(as.numeric(unlist(values))))) )
    }
 
    s <- systemSummaryO
-   cols <- c("Util. Fog", "Util. Cloud", "Queuing Time", "Startup Time", "Processing Time", "Handling Time")
+   cols <- c("Util.~Fog", "Util.~Cloud", "Queuing Time", "Startup Time", "Processing Time", "Handling Time")
    for(col in cols) {
       s[col] <- updown(systemSummaryO[col] - systemSummaryP[col])
    }
@@ -282,5 +286,5 @@ for(setup in c("2hr", "1hr")) {
               paste(sep="", "mec2-", setup, "P/Results"),
               paste(sep="", "MEC2-", setup, "P"),
               "Comparison",
-              "Comparison of prediction relative to original results")
+              paste(sep="", gsub("hr", "-Hour", setup), ": Comparison of prediction relative to original results"))
 }

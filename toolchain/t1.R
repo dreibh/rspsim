@@ -45,7 +45,7 @@ getPolicyAbbreviations <- function(policies)
 }
 
 
-   name <- "mec2-sometesting/Results"
+   name <- "mec2-1hrO/Results"
    calcAppPETotalUsedCapacity   <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalUsedCapacity.data.bz2"))
    calcAppPETotalWastedCapacity <- readResults(paste(sep="/", name, "lan.calcAppPoolElementArray.calcAppServer-CalcAppPETotalWastedCapacity.data.bz2"))
 
@@ -61,7 +61,7 @@ getPolicyAbbreviations <- function(policies)
 
 
    # ====== Aggregate utilisation ===========================================
-   PUs <- c(20, 50, 80)
+   PUs <- c(50)
 
    aggregation <- calcAppPETotalUsedCapacity %>%
                      filter(scenarioNumberOfCalcAppPoolUsersVariable %in% PUs) %>%
@@ -84,7 +84,7 @@ getPolicyAbbreviations <- function(policies)
                 select(c("scenarioNumberOfCalcAppPoolUsersVariable", "calcAppPoolElementSelectionPolicy", all_of(key))) %>%
                 group_by(scenarioNumberOfCalcAppPoolUsersVariable, calcAppPoolElementSelectionPolicy) %>%
                 summarise(.groups = "keep",
-                          time    =  mean(eval(parse(text=key)))
+                          time    =  mean(eval(parse(text=key)), na.rm = TRUE)
                          )
             )
    }
