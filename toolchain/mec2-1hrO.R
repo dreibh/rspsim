@@ -7,7 +7,7 @@ source("simulate-version14.R")
 
 
 # ====== Simulation Settings ================================================
-simulationDirectory <- "mec2-1hr"
+simulationDirectory <- "mec2-1hrO"
 simulationRuns <- 24
 simulationDuration <- 1*60 - 21   # 1 hour - 21 min
 simulationStoreVectors <- FALSE
@@ -173,8 +173,8 @@ reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
                                                    variable, gamma, lambda)
 {
    variable <- as.numeric(variable)
-   gamma    <- as.numeric(gamma)
-   lambda   <- as.numeric(lambda)
+   gamma    <- as.numeric(gamma)    # Factor for value
+   lambda   <- as.numeric(lambda)   # Column
 
    if((currentBlock < 1) || (currentBlock > totalBlocks) ||
       (currentElement < 1) || (currentElement > totalElements) ||
@@ -183,7 +183,9 @@ reqdistfromfileJobIntervalDistribution <- function(currentBlock, totalBlocks,
    }
 
    return(c("Special",
-            sprintf("reqdistfromfile(\"1hr.csv\") * %f", as.numeric(gamma)),
+            sprintf("reqdistfromfile(\"1hr.csv\", %1.0f) * %f",
+               as.numeric(lambda),
+               as.numeric(gamma)),
             NA))
 }
 
@@ -246,6 +248,7 @@ simulationConfigurations <- list(
 
    list("calcAppPoolUserServiceJobIntervalVariable",       0.0),   # Ca. 70.92475% utilisation for 50 PUs, distribution from file 7day_task_req.csv!
    list("calcAppPoolUserServiceJobIntervalDistribution",   "reqdistfromfileJobIntervalDistribution"),   # <<-- customised, see function above!
+   list("calcAppPoolUserServiceJobIntervalLambda",         1),   # !!! Original schedule !!!
    list("calcAppPoolUserServiceJobIntervalGamma",          50),
 
    # list("calcAppPoolUserServiceJobIntervalVariable",       2571.429),   # 70.92475% utilisation for 50 PUs
