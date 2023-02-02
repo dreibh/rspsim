@@ -1,8 +1,8 @@
 # ###########################################################################
 #             Thomas Dreibholz's R Simulation Scripts Collection
-#                 Copyright (C) 2005-2022 by Thomas Dreibholz
+#                 Copyright (C) 2005-2023 by Thomas Dreibholz
 #
-#               Author: Thomas Dreibholz, dreibh@iem.uni-due.de
+#               Author: Thomas Dreibholz, thomas.dreibholz@gmail.com
 # ###########################################################################
 
 
