@@ -1,4 +1,4 @@
 #!/bin/sh
 rsync --delete --info=progress2 -a -e 'ssh -J oesthorn.nntb.no' --exclude '*Environment' 10.1.1.51:/home/dreibh/src/rspsim/toolchain/mec2-baseline* .
 rsync --delete --info=progress2 -a -e 'ssh -J oesthorn.nntb.no' --exclude '*Environment' 10.1.1.51:/home/dreibh/src/rspsim/toolchain/mec2-ec* .
-# rsync --delete --info=progress2 -a -e 'ssh -J oesthorn.nntb.no' --exclude '*Environment' 10.1.1.51:/home/dreibh/src/rspsim/toolchain/mec2-?hr* .
+rsync --delete --info=progress2 -a -e 'ssh -J oesthorn.nntb.no' --exclude '*Environment' 10.1.1.51:/home/dreibh/src/rspsim/toolchain/mec2-?hr* .
