@@ -21,7 +21,6 @@
 #
 # Contact: thomas.dreibholz@gmail.com
 
-
 while [ $# -gt 0 ] ; do
    if [ ! -e $1.R ] ; then
       echo "ERROR: $1.R does not exist!"
