@@ -50,14 +50,14 @@ scripts, copy it to the toolchain/ directory itself. They will
 
 To distribute simulation runs in a compute pool, and for more details
 on SimProcTC, see:
-https://www.uni-due.de/~be0001/omnetpp/
+https://www.nntb.no/~dreibh/omnetpp/
 All examples include the file computation-pool.R, where the pool
 configuration has to be made!
 
 
 4. Any questions?
 
-Write e-mail to Thomas Dreibholz, dreibh@iem.uni-due.de.
+Write e-mail to Thomas Dreibholz, thomas.dreibholz@gmail.com.
 
 Also have a look at the RSerPool page:
-https://www.uni-due.de/~be0001/rserpool/
+https://www.nntb.no/~dreibh/rserpool/
