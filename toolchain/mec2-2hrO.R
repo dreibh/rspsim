@@ -8,7 +8,7 @@ source("simulate-version14.R")
 
 # ====== Simulation Settings ================================================
 simulationDirectory <- "mec2-2hrO"
-simulationRuns <- 128
+simulationRuns <- 96
 simulationDuration <- 2*60 - 21   # 2 hours - 21 min
 simulationStoreVectors <- FALSE
 simulationExecuteMake <- TRUE
