@@ -8,7 +8,7 @@
  *
  * ------------- An Open Source RSerPool Simulation for OMNeT++ -------------
  *
- * Copyright (C) 2003-2023 by Thomas Dreibholz
+ * Copyright (C) 2003-2024 by Thomas Dreibholz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <stdlib.h>
 
 
-#ifdef NDEBUG
+#if defined(SIM_IMPORT) || defined(OMNETPPLIBS_IMPORT)
 #undef min
 #undef max
 #include <omnetpp.h>
@@ -87,7 +87,7 @@ uint64_t random64()
 /* ###### Get 32-bit random value ######################################## */
 uint32_t random32()
 {
-#ifdef NDEBUG
+#if defined(SIM_IMPORT) || defined(OMNETPPLIBS_IMPORT)
 #warning Using OMNeT++ random generator instead of time-seeded one!
    const double value = uniform(getSimulation()->getContextModule()->getRNG(0), 0.0, (double)0xffffffff);
    return((uint32_t)rint(value));

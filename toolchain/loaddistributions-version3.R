@@ -1,6 +1,6 @@
 # ###########################################################################
 #             Thomas Dreibholz's R Simulation Scripts Collection
-#                 Copyright (C) 2005-2023 by Thomas Dreibholz
+#                 Copyright (C) 2005-2024 by Thomas Dreibholz
 #
 #               Author: Thomas Dreibholz, thomas.dreibholz@gmail.com
 # ###########################################################################
@@ -40,38 +40,6 @@ workloadExponentialRandomizedDistribution <- function(currentBlock, totalBlocks,
    return(c("RandNegExp",
             sprintf("exponential(%f)", variable),
             rexp(1, 1 / variable)))
-}
-
-
-# ###### Uniform randomized distribution ####################################
-workloadUniformRandomizedDistribution <- function(currentBlock, totalBlocks,
-                                                  currentElement, totalElements,
-                                                  variable, gamma, lambda)
-{
-   variable <- as.numeric(variable)
-   gamma    <- as.numeric(gamma)
-   lambda   <- as.numeric(lambda)
-
-   if((currentBlock < 1) || (currentBlock > totalBlocks) ||
-      (currentElement < 1) || (currentElement > totalElements) ||
-      (poolUserServiceJobIntervalGamma < 0.0) ||
-      (variable <= 0.0)) {
-      stop("poolUserServiceJobIntervalUniformRandomizedDistribution: Check parameters!")
-   }
-
-   low <- variable
-   high <- variable
-   if(poolUserServiceJobIntervalGamma != 0) {
-      low  <- variable - (variable * poolUserServiceJobIntervalGamma)
-      high <- variable + (variable * poolUserServiceJobIntervalGamma)
-   }
-   if(low < 0) {
-      cat("WARNING: poolUserServiceJobIntervalUniformRandomizedDistribution: low < 0. Setting it to 0.\n")
-   }
-
-   return(c("RandUniform",
-            sprintf("uniform(%f,%f)", low, high),
-            runif(1, min=low, max=high)))
 }
 
 
