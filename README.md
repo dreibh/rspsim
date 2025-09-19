@@ -20,6 +20,35 @@ Details about RSPSIM and the CalcApp service can be found in «[Reliable Server 
 Also take at look at [Thomas Dreibholz's Reliable Server Pooling Page](https://www.nntb.no/~dreibh/rserpool/index.html) for details about the real-world RSerPool implementation RSPLIB.
 
 
+# 💾 Build from Sources
+
+RSPSIM is released under the [GNU General Public Licence&nbsp;(GPL)](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text).
+
+Please use the issue tracker at [https://github.com/dreibh/rspsim/issues](https://github.com/dreibh/rspsim/issues) to report bugs and issues!
+
+## Development Version
+
+The Git repository of the RSPSIM sources can be found at [https://github.com/dreibh/rspsim](https://github.com/dreibh/rspsim):
+
+<pre>
+git clone https://github.com/dreibh/rspsim
+cd rspsim
+cd tools &amp;&amp; make &amp;&amp; cd ..
+</pre>
+
+Contributions:
+
+* Issue tracker: [https://github.com/dreibh/rspsim/issues](https://github.com/dreibh/rspsim/issues).
+  Please submit bug reports, issues, questions, etc. in the issue tracker!
+
+* Pull Requests for RSPSIM: [https://github.com/dreibh/rspsim/pulls](https://github.com/dreibh/rspsim/pulls).
+  Your contributions to RSPSIM are always welcome!
+
+## Release Versions
+
+See [https://www.nntb.no/~dreibh/rspsim/#current-stable-release](https://www.nntb.no/~dreibh/rspsim/#current-stable-release) for release packages!
+
+
 # 🗃️ First Steps
 
 
@@ -47,7 +76,7 @@ See [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](h
 
 <pre>
 cd toolchain
-cd tools && make && cd ..
+cd tools &amp;&amp; make &amp;&amp; cd ..
 R --vanilla
 </pre>
 
