@@ -10,7 +10,7 @@
 
 # 💡 What is RSPSIM?
 
-[Reliable Server Pooling&nbsp;(RSerPool)](#what-is-reliable-server-pooling-rserpool) is the new IETF framework for server pool management and session failover handling. In particular, it can be used for realising highly available services and load distribution. RSPSIM is a simulation model of RSerPool for the OMNeT++ discrete event simulator. It includes:
+[Reliable Server Pooling&nbsp;(RSerPool)](#what-is-reliable-server-pooling-rserpool) is the new IETF framework for server pool management and session failover handling. In particular, it can be used for realising highly available services and load distribution. RSPSIM is a simulation model of RSerPool for the [OMNeT++](https://omnetpp.org/) discrete event simulator. It includes:
 
 * The RSerPool model itself, including an application model for the [Calculation Application (CalcApp)](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.8) service.
 * [SimProcTC](https://www.nntb.no/~dreibh/omnetpp/)-based tool-chain for running large-scale simulations, including support for using a real-world RSerPool setup with [RSPLIB](https://www.nntb.no/~dreibh/rserpool/index.html) to distribute the simulation processing jobs.
