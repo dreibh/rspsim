@@ -2,7 +2,7 @@
  RSPSIM<br />
  <span style="font-size: 30%">The Reliable Server Pooling Simulation Model</span><br />
  <a href="https://www.nntb.no/~dreibh/rserpool/">
-  <img alt="RSPLIB Project Logo" src="src/logo/rsplib.svg" width="25%" /><br />
+  <img alt="RSPLIB Project Logo" src="logo/rsplib.svg" width="25%" /><br />
   <span style="font-size: 30%;">https://www.nntb.no/~dreibh/rserpool</span>
  </a>
 </h1>
