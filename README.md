@@ -33,7 +33,7 @@ The Git repository of the RSPSIM sources can be found at [https://github.com/dre
 <pre>
 git clone https://github.com/dreibh/rspsim
 cd rspsim
-cd tools &amp;&amp; make &amp;&amp; cd ..
+cd toolchain/tools &amp;&amp; make &amp;&amp; cd ../..
 </pre>
 
 Contributions:
@@ -61,22 +61,39 @@ See [https://www.nntb.no/~dreibh/rspsim/#current-stable-release](https://www.nnt
 ## How to compile and run a simple model test
 
 <pre>
-cd model/
-opp_makemake -f -I.
+cd toolchain/tools &amp;&amp; make &amp;&amp; cd ../.. && \
+cd model && \
+opp_makemake -I . -f && \
 make
+</pre>
+
+Notes:
+
+* Make sure to compile in the OMNeT++ Python environment (see the [OMNeT++ Installation Guide](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf)), i.e.:
+
+  <pre>
+  source &lt;<em>PATH_TO_OMNET++_DIRECTORY</em>&gt;/setenv
+  </pre>
+
+  If <tt>opp_makemake</tt> is not found, this step is likely missing!
+
+* Make sure that everything compiles successfully. Otherwise, the tool-chain will not work properly!
+
+After compilation, you can start the demo simulation by calling:
+
+<pre>
 ./model -f test1.ini
 </pre>
 
-Take a look into <tt><a href="https://github.com/dreibh/rspsim/blob/master/model/test1.ini">test1.ini</a></tt>, the parameters mostly should be self-explaining. A detailed introduction to the model can be found in Chapter&nbsp;6 of «[Reliable Server Pooling – Evaluation, Optimization and Extension of a Novel IETF Architecture](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.6)»!
+Take a look into <tt><a href="https://github.com/dreibh/rspsim/blob/master/model/test1.ini">test1.ini</a></tt>, the parameters should mostly be self-explaining. A detailed introduction to the model can be found in Chapter&nbsp;6 of «[Reliable Server Pooling – Evaluation, Optimization and Extension of a Novel IETF Architecture](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.6)»!
 
 
 ## How to run a SimProcTC-based example?
 
-See [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](https://www.nntb.no/~dreibh/omnetpp/) for the SimProcTC installation requirements. It particularly needs [GNU&nbsp;R](https://www.r-project.org/). When it is installed, the toolchain tools can be compiled and the R&nbsp;shell started:
+See [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](https://www.nntb.no/~dreibh/omnetpp/) for the SimProcTC installation details. It particularly needs [GNU&nbsp;R](https://www.r-project.org/), [bzip2](https://sourceware.org/bzip2/) including headers, and <tt>chrpath</tt>. When it is installed, an R&nbsp;shell can be started in the <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/">toolchain</a></tt> directory:
 
 <pre>
 cd toolchain
-cd tools &amp;&amp; make &amp;&amp; cd ..
 R --vanilla
 </pre>
 
@@ -115,7 +132,7 @@ RSPSIM and related BibTeX entries can be found in [AllReferences.bib](https://ww
 
 * 🇧🇦 [Bosnian](https://bs.wikipedia.org/wiki/Reliable_Server_Pooling) (thanks to Nihad Cosić)
 * 🇨🇳 [Chinese](https://zh.wikipedia.org/wiki/Reliable_Server_Pooling) (thanks to Xing Zhou)
-* 🇭🇷 [Croatian](https://hr.wikipedia.org/wiki/Reliable_Server_Pooling) (thanks to Nihad Cosić)
+* 🇭🇷 [Croatian](https://web.archive.org/web/20230709054321/https://hr.wikipedia.org/wiki/Reliable_server_Pooling) (thanks to Nihad Cosić)
 * 🇬🇧 [English](https://en.wikipedia.org/wiki/Reliable_server_pooling)
 * 🇫🇷 [French](https://fr.wikipedia.org/wiki/Reliable_Server_Pooling)
 * 🇩🇪 [German](https://de.wikipedia.org/wiki/Reliable_Server_Pooling) (thanks to Jobin Pulinthanath)
