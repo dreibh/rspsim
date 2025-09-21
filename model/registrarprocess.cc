@@ -950,10 +950,11 @@ void RegistrarProcess::handleASAPHandleResolution(ASAPHandleResolution* msg)
       EV << Description << "Selecting up to " << items << " of pool "
          << msg->getPoolHandle() << " ..." << endl;
 
-      cPoolElement* selectionArray[items];
+      cPoolElement** selectionArray = new cPoolElement*[items];
+      OPP_CHECK(selectionArray);
       unsigned int policyType = Handlespace->selectPoolElementsByPolicy(
                                  msg->getPoolHandle(),
-                                 (cPoolElement**)&selectionArray, items,
+                                 selectionArray, items,
                                  items,
                                  (unsigned int)par("registrarMaxIncrement"));
 
@@ -972,6 +973,8 @@ void RegistrarProcess::handleASAPHandleResolution(ASAPHandleResolution* msg)
       for(unsigned int i = 0;i < items;i++) {
          response->setPoolElementParameter(i, selectionArray[i]->toPoolElementParameter());
       }
+
+      delete [] selectionArray;
    }
    else {
       EV << Description << "Rejecting handle resolution request in startup phase" << endl;
@@ -1104,7 +1107,8 @@ void RegistrarProcess::handleENRPListRequest(ENRPListRequest* msg)
    peerListResponse->setSenderServerID(MyIdentifier);
    peerListResponse->setReceiverServerID(msg->getSenderServerID());
 
-   ServerInformationParameter serverInfoArray[PeerList->getPeers() + 1];
+   ServerInformationParameter* serverInfoArray = new ServerInformationParameter[PeerList->getPeers() + 1];
+   OPP_CHECK(serverInfoArray);
    serverInfoArray[0] = OwnServerInfo;
    size_t peers = 1;
    cPeerListNode* node = PeerList->getFirstPeerListNode();
@@ -1120,6 +1124,8 @@ void RegistrarProcess::handleENRPListRequest(ENRPListRequest* msg)
    for(size_t i = 0;i < peers;i++) {
       peerListResponse->setServerInformation(i, serverInfoArray[i]);
    }
+
+   delete [] serverInfoArray;
 
    peerListResponse->setTimestamp(simTime());
    send(peerListResponse, "toTransport");

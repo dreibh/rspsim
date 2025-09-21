@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -eu
 # ###########################################################################
 #             Thomas Dreibholz's R Simulation Scripts Collection
 #                  Copyright (C) 2005-2025 Thomas Dreibholz
@@ -21,6 +21,7 @@
 #
 # Contact: thomas.dreibholz@gmail.com
 
+# ====== Check parameters ===================================================
 if [ $# -lt 1 ] ; then
    echo >&2 "Usage: get-neds [NED Directory] {NED file or directory} ..."
    exit 1
@@ -31,10 +32,10 @@ shift
 
 
 # ====== Prepare NED directory ==============================================
-if [ -e $NEDDIR ] ; then
-   rm -rf $NEDDIR
+if [ -e "$NEDDIR" ] ; then
+   rm -rf "$NEDDIR"
 fi
-mkdir $NEDDIR || exit 1
+mkdir "$NEDDIR" || exit 1
 
 
 # ====== Copy NED files =====================================================
@@ -44,14 +45,14 @@ while [ $# -gt 0 ] ; do
    NED=$1
    shift
 
-   if [ -d $NED ] ; then
-      rm -f $NEDDIR/out.tar
-      find $NED -name "*.ned" -printf "%P\n" | grep --invert-match "tdtoolchain/" | tar cf $NEDDIR/out.tar -C $NED -T -
-      if [ -e $NEDDIR/out.tar ] ; then
-         ( cd $NEDDIR && tar xf out.tar )
+   if [ -d "$NED" ] ; then
+      rm -f "$NEDDIR/out.tar"
+      find "$NED" -name "*.ned" -printf "%P\n" | grep --invert-match "tdtoolchain/" | tar cf "$NEDDIR/out.tar" -C "$NED" -T -
+      if [ -e "$NEDDIR/out.tar" ] ; then
+         ( cd "$NEDDIR" && tar xf out.tar )
       fi
-      rm -f $NEDDIR/out.tar
+      rm -f "$NEDDIR/out.tar"
    else
-      cp $NED $NEDDIR
+      cp "$NED" "$NEDDIR"
    fi
 done
