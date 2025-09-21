@@ -393,7 +393,9 @@ size_t cPoolHandlespace::selectPoolElementsByPolicy(const char*    poolHandle,
                                                     const size_t   maxHandleResolutionItems,
                                                     const size_t   maxIncrement)
 {
-   struct TMPL_CLASS(PoolElementNode, SimpleRedBlackTree)* array[maxHandleResolutionItems];
+   struct TMPL_CLASS(PoolElementNode, SimpleRedBlackTree)** array =
+      new TMPL_CLASS(PoolElementNode, SimpleRedBlackTree)*[maxHandleResolutionItems];
+   OPP_CHECK(array);
 
    struct PoolHandle myPoolHandle;
    poolHandleNew(&myPoolHandle,
@@ -403,12 +405,13 @@ size_t cPoolHandlespace::selectPoolElementsByPolicy(const char*    poolHandle,
    TMPL_CLASS(poolHandlespaceManagementHandleResolution, SimpleRedBlackTree)(
       &Handlespace,
       &myPoolHandle,
-      (struct TMPL_CLASS(PoolElementNode, SimpleRedBlackTree)**)&array,
-      &items,
+      array, &items,
       maxHandleResolutionItems, maxIncrement);
    for(size_t i = 0;i < items;i++) {
       selectionArray[i] = (cPoolElement*)array[i]->UserData;
    }
+
+   delete [] array;
 
 #ifdef VERIFY
    TMPL_CLASS(poolHandlespaceManagementVerify, SimpleRedBlackTree)(&Handlespace);
