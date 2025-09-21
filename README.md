@@ -61,9 +61,9 @@ See [https://www.nntb.no/~dreibh/rspsim/#current-stable-release](https://www.nnt
 ## How to compile and run a simple model test
 
 <pre>
-cd toolchain/tools &amp;&amp; make &amp;&amp; cd ../.. && \
-cd model && \
-opp_makemake -I . -f && \
+cd toolchain/tools &amp;&amp; make &amp;&amp; cd ../.. &amp;&amp; \
+cd model &amp;&amp; \
+opp_makemake -I . -f &amp;&amp; \
 make
 </pre>
 
