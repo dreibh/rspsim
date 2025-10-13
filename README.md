@@ -30,11 +30,10 @@ Please use the issue tracker at [https://github.com/dreibh/rspsim/issues](https:
 
 The Git repository of the RSPSIM sources can be found at [https://github.com/dreibh/rspsim](https://github.com/dreibh/rspsim):
 
-```bash
-git clone https://github.com/dreibh/rspsim
-cd rspsim
-cd toolchain/tools && make && cd ../..
-```
+<pre><code><span class="fu">git</span> clone <a href="https://github.com/dreibh/rspsim">https://github.com/dreibh/rspsim</a>
+<span class="bu">cd</span> rspsim
+<span class="bu">cd</span> toolchain/tools && make <span class="fu">&&</span> <span class="bu">cd</span> ..
+</code></pre>
 
 Contributions:
 
