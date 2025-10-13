@@ -13,11 +13,11 @@
 [Reliable Server Pooling&nbsp;(RSerPool)](#what-is-reliable-server-pooling-rserpool) is the new IETF framework for server pool management and session failover handling. In particular, it can be used for realising highly available services and load distribution. RSPSIM is a simulation model of RSerPool for the [OMNeT++](https://omnetpp.org/) discrete event simulator. It includes:
 
 * The RSerPool model itself, including an application model for the [Calculation Application (CalcApp)](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.8) service.
-* [SimProcTC](https://www.nntb.no/~dreibh/omnetpp/)-based tool-chain for running large-scale simulations, including support for using a real-world RSerPool setup with [RSPLIB](https://www.nntb.no/~dreibh/rserpool/index.html) to distribute the simulation processing jobs.
+* [SimProcTC](https://www.nntb.no/~dreibh/omnetpp/)-based tool-chain for running large-scale simulations, including support for using a real-world RSerPool setup with [RSPLIB](https://www.nntb.no/~dreibh/rserpool/) to distribute the simulation processing jobs.
 
 Details about RSPSIM and the CalcApp service can be found in «[Reliable Server Pooling – Evaluation, Optimization and Extension of a Novel IETF Architecture](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.6)»!
 
-Also take at look at [Thomas Dreibholz's Reliable Server Pooling Page](https://www.nntb.no/~dreibh/rserpool/index.html) for details about the real-world RSerPool implementation RSPLIB.
+Also take at look at [Thomas Dreibholz's Reliable Server Pooling Page](https://www.nntb.no/~dreibh/rserpool/) for details about the real-world RSerPool implementation RSPLIB.
 
 
 # 💾 Build from Sources
@@ -30,11 +30,11 @@ Please use the issue tracker at [https://github.com/dreibh/rspsim/issues](https:
 
 The Git repository of the RSPSIM sources can be found at [https://github.com/dreibh/rspsim](https://github.com/dreibh/rspsim):
 
-<pre>
+```bash
 git clone https://github.com/dreibh/rspsim
 cd rspsim
-cd toolchain/tools &amp;&amp; make &amp;&amp; cd ../..
-</pre>
+cd toolchain/tools && make && cd ../..
+```
 
 Contributions:
 
@@ -60,20 +60,20 @@ See [https://www.nntb.no/~dreibh/rspsim/#current-stable-release](https://www.nnt
 
 ## How to compile and run a simple model test
 
-<pre>
-cd toolchain/tools &amp;&amp; make &amp;&amp; cd ../.. &amp;&amp; \
-cd model &amp;&amp; \
-opp_makemake -I . -f &amp;&amp; \
+```bash
+cd toolchain/tools && make && cd ../.. && \
+cd model && \
+opp_makemake -I . -f && \
 make
-</pre>
+```
 
 Notes:
 
 * Make sure to compile in the OMNeT++ Python environment (see the [OMNeT++ Installation Guide](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf)), i.e.:
 
-  <pre>
-  source &lt;<em>PATH_TO_OMNET++_DIRECTORY</em>&gt;/setenv
-  </pre>
+  ```bash
+  source <PATH_TO_OMNET++_DIRECTORY>/setenv
+  ```
 
   If <tt>opp_makemake</tt> is not found, this step is likely missing!
 
@@ -81,9 +81,9 @@ Notes:
 
 After compilation, you can start the demo simulation by calling:
 
-<pre>
+```bash
 ./model -f test1.ini
-</pre>
+```
 
 Take a look into <tt><a href="https://github.com/dreibh/rspsim/blob/master/model/test1.ini">test1.ini</a></tt>, the parameters should mostly be self-explaining. A detailed introduction to the model can be found in Chapter&nbsp;6 of «[Reliable Server Pooling – Evaluation, Optimization and Extension of a Novel IETF Architecture](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.6)»!
 
@@ -92,24 +92,24 @@ Take a look into <tt><a href="https://github.com/dreibh/rspsim/blob/master/model
 
 See [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](https://www.nntb.no/~dreibh/omnetpp/) for the SimProcTC installation details. It particularly needs [GNU&nbsp;R](https://www.r-project.org/), [bzip2](https://sourceware.org/bzip2/) including headers, and <tt>chrpath</tt>. When it is installed, an R&nbsp;shell can be started in the <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/">toolchain</a></tt> directory:
 
-<pre>
+```bash
 cd toolchain
 R --vanilla
-</pre>
+```
 
 In the R&nbsp;shell, <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/example1.R">example1.R</a></tt> can be started:
 
-<pre>
+```r
 source("example1.R")
-</pre>
+```
 
 This will parametrise the simulation defined in <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/example1.R">example1.R</a></tt>, perform all runs (on the local machine) and collect the results.
 
 The plot script <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/plot-example1.R">example1.R</a></tt> plots the results of the example1 run.
 
-<pre>
+```r
 source("plot-example1.R")
-</pre>
+```
 
 The resulting PDF file is example1.pdf.
 
@@ -143,13 +143,13 @@ What about helping Wikipedia by adding an article in your language?
 
 ## Networking and System Management Software
 
-* [Thomas Dreibholz's Reliable Server Pooling (RSerPool) Page](https://www.nntb.no/~dreibh/rserpool/index.html)
-* [NetPerfMeter – A TCP/MPTCP/UDP/SCTP/DCCP Network Performance Meter Tool](https://www.nntb.no/~dreibh/netperfmeter/index.html)
-* [HiPerConTracer – High-Performance Connectivity Tracer](https://www.nntb.no/~dreibh/hipercontracer/index.html)
-* [TSCTP – An SCTP test tool](https://www.nntb.no/~dreibh/tsctp/index.html)
-* [_sctplib_ and _socketapi_ – The User-Space SCTP Library (_sctplib_) and Socket API Library (_socketapi_)](https://www.nntb.no/~dreibh/sctplib/index.html)
-* [SubNetCalc – An IPv4/IPv6 Subnet Calculator](https://www.nntb.no/~dreibh/subnetcalc/index.html)
-* [System-Tools – Tools for Basic System Management](https://www.nntb.no/~dreibh/system-tools/index.html)
+* [Thomas Dreibholz's Reliable Server Pooling (RSerPool) Page](https://www.nntb.no/~dreibh/rserpool/)
+* [NetPerfMeter – A TCP/MPTCP/UDP/SCTP/DCCP Network Performance Meter Tool](https://www.nntb.no/~dreibh/netperfmeter/)
+* [HiPerConTracer – High-Performance Connectivity Tracer](https://www.nntb.no/~dreibh/hipercontracer/)
+* [TSCTP – An SCTP test tool](https://www.nntb.no/~dreibh/tsctp/)
+* [_sctplib_ and _socketapi_ – The User-Space SCTP Library (_sctplib_) and Socket API Library (_socketapi_)](https://www.nntb.no/~dreibh/sctplib/)
+* [SubNetCalc – An IPv4/IPv6 Subnet Calculator](https://www.nntb.no/~dreibh/subnetcalc/)
+* [System-Tools – Tools for Basic System Management](https://www.nntb.no/~dreibh/system-tools/)
 * [Wireshark](https://www.wireshark.org/)
 
 ## Simulation and Data Processing Software
@@ -159,8 +159,8 @@ What about helping Wikipedia by adding an article in your language?
 
 ## Other Resources
 
-* [Thomas Dreibholz's SCTP Page](https://www.nntb.no/~dreibh/sctp/index.html)
-* [Thomas Dreibholz's Multi-Path TCP (MPTCP) Page](https://www.nntb.no/~dreibh/mptcp/index.html)
+* [Thomas Dreibholz's SCTP Page](https://www.nntb.no/~dreibh/sctp/)
+* [Thomas Dreibholz's Multi-Path TCP (MPTCP) Page](https://www.nntb.no/~dreibh/mptcp/)
 * [Michael Tüxen's SCTP page](https://www.sctp.de/)
 * [Michael Tüxen's RSerPool page](https://www.sctp.de/rserpool.html)
 * [NorNet – A Real-World, Large-Scale Multi-Homing Testbed](https://www.nntb.no/)
