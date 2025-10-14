@@ -53,8 +53,8 @@ See [https://www.nntb.no/~dreibh/rspsim/#current-stable-release](https://www.nnt
 
 ## Directory Structure
 
-* <tt><a href="model">model</a></tt>: The model itself
-* <tt><a href="toolchain">toolchain</a></tt>: The SimProcTC files for parametrisation, run distribution and post-processing of results
+* [`model`](https://github.com/dreibh/rspsim/blob/master/model): The model itself
+* [`toolchain`](https://github.com/dreibh/rspsim/blob/master/toolchain): The SimProcTC files for parametrisation, run distribution and post-processing of results
 
 
 ## How to compile and run a simple model test
@@ -74,7 +74,7 @@ Notes:
   source <PATH_TO_OMNET++_DIRECTORY>/setenv
   ```
 
-  If <tt>opp_makemake</tt> is not found, this step is likely missing!
+  If `opp_makemake</tt> is not found, this step is likely missing!
 
 * Make sure that everything compiles successfully. Otherwise, the tool-chain will not work properly!
 
@@ -84,38 +84,38 @@ After compilation, you can start the demo simulation by calling:
 ./model -f test1.ini
 ```
 
-Take a look into <tt><a href="https://github.com/dreibh/rspsim/blob/master/model/test1.ini">test1.ini</a></tt>, the parameters should mostly be self-explaining. A detailed introduction to the model can be found in Chapter&nbsp;6 of «[Reliable Server Pooling – Evaluation, Optimization and Extension of a Novel IETF Architecture](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.6)»!
+Take a look into [`test1.ini`](https://github.com/dreibh/rspsim/blob/master/model/test1.ini), the parameters should mostly be self-explaining. A detailed introduction to the model can be found in Chapter&nbsp;6 of «[Reliable Server Pooling – Evaluation, Optimization and Extension of a Novel IETF Architecture](https://duepublico2.uni-due.de/servlets/MCRFileNodeServlet/duepublico_derivate_00016326/Dre2006_final.pdf#chapter.6)»!
 
 
 ## How to run a SimProcTC-based example?
 
-See [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](https://www.nntb.no/~dreibh/omnetpp/) for the SimProcTC installation details. It particularly needs [GNU&nbsp;R](https://www.r-project.org/), [bzip2](https://sourceware.org/bzip2/) including headers, and <tt>chrpath</tt>. When it is installed, an R&nbsp;shell can be started in the <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/">toolchain</a></tt> directory:
+See [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](https://www.nntb.no/~dreibh/omnetpp/) for the SimProcTC installation details. It particularly needs [GNU&nbsp;R](https://www.r-project.org/), [bzip2](https://sourceware.org/bzip2/) including headers, and `chrpath`. When it is installed, an R&nbsp;shell can be started in the [`toolchain`](https://github.com/dreibh/rspsim/blob/master/toolchain) directory:
 
 ```bash
 cd toolchain
 R --vanilla
 ```
 
-In the R&nbsp;shell, <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/example1.R">example1.R</a></tt> can be started:
+In the R&nbsp;shell, [`example1.R`](https://github.com/dreibh/rspsim/blob/master/toolchain/example1.R) can be started:
 
 ```r
 source("example1.R")
 ```
 
-This will parametrise the simulation defined in <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/example1.R">example1.R</a></tt>, perform all runs (on the local machine) and collect the results.
+This will parametrise the simulation defined in [`example1.R`](https://github.com/dreibh/rspsim/blob/master/toolchain/example1.R), perform all runs (on the local machine) and collect the results.
 
-The plot script <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/plot-example1.R">example1.R</a></tt> plots the results of the example1 run.
+The plot script [`plot-example1.R`](https://github.com/dreibh/rspsim/blob/master/toolchain/plot-example1.R) plots the results of the example1 run.
 
 ```r
 source("plot-example1.R")
 ```
 
-The resulting PDF file is example1.pdf.
+The resulting PDF file is `example1.pdf`.
 
-Need more examples? Take a look into the directory <tt><a href="https://github.com/dreibh/rspsim/tree/master/toolchain/example-scripts">toolchain/example-scripts</a></tt>. Each <tt><em>&lt;simulation&gt;</em>.R</tt> file is accompanied by a corresponding <tt>plot-<em>&lt;simulation&gt;</em>.R</tt> to create the corresponding PDF output. To use one of these scripts, copy it to the <tt><a href="https://github.com/dreibh/rspsim/tree/master/toolchain/example-scripts">toolchain</a></tt> directory itself. They will **not** work in the <tt><a href="https://github.com/dreibh/rspsim/tree/master/toolchain/example-scripts">toolchain/example-scripts</a></tt> subdirectory!
+Need more examples? Take a look into the directory [`example-scripts`](https://github.com/dreibh/rspsim/blob/master/toolchain/example-scripts). Each <tt><em>&lt;simulation&gt;</em>.R</tt> file is accompanied by a corresponding <tt>plot-<em>&lt;simulation&gt;</em>.R</tt> to create the corresponding PDF output. To use one of these scripts, copy it to the [`toolchain`](https://github.com/dreibh/rspsim/blob/master/toolchain) directory itself. They will **not** work in the [`example-scripts`](https://github.com/dreibh/rspsim/blob/master/toolchain/example-scripts) subdirectory!
 
 To distribute simulation runs in a compute pool, and for more details about SimProcTC, see: [SimProcTC – A Simulation Processing Tool-Chain for OMNeT++ Simulations](https://www.nntb.no/~dreibh/omnetpp/).
-All examples include the file <tt><a href="https://github.com/dreibh/rspsim/blob/master/toolchain/computation-pool.R">computation-pool.R</a></tt>, where the pool configuration has to be made!
+All examples include the file [`computation-pool.R`](https://github.com/dreibh/rspsim/blob/master/toolchain/computation-pool.R), where the pool configuration has to be made!
 
 
 # 🖋️ Citing RSPSIM in Publications
