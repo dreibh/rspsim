@@ -32,7 +32,7 @@ The Git repository of the RSPSIM sources can be found at [https://github.com/dre
 
 <pre><code><span class="fu">git</span> clone <a href="https://github.com/dreibh/rspsim">https://github.com/dreibh/rspsim</a>
 <span class="bu">cd</span> rspsim
-<span class="bu">cd</span> toolchain/tools && make <span class="fu">&&</span> <span class="bu">cd</span> ..
+<span class="bu">cd</span> toolchain/tools &amp;&amp; <span class="fu">make</span> &amp;&amp; <span class="bu">cd</span> ..
 </code></pre>
 
 Contributions:
@@ -74,7 +74,7 @@ Notes:
   source <PATH_TO_OMNET++_DIRECTORY>/setenv
   ```
 
-  If `opp_makemake</tt> is not found, this step is likely missing!
+  If `opp_makemake` is not found, this step is likely missing!
 
 * Make sure that everything compiles successfully. Otherwise, the tool-chain will not work properly!
 
