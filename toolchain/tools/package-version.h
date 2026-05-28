@@ -27,61 +27,17 @@
  * Homepage: https://www.nntb.no/~dreibh/netperfmeter/
  */
 
-#ifndef INPUTFILE_H
-#define INPUTFILE_H
+#ifndef NETPERFMETER_VERSION_H
+#define NETPERFMETER_VERSION_H
 
-#include <bzlib.h>
-#include <iostream>
-#include <cstdio>
-#include <string>
+#define NETPERFMETER_VERSION_MAJOR "2"
+#define NETPERFMETER_VERSION_MINOR "0"
+#define NETPERFMETER_VERSION_PATCH "4"
+#define NETPERFMETER_VERSION       "2.0.4"
+#define NETPERFMETER_PACKAGE       "netperfmeter-2.0.4"
 
-
-// Input File Formats
-enum InputFileFormat
-{
-   IFF_Plain = 1,
-   IFF_BZip2 = 2
-};
-
-
-class InputFile
-{
-   // ====== Methods ========================================================
-   public:
-   InputFile();
-   ~InputFile();
-
-   bool initialize(const char*            name,
-                   const InputFileFormat format);
-   bool finish(const bool closeFile = true);
-
-   inline bool exists() const {
-      return File || BZFile;
-   }
-   inline InputFileFormat getFormat() const {
-      return Format;
-   }
-   inline FILE* getFile() const {
-      return File;
-   }
-   inline const std::string& getName() const {
-      return Name;
-   }
-   inline unsigned long long getLine() const {
-      return Line;
-   }
-   ssize_t readLine(char* buffer, size_t bufferSize, bool& eof);
-
-   // ====== Private Data ===================================================
-   private:
-   InputFileFormat    Format;
-   std::string        Name;
-   unsigned long long Line;
-   FILE*              File;
-   BZFILE*            BZFile;
-   bool               ReadError;
-   size_t             StoragePos;
-   char               Storage[16384];
-};
+#define CREATESUMMARY_VERSION      NETPERFMETER_VERSION
+#define COMBINESUMMARIES_VERSION   NETPERFMETER_VERSION
+#define EXTRACTVECTORS_VERSION     NETPERFMETER_VERSION
 
 #endif
